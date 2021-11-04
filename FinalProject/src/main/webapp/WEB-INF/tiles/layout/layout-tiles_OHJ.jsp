@@ -27,14 +27,14 @@
   <style type="text/css">
 	body {font-family: Arial, Helvetica, sans-serif, 돋움; }
 
-	#mycontainer   { padding: 0; }
+	#mycontainer   { padding-left: 20px; padding-right: 20px; }
 	#myheader      { display: flex; position: relative; }
 	
-	#mysideinfo    { min-height:900px; position: relative; padding-top: 40px; background-color:#a6a6a6;
-	                 float:left; width:22.5%; }
+	#mysideinfo    { min-height:900px; position: relative; padding-top: 40px; background-color:#f4f5f7;
+	                 float:left; width:23%; border-right: solid 1px #404040;}
 	                 
 	#mycontent     { min-height:900px; position: relative; padding-top: 40px; background-color:#f4f5f7;
-	                 float:right; width:76%; }
+	                 float:right; width:77%; }
 	                 
 	#myfooter      { display: flex; position: relative; background-color:#555555; clear:both; }
 	 
