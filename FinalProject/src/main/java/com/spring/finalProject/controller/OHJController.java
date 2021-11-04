@@ -81,8 +81,15 @@ public class OHJController {
 	private InterOHJService service;
 	// Type에 따라 알아서 Bean 을 주입해준다.
 
-
-
+	// === #36. 게시판 페이지 요청 === //
+	@RequestMapping(value="/recent.gw")
+	public String recent(HttpServletRequest request) {
+		
+		return "board/recent.tiles_OHJ";
+		//  /WEB-INF/views/tiles_OHJ/board/recent.jsp 파일을 생성한다.
+	}
+	
+	
 
 	
 }
