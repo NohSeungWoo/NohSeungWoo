@@ -45,11 +45,11 @@
 
 </head>
 <body>
-	<div class="container-fluid"> <!-- 팀장님꺼에서 style="max-width:1600px" 삭제함 -->
+	<div class="container-fluid" style="max-width:1600px">
 		<nav class="navbar navbar-expand-lg navbar-light pt-2" style="background-color: black;">
 		
 			<!-- Brand/logo --> <!-- Font Awesome 5 Icons -->
-			<a class="navbar-brand" href="<%= ctxPath %>/index.gw" style="color: white;"><i class="fas fa-home fa-lg"></i></a>
+			<a class="navbar-brand" href="<%= ctxPath %>/index.gw" style="color: white;">그룹<i class="fab fa-google-wallet fa-lg"></i></a>
 			
 			<span style="font-size:20pt; font-weight: bold; color: white;">게시판</span>
 			

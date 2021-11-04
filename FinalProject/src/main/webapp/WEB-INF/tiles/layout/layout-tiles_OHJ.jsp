@@ -27,14 +27,14 @@
   <style type="text/css">
 	body {font-family: Arial, Helvetica, sans-serif, 돋움; }
 
-	#mycontainer   { padding-left: 20px; padding-right: 20px; }
+	#mycontainer   { padding: 0; }
 	#myheader      { display: flex; position: relative; }
 	
-	#mysideinfo    { min-height:900px; position: relative; padding-top: 40px; background-color:#f4f5f7;
-	                 float:left; width:23%; border-right: solid 1px #404040;}
+	#mysideinfo    { min-height:900px; position: relative; padding-top: 40px;
+	                 float:left; width:19%; }
 	                 
 	#mycontent     { min-height:900px; position: relative; padding-top: 40px; background-color:#f4f5f7;
-	                 float:right; width:77%; }
+	                 float:right; width:80%; }
 	                 
 	#myfooter      { display: flex; position: relative; background-color:#555555; clear:both; }
 	 
@@ -59,13 +59,13 @@
       <div id="myheader">
          <tiles:insertAttribute name="header" />
       </div>
-      
-      <div id="mysideinfo">
-         <tiles:insertAttribute name="sideinfo" />
-      </div>
-      
-      <div id="mycontent">
-         <tiles:insertAttribute name="content" />
+      <div class="container-fluid" style="max-width:1600px">
+	      <div id="mysideinfo">
+	         <tiles:insertAttribute name="sideinfo" />
+	      </div>
+	      <div id="mycontent">
+	         <tiles:insertAttribute name="content" />
+	      </div>
       </div>
       
       <div id="myfooter">
