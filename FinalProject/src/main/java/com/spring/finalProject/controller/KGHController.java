@@ -14,5 +14,13 @@ public class KGHController {
 		
 		return mav;
 	}
+
+	@RequestMapping(value = "/memberList.gw")
+	public ModelAndView memberList(ModelAndView mav) {
+		
+		mav.setViewName("admin/memberList.tiles2");
+		
+		return mav;
+	}
 	
 }
