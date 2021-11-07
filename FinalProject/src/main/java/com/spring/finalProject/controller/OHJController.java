@@ -1,11 +1,13 @@
 package com.spring.finalProject.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.finalProject.service.InterOHJService;
 
@@ -81,13 +83,41 @@ public class OHJController {
 	private InterOHJService service;
 	// Type에 따라 알아서 Bean 을 주입해준다.
 
-	// === #36. 게시판 페이지 요청 === //
-	@RequestMapping(value="/recent.gw")
-	public String recent(HttpServletRequest request) {
+	/////////////////////////////////////////////////////////////////////////////////
+						// 기본셋팅 끝이다. 여기서부터 개발 시작이다! //
+	/////////////////////////////////////////////////////////////////////////////////
+	
+	
+	// === &36. 게시판 페이지 요청(최근 게시물) === //
+	@RequestMapping(value="/boardRecent.gw")
+	public String boardRecent(HttpServletRequest request) {
 		
-		return "board/recent.tiles_OHJ";
-		//  /WEB-INF/views/tiles_OHJ/board/recent.jsp 파일을 생성한다.
+		return "board/boardRecent.tiles_OHJ";
+		//  /WEB-INF/views/tiles_OHJ/board/boardRecent.jsp 파일을 생성한다.
 	}
+	
+	
+	// === &51. 게시판 글쓰기 폼페이지 요청 === //
+	@RequestMapping(value="/boardWrite.gw")
+	public ModelAndView requiredLogin_boardWrite(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		mav.setViewName("board/boardWrite.tiles_OHJ");
+		//  /WEB-INF/views/tiles_OHJ/board/boardWrite.jsp 파일을 생성한다.
+		
+		return mav;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 

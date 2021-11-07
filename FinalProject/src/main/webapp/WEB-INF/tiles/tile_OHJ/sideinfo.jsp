@@ -5,6 +5,8 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<% String ctxPath = request.getContextPath(); %>
+
 <style>
 	
 	button#writeBtn{
@@ -31,14 +33,22 @@
 <script type="text/javascript">
 
 	$(document).ready(function() {
-	
+		
 	}); // end of ready(); ---------------------------------
-
+	
+	
+	// Function Declaration
+	
+	// 글쓰기로 이동하는 함수
+	function goBoardWrite(){
+		location.href = "<%= ctxPath%>/boardWrite.gw";
+	}
+	
 </script>
 
 <div>
 
-	<button type="button" id="writeBtn" class="btn btn-outline-secondary btn-lg" onclick="" style="margin-bottom: 20px;">글쓰기</button>
+	<button type="button" id="writeBtn" class="btn btn-outline-secondary btn-lg" onclick="goBoardWrite();" style="margin-bottom: 20px;">글쓰기<i class="fas fa-pen" style="margin-left: 4px;"></i></button>
 	
 	
 	
@@ -51,13 +61,13 @@
 			<a href="#allCompany" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle">전사 게시판</a> <!-- dropdown-toggle을 통해 ▽ 모양 보여줌 --> <!-- 원래는 data-target="#allCompany"랑 연결하는데, 여기선 href로 연결해줌. -->
 				<ul class="collapse sidesubmenu" id="allCompany" >
 		            <li>
-		                <a href="#">사내공지</a>
+		                <a href="#">공지사항</a>
 		            </li>
 		            <li>
 		                <a href="#">자유게시판</a>
 		            </li>
 		            <li>
-		                <a href="#">설문조사</a>
+		                <a href="#">건의사항</a>
 		            </li>
 		        </ul>
 		      

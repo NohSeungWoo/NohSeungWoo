@@ -33,7 +33,7 @@
 	#mysideinfo    { min-height:900px; position: relative; padding-top: 40px;
 	                 float:left; width:19%; }
 	                 
-	#mycontent     { min-height:900px; position: relative; padding-top: 40px; background-color:#f4f5f7;
+	#mycontent     { min-height:900px; position: relative; padding-top: 40px; /* background-color:#f4f5f7; */ border-left: solid 1px gray;
 	                 float:right; width:80%; }
 	                 
 	#myfooter      { display: flex; position: relative; background-color:#555555; clear:both; }
