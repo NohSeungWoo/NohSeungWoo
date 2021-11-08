@@ -24,7 +24,7 @@ create table tbl_position
 
 -- 직원 테이블
 create table tbl_employee
-(employeeNo        varchar2(100)            not null,    -- 사원번호
+(employeeID        varchar2(100)            not null,    -- 사원번호
  fk_departNo       number                   not null,    -- 부서번호(foreign key)
  fk_positionNo     number                   not null,    -- 직급번호(foreign key)
  name              varchar2(100)            not null,    -- 사원명
@@ -40,7 +40,11 @@ create table tbl_employee
  salary            number                   not null,    -- 급여
  dayoff            number default 0         not null,    -- 연차개수
  admin             number(1) default 0      not null,    -- 관리자 권한 여부
- 
+ postcode          number                   not null,    -- 우편번호
+ address           varchar2(200)            not null,    -- 주소
+ detailAddress     varchar2(200)            not null,    -- 상세주소
+ extraAddress      varchar2(200),                        -- 추가주소
+    
  constraint PK_tbl_emp_employeeNo primary key(employeeNo),
  constraint FK_tbl_emp_fk_departNo foreign key(fk_departNo) references tbl_department(departNo),
  constraint FK_tbl_emp_fk_positionNo foreign key(fk_positionNo) references tbl_position(positionNo),
@@ -50,8 +54,8 @@ create table tbl_employee
  constraint CK_tbl_emp_dayoff check(dayoff > 0),
  constraint CK_tbl_emp_admin check(admin in (0, 1))
  );
- 
-commit;
+
+select * from tbl_employee;
 
 create sequence departSeq
 start with 101
@@ -118,11 +122,6 @@ values(to_char(sysdate, 'yy')||101||employeSeq.nextval, 101, 3, '이순신2', '2
 
 select * 
 from tbl_employee
-order by fk_positionNo, employeeNo asc;
-211019002
-211019003
-
-update tbl_employee set fk_departNo = 105
-where employeeNo = '211059005';
+order by fk_positionNo, employeeID asc;
 
 commit;
