@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<% String ctxPath = request.getContextPath(); %>
+
 <style>
 	
 	th{border-right: solid 1px #dee2e6;} /* class가 table이니까 내가 원하는 table-bordered 처럼 보이도록 함. */
@@ -34,8 +36,43 @@
 		*/
 			
 			$("span#subjectLen").text(subjectLen);
+		}); // end of $("input#subject").keyup(function(){})------------
+		
+		// 글쓰기 버튼 누르면, 유효성 검사 후 전송함.
+		$("button#btnWrite").click(function(){
 			
-		});
+			// 게시판 종류 유효성 검사
+			var boardTypeVal = $("select#boardType").val();
+		//	console.log("확인용 boardTypeVal : " + boardTypeVal);
+			
+			if(boardTypeVal == "0"){ // "-[필수]옵션을 선택해주세요-"를 클릭한 경우
+				alert("게시판 종류를 선택하세요!!");
+				return;
+			}
+			
+			
+			// 글제목 유효성 검사
+			var subjectVal = $("input#subject").val().trim();
+			if(subjectVal == ""){
+				alert("글제목을 입력하세요!!");
+				return;
+			}
+			
+			
+			// 글내용 유효성 검사(스마트에디터 사용 안할시)
+			var contentVal = $("textarea#content").val().trim();
+			if(contentVal == ""){
+				alert("글내용을 입력하세요!!");
+				return;
+			}
+			
+			// 폼(form)을 전송(submit)
+			var frm = document.writeFrm;
+			frm.method = "POST";
+			frm.action = "<%= ctxPath%>/boardWriteEnd.gw";
+			frm.submit();
+			
+		});// end of $("button#btnWrite").click(function(){})-------------
 		
 	});// end of $(document).ready(function(){})--------------------------
 	
@@ -51,17 +88,18 @@
 		<span class="star">*</span><span style="font-size: 15px;">&nbsp;필수입력사항</span>
 	</div>
 	
+	<form name="writeFrm">
 	<div class="table-responsive">
 		<table class="table">
 			<tr>
 				<th>게시판종류&nbsp;<span class="star">*</span></th>
 				<td>
-					<select id="boardType">
-						<option>-[필수]옵션을 선택해주세요-</option>
+					<select name="fk_bCategorySeq" id="boardType">
+						<option value="0">-[필수]옵션을 선택해주세요-</option>
 						<optgroup label="전사 게시판">
-							<option>공지사항</option>
-							<option>자유게시판</option>
-							<option>건의사항</option>
+							<option value="1">공지사항</option>
+							<option value="2">자유</option>
+							<option value="3">건의사항</option>
 						</optgroup>
 						<optgroup label="그룹 게시판">
 							<option>인사팀</option>
@@ -73,7 +111,7 @@
 			<tr>	
 				<th>글제목&nbsp;<span class="star">*</span></th>
 				<td>
-					<input type="text" id="subject" size="85" maxlength="50" placeholder="글제목 입력"/>
+					<input type="text" name="subject" id="subject" size="85" maxlength="50" placeholder="글제목 입력"/>
 				<!-- 
 					size="85"		: 웹페이지상에 보여주는 길이
 					maxlength="50"  : 입력될 수 있는 글자(한글 또는 영문)의 최대글자수 -> 오라클DB의 컬럼길이와 똑같이 맵핑
@@ -81,17 +119,27 @@
 					<span id="subjectLen" style="font-weight: bold;">0</span>/50
 				</td>
 			</tr>
+		<!-- 
 			<tr>
 				<th>파일첨부</th>
 				<td><button type="button" id="fileAttach" class="btn btn-outline-secondary btn-sm">+</button></td>
-			</tr>
+			</tr> 
+		-->	
 			<tr style="border-bottom: solid 1px #dee2e6;">
 				<th>참조글</th>
 				<td><button type="button" id="refBoard" class="btn btn-outline-secondary btn-sm">+</button></td>
 			</tr>
+		
 		</table>
 	</div>
 	
-	<hr style="border: solid 1px gray;" />
+	<textarea style="width: 100%; height: 612px;" name="content" id="content" ></textarea>
+	
+	<div align="center" style="margin-bottom: 20px; margin-top: 20px;">
+		<button type="button" class="btn btn-primary btn-lg mr-3" id="btnWrite">글쓰기</button>
+		<button type="button" class="btn btn-secondary btn-lg" onclick="javascript:history.back()">취소</button>
+	</div>
+	
+	</form>
 	
 </div>

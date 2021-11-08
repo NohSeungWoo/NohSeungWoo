@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.finalProject.model.BoardVO;
 import com.spring.finalProject.service.InterOHJService;
 
 //==== #30. 컨트롤러 선언 ====
@@ -101,8 +103,30 @@ public class OHJController {
 	@RequestMapping(value="/boardWrite.gw")
 	public ModelAndView requiredLogin_boardWrite(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
+	//	getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
+		
 		mav.setViewName("board/boardWrite.tiles_OHJ");
 		//  /WEB-INF/views/tiles_OHJ/board/boardWrite.jsp 파일을 생성한다.
+		
+		return mav;
+	}
+	
+	
+	// === &54. 게시판 글쓰기 완료 요청 === //
+	@RequestMapping(value="/boardWriteEnd.gw", method= {RequestMethod.POST})
+	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO boardvo) {
+		
+		// form 태그의 name명과 BoardVO의 필드명이 같다라면, getParameter 사용안하더라도 자동적으로 set되어진다.
+	/*	
+		System.out.println("확인용 fk_bCategorySeq => " + boardvo.getFk_bCategorySeq());
+		System.out.println("확인용 subject => " + boardvo.getSubject());
+		System.out.println("확인용 content => " + boardvo.getContent());
+	*/	
+		
+		int n = service.boardWrite(boardvo); // <== 파일첨부가 없는 글쓰기
+		
+		mav.setViewName("redirect:/list.gw");
+		//	/list.gw 페이지로 redirect(페이지이동)해라는 말이다.
 		
 		return mav;
 	}
@@ -116,9 +140,15 @@ public class OHJController {
 	
 	
 	
-	
-	
-	
+	////////////////////////////////////////////////////////////////////////////////
+	//  === 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 생성 === 
+/*	
+	public void getCurrentURL(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		session.setAttribute("goBackURL", MyUtil.getCurrentURL(request));
+	}
+*/	
+	////////////////////////////////////////////////////////////////////////////////
 	
 
 	

@@ -3,6 +3,7 @@ package com.spring.finalProject.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.finalProject.model.BoardVO;
 import com.spring.finalProject.model.InterOHJDAO;
 
 //==== #31. Service 선언 ====
@@ -15,6 +16,19 @@ public class OHJService implements InterOHJService {
 	private InterOHJDAO dao; // 다형성 // 원래는 dao가 아니라 boardDAO라고 써줘야하는데 지금은 BoardDAO가 한개밖에 없으므로 @Autowired에 의해 타입만 맞으면 되니까 dswefwf라고 써도 된다.
 	// Type 에 따라 Spring 컨테이너가 알아서 bean 으로 등록된 com.spring.model.BoardDAO 의 bean 을  dao 에 주입시켜준다. 
     // 그러므로 dao 는 null 이 아니다.
+
+	
+	/////////////////////////////////////////////////////////////////////////////////
+	// 기본셋팅 끝이다. 여기서부터 개발 시작이다! //
+	/////////////////////////////////////////////////////////////////////////////////
+		
+	
+	// === &55. 글쓰기(파일첨부가 없는 글쓰기) === //
+	@Override
+	public int boardWrite(BoardVO boardvo) {
+		int n = dao.boardWrite(boardvo);
+		return n;
+	}
 	
 	
 	
