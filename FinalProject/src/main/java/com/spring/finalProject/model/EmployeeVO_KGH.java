@@ -1,6 +1,6 @@
 package com.spring.finalProject.model;
 
-public class MemberVO_KGH {
+public class EmployeeVO_KGH {
 	
 	private String employeeid;		// 사원번호
 	private String fk_departNo;		// 부서번호(foreign key)
@@ -23,9 +23,9 @@ public class MemberVO_KGH {
 	private String detailAddress;	// 상세주소
 	private String extraAddress;	// 추가주소
 	
-	MemberVO_KGH() {}	// 기본생성자
+	EmployeeVO_KGH() {}	// 기본생성자
 
-	public MemberVO_KGH(String employeeid, String fk_departNo, String fk_positionNo, String name, String password,
+	public EmployeeVO_KGH(String employeeid, String fk_departNo, String fk_positionNo, String name, String password,
 			String mobile, String email, String hiredate, String retiredate, String retire, String profilename,
 			String orgProfilename, String fileSize, String salary, String dayoff, String admin, String postcode,
 			String address, String detailAddress, String extraAddress) {
