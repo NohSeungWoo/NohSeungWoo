@@ -23,6 +23,9 @@ public class EmployeeVO_KGH {
 	private String detailAddress;	// 상세주소
 	private String extraAddress;	// 추가주소
 	
+	private DepartmentVO_KGH departvo;		// 부서 테이블
+	private PositionVO_KGH positionvo;		// 직급 테이블
+	
 	EmployeeVO_KGH() {}	// 기본생성자
 
 	public EmployeeVO_KGH(String employeeid, String fk_departNo, String fk_positionNo, String name, String password,
@@ -212,6 +215,20 @@ public class EmployeeVO_KGH {
 		this.extraAddress = extraAddress;
 	}
 	
-	
+	public DepartmentVO_KGH getDepartvo() {
+		return departvo;
+	}
+
+	public void setDepartvo(DepartmentVO_KGH departvo) {
+		this.departvo = departvo;
+	}
+
+	public PositionVO_KGH getPositionvo() {
+		return positionvo;
+	}
+
+	public void setPositionvo(PositionVO_KGH positionvo) {
+		this.positionvo = positionvo;
+	}
 	
 }
