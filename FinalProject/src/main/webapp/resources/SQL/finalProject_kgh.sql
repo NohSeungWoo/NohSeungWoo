@@ -124,4 +124,16 @@ select *
 from tbl_employee
 order by fk_positionNo, employeeID asc;
 
+select employeeid, fk_departno, departmentname, fk_positionno, positionname, name, mobile, email
+from 
+(
+    select employeeid, fk_departno, departmentname, fk_positionno, name, mobile, email
+    from tbl_employee E
+    JOIN tbl_department D
+    ON E.fk_departno = D.departno
+) V
+JOIN tbl_position P
+ON V.fk_positionno = P.positionno
+order by fk_positionNo, fk_departno, employeeID asc;
+-- employeeid, departno, departmentname, fk_positionno, name, mobile, email,  
 commit;

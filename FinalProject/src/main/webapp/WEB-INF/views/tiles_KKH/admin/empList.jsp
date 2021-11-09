@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
 	String ctxPath = request.getContextPath();
@@ -86,6 +87,7 @@
 	    <thead class="thead-light">
 	      <tr>
 	        <th>이름</th>
+	        <th>사번</th>
 	        <th>
 				<span class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
 				      부서
@@ -111,30 +113,20 @@
 	      </tr>
 	    </thead>
 	    <tbody>
-	      <tr>
-	        <td>John</td>
-	        <td>인사과</td>
-	        <td>부장</td>
-	        <td>john@example.com</td>
-	        <td>010-1234-5678</td>
-	      </tr>
-	      <tr>
-	        <td>Mary</td>
-	        <td>인사과</td>
-	        <td>대리</td>
-	        <td>mary@example.com</td>
-	        <td>010-1234-5678</td>
-	      </tr>
-	      <tr>
-	        <td>July</td>
-	        <td>인사과</td>
-	        <td>사원</td>
-	        <td>july@example.com</td>
-	        <td>010-1234-5678</td>
-	      </tr>
+	    <c:if test="${not empty requestScope.empList}">
+	    	<c:forEach var="map" items="${requestScope.empList}">
+	    		<tr>
+			        <td>${map.name}</td>
+			        <td>${map.employeeid}</td>
+			        <td>${map.departmentname}</td>
+			        <td>${map.positionname}</td>
+			        <td>${map.email}</td>
+			        <td>${map.mobile}</td>
+			    </tr>
+	    	</c:forEach>
+	    </c:if>
 	    </tbody>
 	  </table>
 	</div>
-	
 </body>
 </html>

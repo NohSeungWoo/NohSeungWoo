@@ -5,5 +5,31 @@
 
 <!-- === 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체 내에서 유일해야 한다.) === -->
 <mapper namespace="KangGH">
-
+	
+	<!-- === 직원 목록 가져오기(select) 메서드 === -->
+	<resultMap type="HashMap" id="empListMap">
+		<result property="employeeid"		column="employeeid" 		javaType="String" />
+		<result property="fk_departno"		column="fk_departno" 		javaType="String" />
+		<result property="departmentname"	column="departmentname" 	javaType="String" />
+		<result property="fk_positionno"	column="fk_positionno" 		javaType="String" />
+		<result property="positionname"		column="positionname" 		javaType="String" />
+		<result property="name"		 		column="name" 				javaType="String" />
+		<result property="mobile"		 	column="mobile" 			javaType="String" />
+		<result property="email"		 	column="email" 				javaType="String" />
+	</resultMap>
+	<select id="getEmpList" resultMap="empListMap">
+		select employeeid, fk_departno, departmentname, 
+			   fk_positionno, positionname, name, mobile, email
+		from 
+		(
+		    select employeeid, fk_departno, departmentname, fk_positionno, name, mobile, email
+		    from tbl_employee E
+		    JOIN tbl_department D
+		    ON E.fk_departno = D.departno
+		) V
+		JOIN tbl_position P
+		ON V.fk_positionno = P.positionno
+		order by fk_positionNo, fk_departno, employeeID asc
+	</select>
+	
 </mapper>

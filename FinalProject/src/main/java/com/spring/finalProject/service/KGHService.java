@@ -1,11 +1,10 @@
 package com.spring.finalProject.service;
 
-import java.util.List;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.model.InterKGHDAO;
 
 @Service
@@ -18,10 +17,10 @@ public class KGHService implements InterKGHService {
 	    // 그러므로 dao 는 null 이 아니다.
 	
 	@Override
-	public List<EmployeeVO_KGH> getEmpList() {
+	public List<Map<String, String>> getEmpList() {
 		
 		// 직원 목록 가져오기(select) 메서드
-		List<EmployeeVO_KGH> empList = dao.getEmpList();
+		List<Map<String, String>> empList = dao.getEmpList();
 		return empList;
 	}
 

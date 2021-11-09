@@ -1,6 +1,7 @@
 package com.spring.finalProject.model;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -16,8 +17,8 @@ public class KGHDAO implements InterKGHDAO {
 	
 	// 직원 목록 가져오기(select) 메서드
 	@Override
-	public List<EmployeeVO_KGH> getEmpList() {
-		List<EmployeeVO_KGH> empList = sqlsession.selectList("KangGH.getEmpList");
+	public List<Map<String, String>> getEmpList() {
+		List<Map<String, String>> empList = sqlsession.selectList("KangGH.getEmpList");
 		
 		return empList;
 	}

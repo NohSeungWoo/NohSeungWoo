@@ -1,13 +1,12 @@
 package com.spring.finalProject.controller;
 
-import java.util.List;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.service.InterKGHService;
 
 @Controller
@@ -24,12 +23,13 @@ public class KGHController {
 		return mav;
 	}
 
-	@RequestMapping(value = "/empList.gw")
+	@RequestMapping(value = "admin/empList.gw")
 	public ModelAndView empList(ModelAndView mav) {
 		
 		// 직원목록 가져오기 메서드
-		List<EmployeeVO_KGH> empList =  service.getEmpList();
+		List<Map<String, String>> empList = service.getEmpList();
 		
+		mav.addObject("empList", empList);
 		mav.setViewName("admin/empList.tiles_KKH");
 		
 		return mav;
