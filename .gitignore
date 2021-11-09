@@ -124,7 +124,7 @@ hs_err_pid*
 
 ######### Final Project Setting #########
 /FinalProject/target/
-
+*.sql
 
 
 
