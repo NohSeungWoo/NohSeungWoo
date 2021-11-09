@@ -1,36 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
 	String ctxPath = request.getContextPath();
 %>    
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
 
-<!-- Required meta tags -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+<script type="text/javascript">
 
-<!-- Bootstrap CSS -->
-<link rel="stylesheet" type="text/css" href="<%= ctxPath%>/resources/bootstrap-4.6.0-dist/css/bootstrap.min.css" > 
+	$(document).ready(function() {
+		
+		$("td").click(function() {
+			var target = event.target;
+			
+			var employeeid = target.parent().find(".employeeid").value;
+			alert(employeeid);
+		});
+		
+	});// end of $(document).ready(function() {})
 
-<!-- Font Awesome 5 Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-<!-- 직접 만든 CSS 1 -->
-<link rel="stylesheet" type="text/css" href="<%=ctxPath %>/resources/css/style1.css" />
-
-<!-- Optional JavaScript -->
-<script type="text/javascript" src="<%= ctxPath%>/resources/js/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="<%= ctxPath%>/resources/bootstrap-4.6.0-dist/js/bootstrap.bundle.min.js" ></script> 
-<script type="text/javascript" src="<%= ctxPath%>/resources/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script> 
-  
+</script>
 
 <style type="text/css">
 	
@@ -64,9 +54,13 @@
   		display: inline-block;
 	}
 	
+	tr:hover {
+		cursor: pointer;
+		background-color: #e6e6e6;
+	}
+	
 </style>
-</head>
-<body>
+
 	<div class="container-fluid" id="empList">
 	  <div class="row mb-2 ml-2">
 	  	<span class="h3 font-weight-bold">직원 목록</span>
@@ -116,17 +110,15 @@
 	    <c:if test="${not empty requestScope.empList}">
 	    	<c:forEach var="map" items="${requestScope.empList}">
 	    		<tr>
-			        <td>${map.name}</td>
-			        <td>${map.employeeid}</td>
-			        <td>${map.departmentname}</td>
-			        <td>${map.positionname}</td>
-			        <td>${map.email}</td>
-			        <td>${map.mobile}</td>
+			        <td class="name">${map.name}</td>
+			        <td class="employeeid">${map.employeeid}</td>
+			        <td class="departmentname">${map.departmentname}</td>
+			        <td class="positionname">${map.positionname}</td>
+			        <td class="email">${map.email}</td>
+			        <td class="mobile">${map.mobile}</td>
 			    </tr>
 	    	</c:forEach>
 	    </c:if>
 	    </tbody>
 	  </table>
 	</div>
-</body>
-</html>
