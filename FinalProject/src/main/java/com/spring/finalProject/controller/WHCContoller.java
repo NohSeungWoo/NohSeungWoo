@@ -27,11 +27,28 @@ public class WHCContoller {
 	
 	@Autowired
 	private InterWHCService service;
+	
 	// === 전자결재 메인 페이지 === //
 	@RequestMapping(value="/approval.gw")
-	public String recent(HttpServletRequest request) {
+	public String approvalMain(HttpServletRequest request) {
 		
 		return "approval/approvalMain.tiles_WHC";
 		//  /WEB-INF/views/tiles_WHC/approval/approvalMain.jsp 파일을 생성한다.
+	}
+	
+	// === 기안하기 버튼 클릭시 기안양식 페이지 === //
+	@RequestMapping(value="/approvalForm.gw")
+	public String approvalForm(HttpServletRequest request) {
+		
+		return "approval/approvalForm.tiles_WHC";
+		
+	}
+	
+	// === 기안양식을 골랐을때 기안작성하는 페이지 === //
+	@RequestMapping(value="/addApproval.gw")
+	public String addApproval(HttpServletRequest request) {
+		
+		return "approval/addApproval.tiles_WHC";
+		
 	}
 }
