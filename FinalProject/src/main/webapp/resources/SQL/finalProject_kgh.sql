@@ -127,13 +127,50 @@ order by fk_positionNo, employeeID asc;
 select employeeid, fk_departno, departmentname, fk_positionno, positionname, name, mobile, email
 from 
 (
-    select employeeid, fk_departno, departmentname, fk_positionno, name, mobile, email
+    select employeeid, fk_departno, departmentname, fk_positionno, name, mobile, email, retire
     from tbl_employee E
     JOIN tbl_department D
     ON E.fk_departno = D.departno
 ) V
 JOIN tbl_position P
 ON V.fk_positionno = P.positionno
+where V.retire = 0
 order by fk_positionNo, fk_departno, employeeID asc;
 -- employeeid, departno, departmentname, fk_positionno, name, mobile, email,  
+
+select count(*)
+from tbl_employee
+where retire = 0;
+
+select employeeid, fk_departno, departmentname, 
+	   fk_positionno, positionname, name, mobile, email
+from
+(
+    select row_number() over(order by fk_positionNo, fk_departno, employeeID) AS RNO,
+           employeeid, fk_departno, departmentname, 
+           fk_positionno, positionname, name, mobile, email
+    from 
+    (
+        select employeeid, fk_departno, departmentname, fk_positionno, 
+               name, mobile, email, retire
+        from tbl_employee E
+        JOIN tbl_department D
+        ON E.fk_departno = D.departno
+    ) V
+    JOIN tbl_position P
+    ON V.fk_positionno = P.positionno
+    where V.retire = 0
+    and departmentname = '인사'
+)
+where rno between 1 and 5;
+
+select departmentname
+from tbl_department
+order by departno;
+
+select positionno, positionname
+from tbl_position
+order by positionno;
+
+
 commit;

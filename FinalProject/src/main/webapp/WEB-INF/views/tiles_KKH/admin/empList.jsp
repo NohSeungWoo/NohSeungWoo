@@ -11,15 +11,63 @@
 
 	$(document).ready(function() {
 		
-		$("td").click(function() {
-			var target = event.target;
-			
-			var employeeid = target.parent().find(".employeeid").value;
-			alert(employeeid);
-		});
-		
+		getDepartmentName();
+		getPositionName();
 	});// end of $(document).ready(function() {})
 
+	
+	// Function Declaration
+	// === 부서목록 가져오기(Ajax) === //
+	function getDepartmentName() {
+		$.ajax({
+			url:"<%= ctxPath%>/getDepartmentName.gw",
+			type:"GET",
+			dataType:"JSON",
+			success:function(json) {
+				if(json.length > 0) {
+					var html = "";
+					
+					$.each(json, function(index, item) {
+						var departmentname = item.departmentName;
+					
+						html += "<a class='dropdown-item' href='#'>" + departmentname + "</a>";
+					});
+					
+					$("div#departmentName").html(html);
+				}
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		});
+	}// end of function getDepartmentName() {}
+	
+	// === 직급 목록 가져오기(Ajax) === //
+	function getPositionName() {
+		$.ajax({
+			url:"<%= ctxPath%>/getPositionName.gw",
+			type:"GET",
+			dataType:"JSON",
+			success:function(json) {
+				if(json.length > 0) {
+					var html = "";
+					
+					$.each(json, function(index, item) {
+						var positionname = item.position;
+					
+						html += "<a class='dropdown-item' href='#'>" + positionname + "</a>";
+					});
+					
+					$("div#positionName").html(html);
+				}
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		});
+	}// end of function getPositionName() {}
+	
+	
 </script>
 
 <style type="text/css">
@@ -86,7 +134,7 @@
 				<span class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
 				      부서
 				</span>
-				<div class="dropdown-menu">
+				<div class="dropdown-menu" id="departmentName">
 				  <a class="dropdown-item" href="#">Link 1</a>
 				  <a class="dropdown-item" href="#">Link 2</a>
 				  <a class="dropdown-item" href="#">Link 3</a>
@@ -96,7 +144,7 @@
 	        	<span class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
 				      직급
 				</span>
-				<div class="dropdown-menu">
+				<div class="dropdown-menu" id="positionName">
 				  <a class="dropdown-item" href="#">Link 1</a>
 				  <a class="dropdown-item" href="#">Link 2</a>
 				  <a class="dropdown-item" href="#">Link 3</a>
@@ -121,4 +169,10 @@
 	    </c:if>
 	    </tbody>
 	  </table>
+	  
+	  <%-- === #122. 페이지바 보여주기 --%>
+	  <div align="center" style="width: 70%; border: solid 0px gray; margin: 20px auto;">
+	  	  ${requestScope.pageBar}
+	  </div>
+	  
 	</div>
