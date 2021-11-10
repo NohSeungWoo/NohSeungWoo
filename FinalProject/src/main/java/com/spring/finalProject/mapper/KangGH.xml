@@ -70,8 +70,18 @@
 		    JOIN tbl_position P
 		    ON V.fk_positionno = P.positionno
 		    where V.retire = 0
+		    <if test='department != ""'>
+		    	and departmentname = #{department}
+		    </if>
+		    <if test='position != ""'>
+		    	and positionname = #{position}
+		    </if>
+		    <if test='searchEmp != ""'>
+		    	and name = #{searchEmp}
+		    </if>
 		)
 		where rno between #{startRno} and #{endRno}
+		
 	</select>
 	
 	<!-- === 부서목록 가져오기 === -->
@@ -86,6 +96,14 @@
 		select positionname
 		from tbl_position
 		order by positionno
+	</select>
+	
+	<!-- === 검색어 결과 조회하기(select) === -->
+	<select id="employeeSearch" parameterType="HashMap" resultType="String">
+		select name
+		from tbl_employee
+		where retire = 0
+		and name like '%'|| #{searchEmployee} ||'%'
 	</select>
 	
 </mapper>

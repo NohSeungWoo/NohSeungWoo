@@ -160,9 +160,12 @@ from
     JOIN tbl_position P
     ON V.fk_positionno = P.positionno
     where V.retire = 0
+    and positionname = '팀장'
     and departmentname = '인사'
+    
 )
-where rno between 1 and 5;
+where rno between 1 and 5
+and name = '이순신';
 
 select departmentname
 from tbl_department
@@ -172,5 +175,9 @@ select positionno, positionname
 from tbl_position
 order by positionno;
 
+select name
+from tbl_employee
+where retire = 0
+and name like '%'|| '이' ||'%';
 
 commit;

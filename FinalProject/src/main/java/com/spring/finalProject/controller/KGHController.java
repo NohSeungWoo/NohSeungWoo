@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,21 +39,29 @@ public class KGHController {
 		// 직원목록 가져오기 메서드
 		// empList = service.getEmpList();
 		
-		String searchType = request.getParameter("searchType");
-		String searchWord = request.getParameter("searchWord");
+		String department = request.getParameter("department");
+		String position = request.getParameter("position");
+		String searchEmp = request.getParameter("searchEmp");
+		
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
-		if(searchType == null || (!"subject".equals(searchType) && !"name".equals(searchType))) {
-			searchType = "";
+		
+		if(department == null || "전체".equals(department)) {
+			department = "";
 		}
 		
-		if(searchWord == null || "".equals(searchWord) || searchWord.trim().isEmpty() ) {
-	         searchWord = "";
+		if(position == null || "전체".equals(position)) {
+			position = "";
+	    }
+		
+		if(searchEmp == null || "".equals(searchEmp) || searchEmp.trim().isEmpty() ) {
+			searchEmp = "";
 	    }
 		
 		Map<String,String> paraMap = new HashMap<>();
-	    paraMap.put("searchType", searchType);
-	    paraMap.put("searchWord", searchWord);
+	    paraMap.put("department", department);
+	    paraMap.put("position", position);
+	    paraMap.put("searchEmp", searchEmp);
 		
 		// 먼저 총 게시물 건수(totalCount)를 구한다.
 		// 총 게시물 건수는(totalCount)는 검색조건이 있을 때와 없을 때로 나뉘어진다.
@@ -109,9 +118,9 @@ public class KGHController {
 		empList = service.getEmpListWithPaging(paraMap);
 		
 		// 아래는 검색대상 컬럼과 검색어를 유지시키기 위한 것임.
-		if(!"".equals(searchType) && !"".equals(searchWord)) {
-			mav.addObject("paraMap", paraMap);
-		}
+//		if(!"".equals(department) && !"".equals(position)) {
+//			mav.addObject("paraMap", paraMap);
+//		}
 		
 		// === 페이지바 만들기 === //
 		int blockSize = 10;
@@ -157,8 +166,8 @@ public class KGHController {
 		
 		// === [맨처음][이전] 만들기 === //
 		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=1'>[맨처음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + (pageNo-1) + "'>[이전]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "?department=" + department + "&position=" + position + "&searchEmp=" + searchEmp + "&currentShowPageNo=1'>[맨처음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "?department=" + department + "&position=" + position + "&searchEmp=" + searchEmp + "&currentShowPageNo=" + (pageNo-1) + "'>[이전]</a></li>";
 		}
 		
 		while(!(loop > blockSize || pageNo > totalPage)) {
@@ -166,7 +175,7 @@ public class KGHController {
 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>" + pageNo + "</li>";
 			}
 			else {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='" + url + "?department=" + department + "&position=" + position + "&searchEmp=" + searchEmp + "&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
 			}
 			
 			loop++;
@@ -175,8 +184,8 @@ public class KGHController {
 		
 		// === [다음][마지막] 만들기 ===
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + pageNo + "'>[다음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentShowPageNo=" + totalPage + "'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "?department=" + department + "&position=" + position + "&searchEmp=" + searchEmp + "&currentShowPageNo=" + pageNo + "'>[다음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "?department=" + department + "&position=" + position + "&searchEmp=" + searchEmp + "&currentShowPageNo=" + totalPage + "'>[마지막]</a></li>";
 		}
 		
 		pageBar = "/<ul>";
@@ -220,10 +229,6 @@ public class KGHController {
 		// === 직급 목록 가져오기(select) === //
 		List<String> positionList = service.getPosition();
 		
-		for (int i = 0; i < positionList.size(); i++) {
-			System.out.println(positionList.get(i));
-		}
-		
 		JSONArray jsonArr = new JSONArray();
 		
 		if(positionList != null) {
@@ -237,5 +242,32 @@ public class KGHController {
 		
 		return jsonArr.toString();
 	}
+	
+	// === 검색어 자동생성하기 === //
+	@ResponseBody
+	@RequestMapping(value = "/employeeSearch.gw", method = {RequestMethod.GET}, produces = "text/plain;charset=UTF-8")
+	public String employeeSearch(HttpServletRequest request) {
+		
+		String searchEmployee = request.getParameter("searchEmployee");
+		
+		Map<String, String> paraMap = new HashedMap<>();
+		paraMap.put("searchEmployee", searchEmployee);
+		
+		// === 검색어 결과 조회하기(select) === //
+		List<String> searchList = service.employeeSearch(paraMap);
+		
+		JSONArray jsonArr = new JSONArray(); // []
+		
+		if(searchList != null) {
+			for(String empName : searchList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("empName", empName);
+				
+				jsonArr.put(jsonObj);
+			}
+		}
+		return jsonArr.toString();
+	}
+	
 	
 }

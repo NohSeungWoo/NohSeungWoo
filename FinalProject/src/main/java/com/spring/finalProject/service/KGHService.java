@@ -54,4 +54,11 @@ public class KGHService implements InterKGHService {
 		return positionList;
 	}
 
+	@Override
+	public List<String> employeeSearch(Map<String, String> paraMap) {
+		// === 검색어 결과 조회하기(select) === //
+		List<String> searchList = dao.employeeSearch(paraMap);
+		return searchList;
+	}
+
 }

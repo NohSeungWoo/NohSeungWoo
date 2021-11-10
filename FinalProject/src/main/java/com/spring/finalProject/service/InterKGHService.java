@@ -22,4 +22,7 @@ public interface InterKGHService {
 	// 직급 목록 가져오기(select)
 	List<String> getPosition();
 
+	// 검색어 결과 조회하기(select)
+	List<String> employeeSearch(Map<String, String> paraMap);
+
 }

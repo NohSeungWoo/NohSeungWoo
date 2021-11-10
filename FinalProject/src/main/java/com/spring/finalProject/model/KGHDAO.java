@@ -50,4 +50,11 @@ public class KGHDAO implements InterKGHDAO {
 		return positionList;
 	}
 
+	// === 검색어 결과 조회하기(select) === //
+	@Override
+	public List<String> employeeSearch(Map<String, String> paraMap) {
+		List<String> searchList = sqlsession.selectList("KangGH.employeeSearch", paraMap);
+		return searchList;
+	}
+
 }
