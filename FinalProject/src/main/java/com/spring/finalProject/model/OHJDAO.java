@@ -1,5 +1,8 @@
 package com.spring.finalProject.model;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -40,6 +43,22 @@ public class OHJDAO implements InterOHJDAO {
 	public int boardWrite(BoardVO boardvo) {
 		int n = sqlsession.insert("ohhj.boardWrite", boardvo);
 		return n;
+	}
+
+
+	// === &60. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 === //
+	@Override
+	public List<BoardVO> boardListNoSearch() {
+		List<BoardVO> boardList = sqlsession.selectList("ohhj.boardListNoSearch");
+		return boardList;
+	}
+
+
+	// === &64. 글1개 조회하기 === //
+	@Override
+	public BoardVO getView(Map<String, String> paraMap) {
+		BoardVO boardvo = sqlsession.selectOne("ohhj.getView", paraMap);
+		return boardvo;
 	}
 	
 	

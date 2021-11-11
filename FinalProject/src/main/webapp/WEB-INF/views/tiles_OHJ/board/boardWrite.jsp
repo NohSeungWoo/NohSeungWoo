@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ taglib prefix="c" 	uri="http://java.sun.com/jsp/jstl/core" %>
+
 <% String ctxPath = request.getContextPath(); %>
 
 <style>
@@ -89,57 +91,69 @@
 	</div>
 	
 	<form name="writeFrm">
-	<div class="table-responsive">
-		<table class="table">
-			<tr>
-				<th>게시판종류&nbsp;<span class="star">*</span></th>
-				<td>
-					<select name="fk_bCategorySeq" id="boardType">
-						<option value="0">-[필수]옵션을 선택해주세요-</option>
-						<optgroup label="전사 게시판">
-							<option value="1">공지사항</option>
-							<option value="2">자유</option>
-							<option value="3">건의사항</option>
-						</optgroup>
-						<optgroup label="그룹 게시판">
-							<option>인사팀</option>
-							<option>회계팀</option>
-						</optgroup>
-					</select>
-				</td>
-			</tr>
-			<tr>	
-				<th>글제목&nbsp;<span class="star">*</span></th>
-				<td>
-					<input type="text" name="subject" id="subject" size="85" maxlength="50" placeholder="글제목 입력"/>
-				<!-- 
-					size="85"		: 웹페이지상에 보여주는 길이
-					maxlength="50"  : 입력될 수 있는 글자(한글 또는 영문)의 최대글자수 -> 오라클DB의 컬럼길이와 똑같이 맵핑
-				-->
-					<span id="subjectLen" style="font-weight: bold;">0</span>/50
-				</td>
-			</tr>
-		<!-- 
-			<tr>
-				<th>파일첨부</th>
-				<td><button type="button" id="fileAttach" class="btn btn-outline-secondary btn-sm">+</button></td>
-			</tr> 
-		-->	
-			<tr style="border-bottom: solid 1px #dee2e6;">
-				<th>참조글</th>
-				<td><button type="button" id="refBoard" class="btn btn-outline-secondary btn-sm">+</button></td>
-			</tr>
+		<!-- 글쓰기에 대한 정보 테이블 시작 -->
+		<div class="table-responsive">
+			<table class="table">
+				<tr>
+					<th>게시판종류&nbsp;<span class="star">*</span></th>
+					<td>
+						<select name="fk_bCategorySeq" id="boardType">
+							<option value="0">-[필수]옵션을 선택해주세요-</option>
+							<optgroup label="전사 게시판">
+							
+							<%-- <c:if test="${sessionScope.loginuser.admin == 1}"> --%> <!-- 공지사항 게시판은 관리자만 글쓰기가 가능하다. --> <!-- &&&&&&&&&&&&&&&&&&&&&& 로그인 코딩 후 주석해제 &&&&&&&&&&&&&&&&&&&&&&&& -->
+								<option value="1">공지사항</option>
+							<%-- </c:if> --%>
+							
+								<option value="2">자유</option>
+								<option value="3">건의사항</option>
+							</optgroup>
+							<optgroup label="그룹 게시판">
+								<option>인사팀</option>
+								<option>회계팀</option>
+							</optgroup>
+						</select>
+					</td>
+				</tr>
+				<tr>	
+					<th>글제목&nbsp;<span class="star">*</span></th>
+					<td>
+						<input type="text" name="subject" id="subject" size="85" maxlength="50" placeholder="글제목 입력"/>
+					<!-- 
+						size="85"		: 웹페이지상에 보여주는 길이
+						maxlength="50"  : 입력될 수 있는 글자(한글 또는 영문)의 최대글자수 -> 오라클DB의 컬럼길이와 똑같이 맵핑
+					-->
+						<span id="subjectLen" style="font-weight: bold;">0</span>/50
+					</td>
+				</tr>
+			<!-- 
+				<tr>
+					<th>파일첨부</th>
+					<td><button type="button" id="fileAttach" class="btn btn-outline-secondary btn-sm">+</button></td>
+				</tr> 
+			-->	
+				<tr style="border-bottom: solid 1px #dee2e6;">
+					<th>참조글</th>
+					<td><button type="button" id="refBoard" class="btn btn-outline-secondary btn-sm">+</button></td>
+				</tr>
+			
+			</table>
+		</div>
+		<!-- 글쓰기에 대한 정보 테이블 종료 -->
 		
-		</table>
-	</div>
-	
-	<textarea style="width: 100%; height: 612px;" name="content" id="content" ></textarea>
-	
-	<div align="center" style="margin-bottom: 20px; margin-top: 20px;">
-		<button type="button" class="btn btn-primary btn-lg mr-3" id="btnWrite">글쓰기</button>
-		<button type="button" class="btn btn-secondary btn-lg" onclick="javascript:history.back()">취소</button>
-	</div>
-	
+		<!-- 글내용 쓰기 -->
+		<textarea style="width: 100%; height: 612px;" name="content" id="content" ></textarea>
+		
+		<!-- 글쓰기/취소 버튼 -->
+		<div align="center" style="margin-bottom: 20px; margin-top: 20px;">
+			<button type="button" class="btn btn-primary btn-lg mr-3" id="btnWrite">글쓰기</button>
+			<button type="button" class="btn btn-secondary btn-lg" onclick="javascript:history.back()">취소</button>
+		</div>
+		
+		<!-- boardVO에 자동으로 set해서, board테이블에 insert하기 위한 용도 -->
+		<input type="text" name="fk_employeeId" value="211019001" /> <%-- 211019001(인사팀 이순신팀장-관리o), 211049004(개발팀 이혜리팀장-관리o)&&&&&&&&&&&&&&&&&&&&&&& 원래는 value="${sessionScope.loginuser.employeeId}" &&&&&&&&&&&&&&&&&&&&&&& --%>
+		
+		
 	</form>
 	
 </div>

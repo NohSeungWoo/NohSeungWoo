@@ -1,5 +1,8 @@
 package com.spring.finalProject.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,22 @@ public class OHJService implements InterOHJService {
 	public int boardWrite(BoardVO boardvo) {
 		int n = dao.boardWrite(boardvo);
 		return n;
+	}
+
+
+	// === &59. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 === //
+	@Override
+	public List<BoardVO> boardListNoSearch() {
+		List<BoardVO> boardList = dao.boardListNoSearch();
+		return boardList;
+	}
+
+
+	// === &63. 글1개를 보여주는 페이지 요청 === //
+	@Override
+	public BoardVO getView(Map<String, String> paraMap) {
+		BoardVO boardvo = dao.getView(paraMap); // 글1개 조회하기
+		return boardvo;
 	}
 	
 	

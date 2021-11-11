@@ -11,21 +11,27 @@ public class BoardVO {
 	private String content; 		// 글내용
 	private String regDate; 		// 작성일자
 	private String readCount; 		// 조회수
+/*	
 	private String commentCount; 	// 댓글수
 
 	private String groupno; 		// 답글의 그룹번호
 	private String fk_boardSeq; 	// 답글의 원글번호
 	private String depthno; 		// 답글의 들여쓰기
 	
-//	private String fileName; 		// 톰캣저장시 파일명
-//	private String orgFilename; 	// 실제파일명
-//	private String fileSize; 		// 파일크기
+	private String fileName; 		// 톰캣저장시 파일명
+	private String orgFilename; 	// 실제파일명
+	private String fileSize; 		// 파일크기
+*/
+	
+	////////////////////////////////////////////
+	private String name; // select용. 글쓴이 -> ohhj.xml에서 join한 결과를 자동으로 set해서 담는 용도임.
+	////////////////////////////////////////////
 	
 	public BoardVO() {}
 	
 	public BoardVO(String boardSeq, String fk_bCategorySeq, String fk_employeeId, String subject, String content,
-			String regDate, String readCount, String commentCount, String groupno, String fk_boardSeq, String depthno) {
-		// super();
+			String regDate, String readCount) {
+		//super();
 		this.boardSeq = boardSeq;
 		this.fk_bCategorySeq = fk_bCategorySeq;
 		this.fk_employeeId = fk_employeeId;
@@ -33,10 +39,6 @@ public class BoardVO {
 		this.content = content;
 		this.regDate = regDate;
 		this.readCount = readCount;
-		this.commentCount = commentCount;
-		this.groupno = groupno;
-		this.fk_boardSeq = fk_boardSeq;
-		this.depthno = depthno;
 	}
 
 	
@@ -96,39 +98,15 @@ public class BoardVO {
 		this.readCount = readCount;
 	}
 
-	public String getCommentCount() {
-		return commentCount;
-	}
-
-	public void setCommentCount(String commentCount) {
-		this.commentCount = commentCount;
-	}
-
-	public String getGroupno() {
-		return groupno;
-	}
-
-	public void setGroupno(String groupno) {
-		this.groupno = groupno;
-	}
-
-	public String getFk_boardSeq() {
-		return fk_boardSeq;
-	}
-
-	public void setFk_boardSeq(String fk_boardSeq) {
-		this.fk_boardSeq = fk_boardSeq;
-	}
-
-	public String getDepthno() {
-		return depthno;
-	}
-
-	public void setDepthno(String depthno) {
-		this.depthno = depthno;
-	}
 	///////////////////////////////////////////////////////
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}	
 	
 	
 	

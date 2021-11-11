@@ -9,8 +9,33 @@
 	
 	<!-- === &57. 글쓰기(파일첨부가 없는 글쓰기) === -->
 	<insert id="boardWrite" parameterType="com.spring.finalProject.model.BoardVO">
-		
+		insert into tbl_board(boardSeq, fk_bCategorySeq, fk_employeeId, subject, content, regDate, readCount)
+		values(tbl_board_boardSeq.nextval, #{fk_bCategorySeq}, #{fk_employeeId}, #{subject}, #{content}, default, default)
 	</insert>
+	
+	
+	<!-- === &61. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 === -->
+	<select id="boardListNoSearch" resultType="com.spring.finalProject.model.BoardVO">
+		select boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		from tbl_board B JOIN tbl_employee E
+		ON B.fk_employeeId = E.employeeId
+		order by regDate desc
+	</select>
+	
+	
+	<!-- === &65. 글1개 조회하기 === -->
+	<select id="getView" parameterType="HashMap" resultType="com.spring.finalProject.model.BoardVO">
+		select boardSeq, subject, fk_employeeid, name, content, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		from tbl_board B JOIN tbl_employee E
+		ON B.fk_employeeId = E.employeeId
+		where boardSeq = #{boardSeq}
+	</select>
+	
+	
+	
+	
+	
+	
 	
 	
 	
