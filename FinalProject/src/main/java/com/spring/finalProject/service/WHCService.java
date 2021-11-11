@@ -1,11 +1,13 @@
 package com.spring.finalProject.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.approval.model.ApcategoryVO;
+import com.spring.finalProject.model.DepartmentVO_KGH;
 import com.spring.finalProject.model.InterWHCDAO;
 
 //==== #31. Service 선언 ====
@@ -25,6 +27,20 @@ public class WHCService implements InterWHCService {
 		
 		List<ApcategoryVO> apcList = whcdao.getApcategoryList();
 		return apcList;
+	}
+
+	// === 부서명, 부서번호 받아오기 === //
+	@Override
+	public List<DepartmentVO_KGH> getDepartment() {
+		List<DepartmentVO_KGH> departList = whcdao.getDepartment();
+		return departList;
+	}
+	
+	// 결제선에 이용할 사원 리스트
+	@Override
+	public List<Map<String, String>> getEmployeeList(Map<String, String> paraMap) {
+		List<Map<String, String>> empList = whcdao.getEmployeeList(paraMap);
+		return empList;
 	}
 	
 	

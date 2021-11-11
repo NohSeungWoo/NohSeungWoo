@@ -1,6 +1,7 @@
 package com.spring.finalProject.model;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -38,6 +39,20 @@ public class WHCDAO implements InterWHCDAO {
 	public List<ApcategoryVO> getApcategoryList() {
 		List<ApcategoryVO> apcList = sqlsession.selectList("woohc.getApcategoryList");
 		return apcList;
+	}
+
+	// === 부서명, 부서번호 받아오기 === //
+	@Override
+	public List<DepartmentVO_KGH> getDepartment() {
+		List<DepartmentVO_KGH> departList = sqlsession.selectList("woohc.getDepartment");
+		return departList;
+	}
+
+	// 결제선에 이용할 사원 리스트
+	@Override
+	public List<Map<String, String>> getEmployeeList(Map<String, String> paraMap) {
+		List<Map<String, String>> empList = sqlsession.selectList("woohc.getEmployeeList", paraMap);
+		return empList;
 	}
 	
 	

@@ -3,6 +3,8 @@
 
 <%-- ======= #28. tile2 중 sideinfo 페이지 만들기  ======= --%>
 
+<% String ctxPath = request.getContextPath(); %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style type="text/css">
@@ -31,7 +33,7 @@
 
 <nav id="sidebar">
 	<div class="list-group-flush">
-		<a href="" class="list-group-item list-group-item-action ">기안작성</a>
+		<a href="<%= ctxPath%>/approvalForm.gw" class="list-group-item list-group-item-action ">기안작성</a>
 		<a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle">기안함</a>
 	  		<ul class="collapse sidesubmenu" id="homeSubmenu" >
 	            <li>
