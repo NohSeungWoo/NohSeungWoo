@@ -40,7 +40,7 @@ public class OHJDAO implements InterOHJDAO {
 	
 	// === &56. 글쓰기(파일첨부가 없는 글쓰기) === //
 	@Override
-	public int boardWrite(BoardVO boardvo) {
+	public int boardWrite(BoardVO_OHJ boardvo) {
 		int n = sqlsession.insert("ohhj.boardWrite", boardvo);
 		return n;
 	}
@@ -48,16 +48,16 @@ public class OHJDAO implements InterOHJDAO {
 
 	// === &60. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 === //
 	@Override
-	public List<BoardVO> boardListNoSearch() {
-		List<BoardVO> boardList = sqlsession.selectList("ohhj.boardListNoSearch");
+	public List<BoardVO_OHJ> boardListNoSearch() {
+		List<BoardVO_OHJ> boardList = sqlsession.selectList("ohhj.boardListNoSearch");
 		return boardList;
 	}
 
 
 	// === &64. 글1개 조회하기 === //
 	@Override
-	public BoardVO getView(Map<String, String> paraMap) {
-		BoardVO boardvo = sqlsession.selectOne("ohhj.getView", paraMap);
+	public BoardVO_OHJ getView(Map<String, String> paraMap) {
+		BoardVO_OHJ boardvo = sqlsession.selectOne("ohhj.getView", paraMap);
 		return boardvo;
 	}
 	

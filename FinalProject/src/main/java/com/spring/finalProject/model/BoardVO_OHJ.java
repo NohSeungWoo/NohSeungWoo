@@ -2,7 +2,7 @@ package com.spring.finalProject.model;
 
 //=== &52. VO 생성하기
 //먼저, 오라클에서 tbl_board 테이블을 생성해야 한다.
-public class BoardVO {
+public class BoardVO_OHJ {
 	
 	private String boardSeq; 		// 글번호
 	private String fk_bCategorySeq; // 카테고리번호
@@ -27,9 +27,9 @@ public class BoardVO {
 	private String name; // select용. 글쓴이 -> ohhj.xml에서 join한 결과를 자동으로 set해서 담는 용도임.
 	////////////////////////////////////////////
 	
-	public BoardVO() {}
+	public BoardVO_OHJ() {}
 	
-	public BoardVO(String boardSeq, String fk_bCategorySeq, String fk_employeeId, String subject, String content,
+	public BoardVO_OHJ(String boardSeq, String fk_bCategorySeq, String fk_employeeId, String subject, String content,
 			String regDate, String readCount) {
 		//super();
 		this.boardSeq = boardSeq;

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.spring.finalProject.model.BoardVO;
+import com.spring.finalProject.model.BoardVO_OHJ;
 import com.spring.finalProject.service.InterOHJService;
 
 //==== #30. 컨트롤러 선언 ====
@@ -105,7 +105,7 @@ public class OHJController {
 	
 	// === &54. 게시판 글쓰기 완료 요청 === //
 	@RequestMapping(value="/boardWriteEnd.gw", method= {RequestMethod.POST})
-	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO boardvo) {
+	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo) {
 		
 		// form 태그의 name명과 BoardVO의 필드명이 같다라면, getParameter 사용안하더라도 자동적으로 set되어진다.
 	/*	
@@ -129,7 +129,7 @@ public class OHJController {
 		
 	//	getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
-		List<BoardVO> boardList = null;
+		List<BoardVO_OHJ> boardList = null;
 		
 		// == 페이징 처리를 안한, 검색어가 없는, 전체 글목록 보여주기 == //
 		boardList = service.boardListNoSearch();
@@ -153,7 +153,7 @@ public class OHJController {
 		Map<String,String> paraMap = new HashMap<>();
 		paraMap.put("boardSeq", boardSeq);
 		
-		BoardVO boardvo = null;
+		BoardVO_OHJ boardvo = null;
 		
 		try {
 			
