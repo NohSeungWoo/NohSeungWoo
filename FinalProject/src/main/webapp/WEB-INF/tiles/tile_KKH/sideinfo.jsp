@@ -31,19 +31,8 @@
 
 <nav id="sidebar">
 	<div class="list-group-flush">
-		<a href="" class="list-group-item list-group-item-action ">기안작성</a>
-		<a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle">기안함</a>
-	  		<ul class="collapse sidesubmenu" id="homeSubmenu" >
-	            <li>
-	                <a href="#">상신한</a>
-	            </li>
-	            <li>
-	                <a href="#">반려된</a>
-	            </li>
-	            <li>
-	                <a href="#">완료된</a>
-	            </li>
-	        </ul>
+		<a href="<%= request.getContextPath()%>/admin/empList.gw" class="list-group-item list-group-item-action ">직원목록</a>
+		<a href="<%= request.getContextPath()%>/admin/empRegister.gw" class="list-group-item list-group-item-action">직원등록</a>
 	  	<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle">결재함</a>
 	  		<ul class="collapse sidesubmenu" id="pageSubmenu">
 	            <li>

@@ -23,4 +23,7 @@ public interface InterKGHDAO {
 	// 검색어 결과 조회하기(select)
 	List<String> employeeSearch(Map<String, String> paraMap);
 
+	// 로그인 처리 메서드(select)
+	EmployeeVO_KGH getLogin(Map<String, String> paraMap);
+
 }
