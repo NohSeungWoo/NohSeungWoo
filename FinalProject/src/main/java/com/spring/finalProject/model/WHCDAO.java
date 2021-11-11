@@ -1,9 +1,13 @@
 package com.spring.finalProject.model;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.spring.approval.model.ApcategoryVO;
 
 //==== #32. DAO 선언 ====
 @Repository // 원래 bean에 올려주기 위해서 @Component를 써야하는데 @Repository를 쓰기 때문에 자동적으로 bean에 올라간다.
@@ -28,6 +32,14 @@ public class WHCDAO implements InterWHCDAO {
 	private SqlSessionTemplate sqlsession; // 원격DB remote_finalorauser1 에 연결
 	// Type 에 따라 Spring 컨테이너가 알아서 root-context.xml 에 생성된 org.mybatis.spring.SqlSessionTemplate 의 sqlsession bean 을  sqlsession 에 주입시켜준다. 
     // 그러므로 sqlsession 는 null 이 아니다.
+
+	// === 기안양식 카테고리 얻어오기 === //
+	@Override
+	public List<ApcategoryVO> getApcategoryList() {
+		List<ApcategoryVO> apcList = sqlsession.selectList("woohc.getApcategoryList");
+		return apcList;
+	}
+	
 	
 	
 }

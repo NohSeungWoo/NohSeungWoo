@@ -1,8 +1,11 @@
 package com.spring.finalProject.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.approval.model.ApcategoryVO;
 import com.spring.finalProject.model.InterWHCDAO;
 
 //==== #31. Service 선언 ====
@@ -12,9 +15,17 @@ public class WHCService implements InterWHCService {
 	
 	// === #34. 의존객체 주입하기(DI: Dependency Injection) ===
 	@Autowired
-	private InterWHCDAO dao; // 다형성 // 원래는 dao가 아니라 boardDAO라고 써줘야하는데 지금은 BoardDAO가 한개밖에 없으므로 @Autowired에 의해 타입만 맞으면 되니까 dswefwf라고 써도 된다.
+	private InterWHCDAO whcdao; // 다형성 // 원래는 dao가 아니라 boardDAO라고 써줘야하는데 지금은 BoardDAO가 한개밖에 없으므로 @Autowired에 의해 타입만 맞으면 되니까 dswefwf라고 써도 된다.
 	// Type 에 따라 Spring 컨테이너가 알아서 bean 으로 등록된 com.spring.model.BoardDAO 의 bean 을  dao 에 주입시켜준다. 
     // 그러므로 dao 는 null 이 아니다.
+
+	// === 기안양식 카테고리 얻어오기 === // 
+	@Override
+	public List<ApcategoryVO> getApcategoryList() {
+		
+		List<ApcategoryVO> apcList = whcdao.getApcategoryList();
+		return apcList;
+	}
 	
 	
 	

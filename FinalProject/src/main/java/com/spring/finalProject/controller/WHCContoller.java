@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.approval.model.ApcategoryVO;
 import com.spring.finalProject.service.InterWHCService;
 
 //==== #30. 컨트롤러 선언 ====
@@ -38,17 +40,29 @@ public class WHCContoller {
 	
 	// === 기안하기 버튼 클릭시 기안양식 페이지 === //
 	@RequestMapping(value="/approvalForm.gw")
-	public String approvalForm(HttpServletRequest request) {
+	public ModelAndView approvalForm(HttpServletRequest request, ModelAndView mav) {
+
+		// 기안양식 카테고리 얻어오기
+		List<ApcategoryVO> apcList = service.getApcategoryList();
 		
-		return "approval/approvalForm.tiles_WHC";
+		mav.addObject("apcList", apcList);
+		mav.setViewName("approval/approvalForm.tiles_WHC");
+		
+		return mav;
 		
 	}
 	
 	// === 기안양식을 골랐을때 기안작성하는 페이지 === //
 	@RequestMapping(value="/addApproval.gw")
-	public String addApproval(HttpServletRequest request) {
+	public ModelAndView addApproval(HttpServletRequest request, ModelAndView mav) {
 		
-		return "approval/addApproval.tiles_WHC";
+		String apcano = request.getParameter("apcano");
+		String apcaname = request.getParameter("apcaname");
+		mav.addObject("apcano", apcano);
+		mav.addObject("apcaname", apcaname);
+		
+		mav.setViewName("approval/addApproval.tiles_WHC");
+		return mav;
 		
 	}
 }

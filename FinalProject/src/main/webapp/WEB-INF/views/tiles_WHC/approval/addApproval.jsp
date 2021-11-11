@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
+<%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
+
+<% String ctxPath = request.getContextPath(); %>
 
 <style type="text/css">
 	ul.departments {
@@ -164,15 +168,24 @@
 		
 		
 		
+		$("button#btnWrite").click(function(){
+			var frm = document.addApprFrm;
+			
+			frm.midate.value = frm.sdate.value +" "+ frm.stime.value +" ~ "+ frm.edate.value +" "+ frm.etime.value
+			frm.method = "POST";
+			<%-- frm.action="<%= ctxPath%>/addEnd.action"; --%>
+		//	frm.submit();
+		});
+		
 	});
 	
 </script>
 <div class="container-fluid">
 
 	<%-- 선택한 기안종류에 맞게 --%>
-	<h4><b>회의록</b></h4>
+	<h4 class="mb-3"><b>${requestScope.apcaname}</b></h4>
 	<div class="mb-1" style="display: flex; border-bottom: 1px solid black;">
-		<div>결재선</div>
+		<div style="font-weight: bold;">결재선</div>
 		<button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#myModal" style="margin-left:auto;">결재선 설정</button>
 	</div>
 	
@@ -194,7 +207,7 @@
             	<div class="col-lg-5">
             		<div class="card shadow mb-4">
 						<div class="card-header py-3">
-							<input type="text" placeholder="사원명 ,부서명">
+							<input type="text" placeholder="사원명 ,부서명" style="width: 100%; padding-left:10px;">
 						</div>
 						<div class="card-body">
 							<div class="list-group-flush">
@@ -240,7 +253,7 @@
             		<div class="btn-group-vertical approvalTypeBtns">
 					  <button type="button" class="approvalTypeBtn btn btn-light mb-2">결재</button>
 					  <button type="button" class="approvalTypeBtn btn btn-light mb-2">협조</button>
-					  <button type="button" class="approvalTypeBtn btn btn-light">수신</button>
+					  <button type="button" class="approvalTypeBtn btn btn-light mb-2">수신</button>
 					</div>
             	</div>
             	
@@ -308,57 +321,74 @@
 	    	</div>
 	  	</div>
 	</div>
-	<div>
-		<div class="mb-1" style="display: flex; border-bottom: 1px solid black;">
-			<div>협조</div>
+	<div class="my-3">
+		<div class="mb-1 pb-1" style="display: flex; border-bottom: 1px solid black;">
+			<div style="font-weight: bold;">협조</div>
 		</div>
 		<div class="row selemps cone">
 			
 		</div>
 	</div>
 	<div class="my-3">
-		<div class="mb-1" style="display: flex; border-bottom: 1px solid black;">
-			<div>수신</div>
+		<div class="mb-1 pb-1" style="display: flex; border-bottom: 1px solid black;">
+			<div style="font-weight: bold;">수신</div>
 		</div>
 		<div class="row selemps receiver">
 			
 	  	</div>
 	</div>
 	<div class="my-3">
-		<div class="mb-1" style="display: flex; border-bottom: 1px solid black;">
-			<div>기안내용</div>
+		<div class="mb-1 pb-1" style="display: flex; border-bottom: 1px solid black;">
+			<div style="font-weight: bold;">기안내용</div>
 		</div>
-		<form>
+		<form name="addApprFrm" enctype="multipart/form-data">
 		
-			<input type="text" name="apprEmp" value="" />
-			<input type="text" name="coopEmp" value="" />
-			<input type="text" name="reciEmp" value="" />
+			<input type="hidden" name="apprEmp" value="" />
+			<input type="hidden" name="coopEmp" value="" />
+			<input type="hidden" name="reciEmp" value="" />
 			
-			<table class="table table-bordered">
-				<tbody>
+			<table class="table " style="width:100%; margin-bottom:5px;">
+				<tbody class="border-bottom" style="background-color: #f7f7f7;" >
 					<tr>
-						<td>기안제목</td>
+						<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">기안제목</th>
 						<td>
-							<input type="text" />
+							<input type="text" name="subject" id="subject" style="width: 60%" />
 						</td>
 					</tr>
 					<tr>
-						<td>파일첨부</td>
+						<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">파일첨부</th>
 						<td>
-							<input type="file" />
+							<input type="file" name="attach" />
 						</td>
 					</tr>
-					<tr>
-						<td>내용</td>
-						<td>
-							<textarea></textarea>
-						</td>
-					</tr>
+					
+					<c:if test="${requestScope.apcano == 50}">
+						<tr>
+							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">회의일시</th>
+							<td>
+								<input type="date" name="sdate"/>
+								<input type="time" name="stime"/>
+								<div>~</div>
+								<input type="date" name="edate"/>
+								<input type="time" name="etime"/>
+								<input type="text" name="midate"/>
+							</td>
+						</tr>
+						<tr>
+							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">회의목적</th>
+							<td>
+								<textarea style="width: 100%; height:80px; resize: none;" name="purpose"></textarea>
+							</td>
+						</tr>
+					</c:if>
 				</tbody>
 			</table>
+			<div>
+				<textarea style="width: 100%; height:612px;" name="content" id="content" ></textarea>
+			</div>
 			<div class="" style="text-align: center;">
 				<button type="button" class="btn btn-secondary">취소</button>
-		        <button type="button" class="btn btn-primary">상신하기</button>
+		        <button type="button" id="btnWrite" class="btn btn-primary">상신하기</button>
 	        </div>
 		</form>
 	</div>	
