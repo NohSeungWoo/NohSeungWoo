@@ -27,8 +27,11 @@
 	
 	$(document).ready(function(){
 		
+		// 모든직원목록 받아오기
+		getEmployeeList("");
+		
 		// 결재선 설정 모달창에서 직원을 클릭 했을때
-		$(".selectEmp").click(function(){
+		$(document).on("click", ".selectEmp", function(){
 			$(".selectEmp").removeClass("selectedEmp");
 			$(this).addClass("selectedEmp");
 		});
@@ -36,10 +39,10 @@
 		// 결재선 설정 모달창에서 결재 협조 수신 버튼을 클릭했을때 
 		$(".approvalTypeBtn").click(function(){
 			
-			var selectedEmpSeq = $("li.selectedEmp > input[name=seq]").val();
-			var selectedEmpDP = $("li.selectedEmp > input[name=department]").val();
+			var selectedEmpSeq = $("li.selectedEmp > input[name=employeeid]").val();
+			var selectedEmpDP = $("li.selectedEmp > input[name=departmentname]").val();
 			var selectedEmpName = $("li.selectedEmp > span.name").text();
-			var selectedEmpPO = $("li.selectedEmp > input[name=position]").val();
+			var selectedEmpPO = $("li.selectedEmp > input[name=positionname]").val();
 			
 			if( selectedEmpSeq == null ) {
 				alert("직원을 선택하세요!");
@@ -166,18 +169,93 @@
 			}
 		});	
 		
+		// 결재선 설정 모달에서 검색어 입력시 해당하는 직원들 보여주기
+		// 검색어를 빠르게 입력시 해당하는 직원이 두번씩 출력되는 오류가 있어서 keyup 이벤트에 delay를 줌
+		var timeout = null;
+
+	    $('input#searchWord').keyup(function () {        
+	        clearTimeout(timeout);
+
+	        timeout = setTimeout(function () {
+
+	        	var wordLength = $('input#searchWord').val().trim().length;
+				// 검색어의 길이를 알아온다.
+							
+				$("ul.departments").empty();
+				if(wordLength == 0) {
+					getEmployeeList("");
+					// 검색어가 공백이거나 검색어 입력후 백스페이스키를 눌러서 검색어를 모두 지우면 모든직원이 보이게 한다.
+				}
+				else {
+					getEmployeeList($("input#searchWord").val());
+					
+				}	
+				$("ul.departments").addClass("show");
+	            
+	        }, 200);
+	    });
+		// end of $('input#searchWord').keyup(function () {})--------------------
 		
-		
+		// 상신하기 버튼 클릭시
 		$("button#btnWrite").click(function(){
 			var frm = document.addApprFrm;
 			
-			frm.midate.value = frm.sdate.value +" "+ frm.stime.value +" ~ "+ frm.edate.value +" "+ frm.etime.value
+			if(frm.fk_apcano.value == 50){
+				frm.midate.value = frm.sdate.value +" "+ frm.stime.value +" ~ "+ frm.edate.value +" "+ frm.etime.value
+			}
+			else if (frm.fk_apcano.value == 51){
+				frm.taskdate.value = frm.tsdate.value +" "+ frm.tstime.value +" ~ "+ frm.tedate.value +" "+ frm.tetime.value
+			}			
+			
 			frm.method = "POST";
 			<%-- frm.action="<%= ctxPath%>/addEnd.action"; --%>
 		//	frm.submit();
 		});
 		
 	});
+	
+	// Function Declaration
+	// 검색어가 있는 직원 목록 받아오기 
+	function getEmployeeList(searchWord) {
+		
+		if(searchWord == null) {
+			searchWord = "";
+		}
+		
+		$.ajax({
+			url:"<%= request.getContextPath()%>/approval/getEmployeeList.gw",
+			data:{"searchWord":searchWord},
+			type:"GET",
+			dataType:"JSON",
+			success:function(json){ 
+				if( json.length > 0) {
+					// 데이터가 존재하는 경우
+					
+					$("a.deptn").hide();
+					
+					$.each(json,function(index, item){
+						var html = "";	
+						html += "<li class='selectEmp'>" +
+					            	"<span class='name'>"+item.name+"</span>" + "<span>&nbsp;(" + item.positionname + ")</span>" +
+					                "<input type='hidden' name='employeeid' value='"+item.employeeid+"' />" +
+					                "<input type='hidden' name='departmentname' value='"+item.departmentname+"' />" +
+					                "<input type='hidden' name='positionname' value='"+item.positionname+"' />" +
+					            "</li>";
+						
+			           	$('ul#department'+item.departno).append(html);
+			           	$("a#"+item.departno).show();
+					}); // end of $.each(json,function(index, item){})---------
+				}
+				else {
+					$("a.deptn").hide();
+				}
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		 	}
+		});
+		
+	}// end of function getEmployeeList() {}------------------------------
 	
 </script>
 <div class="container-fluid">
@@ -207,10 +285,17 @@
             	<div class="col-lg-5">
             		<div class="card shadow mb-4">
 						<div class="card-header py-3">
-							<input type="text" placeholder="사원명 ,부서명" style="width: 100%; padding-left:10px;">
+							<input type="text" id="searchWord" placeholder="사원명 ,부서명" style="width: 100%; padding-left:10px;" autocomplete="off">
 						</div>
 						<div class="card-body">
 							<div class="list-group-flush">
+								<c:forEach var="item" items="${requestScope.departList}">
+									<a href="#department${item.departno}" id="${item.departno}" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle deptn">${item.departmentname}</a>
+							  		<ul class="collapse departments show" id="department${item.departno}" >
+							            
+							        </ul>
+								</c:forEach>
+								<%--
 								<a href="#department1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle">마케팅부</a>
 							  		<ul class="collapse departments" id="department1" >
 							            <li class="selectEmp">
@@ -232,18 +317,7 @@
 							                	<input type="hidden" name="position" value="직책" />
 							            </li>
 							        </ul>
-							  	<a href="#department2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle">관리부</a>
-							  		<ul class="collapse departments" id="department2">
-							            <li class="selectEmp">
-							                	사원1
-							            </li>
-							            <li class="selectEmp">
-							                	사원2
-							            </li>
-							            <li class="selectEmp">
-							                	사원3
-							            </li>
-							        </ul>
+							     --%>    
 							</div>
 	                  	</div>
 	                </div>  	
@@ -329,7 +403,7 @@
 			
 		</div>
 	</div>
-	<div class="my-3">
+	<div class="mt-3 mb-4">
 		<div class="mb-1 pb-1" style="display: flex; border-bottom: 1px solid black;">
 			<div style="font-weight: bold;">수신</div>
 		</div>
@@ -337,6 +411,7 @@
 			
 	  	</div>
 	</div>
+	<hr>
 	<div class="my-3">
 		<div class="mb-1 pb-1" style="display: flex; border-bottom: 1px solid black;">
 			<div style="font-weight: bold;">기안내용</div>
@@ -346,6 +421,7 @@
 			<input type="hidden" name="apprEmp" value="" />
 			<input type="hidden" name="coopEmp" value="" />
 			<input type="hidden" name="reciEmp" value="" />
+			<input type="hidden" name="fk_apcano" value="${requestScope.apcano}" />
 			
 			<table class="table " style="width:100%; margin-bottom:5px;">
 				<tbody class="border-bottom" style="background-color: #f7f7f7;" >
@@ -361,7 +437,7 @@
 							<input type="file" name="attach" />
 						</td>
 					</tr>
-					
+					<%-- 회의록 --%>
 					<c:if test="${requestScope.apcano == 50}">
 						<tr>
 							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">회의일시</th>
@@ -381,6 +457,43 @@
 							</td>
 						</tr>
 					</c:if>
+					
+					<%-- 업무보고 --%>
+					<c:if test="${requestScope.apcano == 51}">
+						<tr>
+							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">업무기간</th>
+							<td>
+								<input type="date" name="tsdate"/>
+								<input type="time" name="tstime"/>
+								<div>~</div>
+								<input type="date" name="tedate"/>
+								<input type="time" name="tetime"/>
+								<input type="text" name="taskdate"/>
+							</td>
+						</tr>
+						<tr>
+							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">이슈</th>
+							<td>
+								<textarea style="width: 100%; height:80px; resize: none;" name="issue"></textarea>
+							</td>
+						</tr>
+					</c:if>
+					
+					<c:if test="${requestScope.apcano == 53}">
+						<tr>
+							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">지출예정일</th>
+							<td>
+								<input type="date" name="spdate"/>
+							</td>
+						</tr>
+						<tr>
+							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">금액</th>
+							<td>
+								<input type="text" name="amount" id="amount" style="width: 40%" />원
+							</td>
+						</tr>
+					</c:if>
+					
 				</tbody>
 			</table>
 			<div>
