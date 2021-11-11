@@ -78,7 +78,7 @@
 			     <li class="nav-item active mx-2" style="text-align: center;">          
 	             	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="far fa-envelope fa-lg"></i><br>메일/메신저</a>
 	          	 </li>
-			     <c:if test="${sessionScope.loginuser != null and sessionScope.loginuser.userid == 'admin' }"> <%-- admin 으로 로그인 했으면 --%>
+			     <c:if test="${sessionScope.loginuser != null and sessionScope.loginuser.admin == '1' }"> <%-- admin 으로 로그인 했으면 --%>
 					 <li class="nav-item dropdown">
 				        <a class="nav-link dropdown-toggle menufont_size text-info" href="#" id="navbarDropdown" data-toggle="dropdown"> 
 				          	 관리자전용   	                           
