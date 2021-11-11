@@ -180,4 +180,18 @@ from tbl_employee
 where retire = 0
 and name like '%'|| '이' ||'%';
 
+select *
+from tbl_employee
+where retire = 0
+and email = 'eomjh@gmail.com' 
+and password = 211029002;
+
+
+select employeeid, fk_departNo, fk_positionNo, name, password, mobile, email,
+       hiredate, retiredate, retire, profilename, orgProfilename, fileSize, 
+       salary, dayoff, admin, postcode, address, detailAddress, extraAddress
+from tbl_employee
+where retire = 0
+and email = 'eomjh@gmail.com' 
+and password = 211029002;
 commit;

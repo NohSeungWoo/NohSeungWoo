@@ -184,7 +184,7 @@
   		display: inline-block;
 	}
 	
-	tr:hover {
+	tr.empTr:hover {
 		cursor: pointer;
 		background-color: #e6e6e6;
 	}
@@ -196,57 +196,59 @@
 	  	<span class="h3 font-weight-bold">직원 목록</span>
 	  </div>
 	  <div class="row mt-1 input-group mb-3">
-	  	<div class="col-11 col-lg-4 search-bar mt-3 ml-2">
+	  	<div id="empButton" class="col-12 col-lg-4 mt-3 mr-2">
+		  <button class="btn btn-outline-secondary float-right">관리자등록</button>
+	  	</div>
+	  	<div class="col-10 col-lg-4 search-bar mt-3 ml-2">
 	      	<input id="searchEmp" type="text" class="form-control rounded-pill float-left" placeholder="직원 검색">
 	  	</div>
 	  	<div id="searchButton" class="mt-3">
 		  	<i id="searchEmployee" class="fas fa-search fa-lg mt-2 pt-1" style="cursor: pointer;"></i>
 	  	</div>
-	  	<div id="empButton" class="col-11 col-lg-4 mt-3" >
-		  	<button class="btn btn-outline-secondary">직원등록</button>
-		  	<button class="btn btn-outline-secondary">관리자등록</button>
-	  	</div>
 	  </div>
-	  <div id="displayList" style="border: solid 1px gray; width: 336px; height: 150px; margin-left: 8px; margin-top: 45px; border-top:0px; padding-left: 9px; border-radius: 10px;"></div>
-	  <table class="table col-12">
-	    <thead class="thead-light">
-	      <tr>
-	        <th>이름</th>
-	        <th>사번</th>
-	        <th>
-				<span class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
-				      부서
-				</span>
-				<div class="dropdown-menu" id="departmentName">
-					
-				</div>
-			</th>
-	        <th>
-	        	<span class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
-				      직급
-				</span>
-				<div class="dropdown-menu" id="positionName">
-				</div>
-			</th>
-	        <th>이메일</th>
-	        <th>연락처</th>
-	      </tr>
-	    </thead>
-	    <tbody>
-	    <c:if test="${not empty requestScope.empList}">
-	    	<c:forEach var="map" items="${requestScope.empList}">
-	    		<tr>
-			        <td class="name">${map.name}</td>
-			        <td class="employeeid">${map.employeeid}</td>
-			        <td class="departmentname">${map.departmentname}</td>
-			        <td class="positionname">${map.positionname}</td>
-			        <td class="email">${map.email}</td>
-			        <td class="mobile"><span>${map.mobile.substring(0, 3)}-${map.mobile.substring(3, 7)}-${map.mobile.substring(7)}</span></td>
-			    </tr>
-	    	</c:forEach>
-	    </c:if>
-	    </tbody>
-	  </table>
+	  <div id="displayList" style="position:absolute; z-index:2; background-color: white;  border: solid 1px #bfbfbf; width: 336px; height: 150px; margin-left: 8px; margin-top: 58px; border-top:0px; padding-left: 9px; border-radius: 10px;"></div>
+	  <div class="table-responsive" style="z-index: 1;">
+		  <table class="table col-12" style="width: 95%;">
+		    <thead class="thead-light">
+		      <tr>
+		        <th style="width: 10%;">이름</th>
+		        <th style="width: 15%;">사번</th>
+		        <th style="width: 10%;">
+					<span class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
+					      부서
+					</span>
+					<div class="dropdown-menu" id="departmentName">
+					</div>
+				</th>
+		        <th style="width: 10%;">
+		        	<span class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
+					      직급
+					</span>
+					<div class="dropdown-menu" id="positionName">
+					</div>
+				</th>
+		        <th>이메일</th>
+		        <th>연락처</th>
+		      </tr>
+		    </thead>
+		    <tbody>
+		    <c:if test="${not empty requestScope.empList}">
+		    	<c:forEach var="map" items="${requestScope.empList}">
+		    		<tr class="empTr">
+				        <td class="name">${map.name}</td>
+				        <td class="employeeid">${map.employeeid}</td>
+				        <td class="departmentname">${map.departmentname}</td>
+				        <td class="positionname">${map.positionname}</td>
+				        <td class="email">${map.email}</td>
+				        <td class="mobile"><span>${map.mobile.substring(0, 3)}-${map.mobile.substring(3, 7)}-${map.mobile.substring(7)}</span></td>
+				    </tr>
+		    	</c:forEach>
+		    </c:if>
+		    </tbody>
+		  </table>
+	  </div>
+	  
+	  
 	  <%-- === #122. 페이지바 보여주기 --%>
 	  <div align="center" style="width: 70%; border: solid 0px gray; margin: 20px auto;">
 	  	  ${requestScope.pageBar}

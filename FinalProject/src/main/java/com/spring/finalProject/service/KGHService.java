@@ -5,6 +5,7 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.model.InterKGHDAO;
 import com.spring.finalProject.model.PositionVO_KGH;
 
@@ -59,6 +60,13 @@ public class KGHService implements InterKGHService {
 		// === 검색어 결과 조회하기(select) === //
 		List<String> searchList = dao.employeeSearch(paraMap);
 		return searchList;
+	}
+
+	@Override
+	public EmployeeVO_KGH getLogin(Map<String, String> paraMap) {
+		// === 로그인 처리 메서드(select) === //
+		EmployeeVO_KGH empvo = dao.getLogin(paraMap);
+		return empvo;
 	}
 
 }

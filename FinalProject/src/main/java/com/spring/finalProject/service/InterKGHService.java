@@ -3,6 +3,7 @@ package com.spring.finalProject.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.model.PositionVO_KGH;
 
 public interface InterKGHService {
@@ -24,5 +25,8 @@ public interface InterKGHService {
 
 	// 검색어 결과 조회하기(select)
 	List<String> employeeSearch(Map<String, String> paraMap);
+
+	// 로그인 처리 메서드(select)
+	EmployeeVO_KGH getLogin(Map<String, String> paraMap);
 
 }

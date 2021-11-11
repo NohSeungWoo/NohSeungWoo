@@ -57,4 +57,11 @@ public class KGHDAO implements InterKGHDAO {
 		return searchList;
 	}
 
+	// === 로그인 처리 메서드(select) === //
+	@Override
+	public EmployeeVO_KGH getLogin(Map<String, String> paraMap) {
+		EmployeeVO_KGH empvo = sqlsession.selectOne("KangGH.getLogin", paraMap);
+		return empvo;
+	}
+
 }
