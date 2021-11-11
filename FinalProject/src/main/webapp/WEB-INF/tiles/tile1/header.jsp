@@ -84,7 +84,7 @@
 				          	 관리자전용   	                           
 				        </a>
 				        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				           <a class="dropdown-item text-info" href="<%= ctxPath %>">사원등록</a>
+				           <%-- <a class="dropdown-item text-info" href="<%= ctxPath %>">사원등록</a> --%>
 				           <a class="dropdown-item text-info" href="<%= ctxPath %>">사원관리</a>
 				           <div class="dropdown-divider"></div>
 				           <a class="dropdown-item text-info" href="<%= ctxPath %>">추가기능있으면 넣기</a>
