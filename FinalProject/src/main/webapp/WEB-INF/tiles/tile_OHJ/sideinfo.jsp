@@ -55,7 +55,7 @@
 	<nav id="sidebar">
 		<div class="list-group-flush"> <!-- .list-group-flush 클래스를 사용하여 일부 테두리와 둥근 모서리를 제거합니다. --> <!-- 리스트의 양옆 테두리가 사라짐 -->
 	
-			<a href="#" class="list-group-item list-group-item-action">최근 게시물</a> <!-- 마우스 오버 시 회색 배경색을 원하면 선택적으로 .list-group-item-action 클래스를 추가합니다. -->
+			<a href="<%= ctxPath%>/recentList.gw" class="list-group-item list-group-item-action">최근 게시물</a> <!-- 마우스 오버 시 회색 배경색을 원하면 선택적으로 .list-group-item-action 클래스를 추가합니다. -->
 			
 			<!-- .collapse 은 내용물을 숨기는 것임. -->
 			<a href="#allCompany" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle">전사 게시판</a> <!-- dropdown-toggle을 통해 ▽ 모양 보여줌 --> <!-- 원래는 data-target="#allCompany"랑 연결하는데, 여기선 href로 연결해줌. -->
