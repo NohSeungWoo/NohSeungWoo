@@ -1,12 +1,18 @@
 package com.spring.finalProject.controller;
 
+import java.util.*;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.finalProject.model.BoardVO_OHJ;
 import com.spring.finalProject.service.InterOHJService;
 
 //==== #30. 컨트롤러 선언 ====
@@ -81,14 +87,111 @@ public class OHJController {
 	private InterOHJService service;
 	// Type에 따라 알아서 Bean 을 주입해준다.
 
-	// === #36. 게시판 페이지 요청 === //
-	@RequestMapping(value="/recent.gw")
-	public String recent(HttpServletRequest request) {
+	/////////////////////////////////////////////////////////////////////////////////
+						// 기본셋팅 끝이다. 여기서부터 개발 시작이다! //
+	/////////////////////////////////////////////////////////////////////////////////
+	
+	
+	// === &51. 게시판 글쓰기 폼페이지 요청 === //
+	@RequestMapping(value="/boardWrite.gw")
+	public ModelAndView requiredLogin_boardWrite(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
-		return "board/recent.tiles_OHJ";
-		//  /WEB-INF/views/tiles_OHJ/board/recent.jsp 파일을 생성한다.
+		mav.setViewName("board/boardWrite.tiles_OHJ");
+		//  /WEB-INF/views/tiles_OHJ/board/boardWrite.jsp 파일을 생성한다.
+		
+		return mav;
 	}
 	
+	
+	// === &54. 게시판 글쓰기 완료 요청 === //
+	@RequestMapping(value="/boardWriteEnd.gw", method= {RequestMethod.POST})
+	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo) {
+		
+		// form 태그의 name명과 BoardVO의 필드명이 같다라면, getParameter 사용안하더라도 자동적으로 set되어진다.
+	/*	
+		System.out.println("확인용 fk_bCategorySeq => " + boardvo.getFk_bCategorySeq());
+		System.out.println("확인용 subject => " + boardvo.getSubject());
+		System.out.println("확인용 content => " + boardvo.getContent());
+	*/	
+		
+		int n = service.boardWrite(boardvo); // <== 파일첨부가 없는 글쓰기
+		
+		mav.setViewName("redirect:/recentList.gw");
+		//	/list.gw 페이지로 redirect(페이지이동)해라는 말이다.
+		
+		return mav;
+	}
+	
+	
+	// === &58. 글목록 보기 페이지 요청(최근 게시물) === //
+	@RequestMapping(value="/recentList.gw")
+	public ModelAndView recentList(ModelAndView mav, HttpServletRequest request) {
+		
+	//	getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
+		
+		List<BoardVO_OHJ> boardList = null;
+		
+		// == 페이징 처리를 안한, 검색어가 없는, 전체 글목록 보여주기 == //
+		boardList = service.boardListNoSearch();
+				
+		mav.addObject("boardList", boardList);
+		mav.setViewName("board/recentList.tiles_OHJ");
+		//  /WEB-INF/views/tiles_OHJ/board/recentList.jsp 파일을 생성한다.
+		
+		return mav;
+	}
+	
+	// === &62. 글1개를 보여주는 페이지 요청 === //
+	@RequestMapping(value="/boardView.gw")
+	public ModelAndView boardView(ModelAndView mav, HttpServletRequest request) {
+		
+	//	getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
+		
+		// 조회하고자 하는 글번호 받아오기
+		String boardSeq = request.getParameter("boardSeq");
+		
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("boardSeq", boardSeq);
+		
+		BoardVO_OHJ boardvo = null;
+		
+		try {
+			
+			Integer.parseInt(boardSeq); // "하하하호호호", "1", "1324654"
+			
+			boardvo = service.getView(paraMap);
+			
+			
+		} catch (NumberFormatException e) {
+			// boardvo는 null인 상태 그대로 뷰단으로 넘어간다.
+		}
+		
+		mav.addObject("boardvo", boardvo);
+		
+		mav.setViewName("board/boardView.tiles_OHJ");
+		//  /WEB-INF/views/tiles_OHJ/board/boardView.jsp 파일을 생성한다.
+		
+		return mav;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	//  === 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 생성 === 
+/*	
+	public void getCurrentURL(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		session.setAttribute("goBackURL", MyUtil.getCurrentURL(request));
+	}
+*/	
+	////////////////////////////////////////////////////////////////////////////////
 	
 
 	

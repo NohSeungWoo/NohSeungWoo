@@ -1,5 +1,8 @@
 package com.spring.finalProject.model;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.mybatis.spring.SqlSessionTemplate;
@@ -28,6 +31,38 @@ public class OHJDAO implements InterOHJDAO {
 	private SqlSessionTemplate sqlsession; // 원격DB remote_finalorauser1 에 연결
 	// Type 에 따라 Spring 컨테이너가 알아서 root-context.xml 에 생성된 org.mybatis.spring.SqlSessionTemplate 의 sqlsession bean 을  sqlsession 에 주입시켜준다. 
     // 그러므로 sqlsession 는 null 이 아니다.
+
+	
+	/////////////////////////////////////////////////////////////////////////////////
+	// 기본셋팅 끝이다. 여기서부터 개발 시작이다! //
+	/////////////////////////////////////////////////////////////////////////////////
+
+	
+	// === &56. 글쓰기(파일첨부가 없는 글쓰기) === //
+	@Override
+	public int boardWrite(BoardVO_OHJ boardvo) {
+		int n = sqlsession.insert("ohhj.boardWrite", boardvo);
+		return n;
+	}
+
+
+	// === &60. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 === //
+	@Override
+	public List<BoardVO_OHJ> boardListNoSearch() {
+		List<BoardVO_OHJ> boardList = sqlsession.selectList("ohhj.boardListNoSearch");
+		return boardList;
+	}
+
+
+	// === &64. 글1개 조회하기 === //
+	@Override
+	public BoardVO_OHJ getView(Map<String, String> paraMap) {
+		BoardVO_OHJ boardvo = sqlsession.selectOne("ohhj.getView", paraMap);
+		return boardvo;
+	}
+	
+	
+	
 	
 	
 }
