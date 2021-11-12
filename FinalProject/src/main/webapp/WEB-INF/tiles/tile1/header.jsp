@@ -61,13 +61,13 @@
 			        <a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="fas fa-home fa-lg"></i><br>홈</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="fas fa-stopwatch fa-lg"></i><br>근태관리</a>
+			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/timemanager.gw"><i class="fas fa-stopwatch fa-lg"></i><br>근태관리</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="far fa-file-alt fa-lg"></i><br>전자결재</a>
+			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/approval.gw"><i class="far fa-file-alt fa-lg"></i><br>전자결재</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="fas fa-chalkboard fa-lg"></i><br>게시판</a>
+			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/recentList.gw"><i class="fas fa-chalkboard fa-lg"></i><br>게시판</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
 			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="fas fa-user-friends fa-lg"></i><br>조직도</a>
@@ -75,9 +75,12 @@
 			     <li class="nav-item active mx-2" style="text-align: center;">          
 	             	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="far fa-calendar-alt fa-lg"></i><br>일정</a>
 	          	 </li>
-			     <li class="nav-item active mx-2" style="text-align: center;">          
-	             	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="far fa-envelope fa-lg"></i><br>메일/메신저</a>
+			     <li class="nav-item active mx-2" style="text-align: center;">
+	             	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/chat.gw"><i class="far fa-envelope fa-lg"></i><br>웹채팅</a>
 	          	 </li>
+	          	 <li class="nav-item active mx-2" style="text-align: center;">  
+                   <a class="nav-link menufont_size" style="color:gray;" href="<%=ctxPath%>/survey.gw"><i class="fas fa-book-reader"></i><br>설문조사</a>
+                 </li>
 			     <c:if test="${sessionScope.loginuser != null and sessionScope.loginuser.admin == '1' }"> <%-- admin 으로 로그인 했으면 --%>
 					 <li class="nav-item dropdown">
 				        <a class="nav-link dropdown-toggle menufont_size text-info" href="#" id="navbarDropdown" data-toggle="dropdown"> 
