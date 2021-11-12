@@ -48,7 +48,7 @@
 	<div class="container-fluid" style="max-width:1600px">
 		<nav class="navbar navbar-expand-lg navbar-light pt-2" style="background-color: white;">
 			<!-- Brand/logo --> <!-- Font Awesome 5 Icons -->
-			<a class="navbar-brand" href="<%= ctxPath %>/index.up" style="margin-right: 10%; font-size:20pt; font-weight: bold;">그룹웨어</a>
+			<a class="navbar-brand" href="<%= ctxPath %>/index.gw" style="margin-right: 10%; font-size:20pt; font-weight: bold;">그룹웨어</a>
 			
 			<!-- 아코디언 같은 Navigation Bar 만들기 -->
 		    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
