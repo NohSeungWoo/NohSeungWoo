@@ -38,8 +38,8 @@ public class KGHDAO implements InterKGHDAO {
 
 	// === 부서목록 가져오기(select) === //
 	@Override
-	public List<String> getDepartmentName() {
-		List<String> departList = sqlsession.selectList("KangGH.getDepartmentName");
+	public List<DepartmentVO_KGH> getDepartmentName() {
+		List<DepartmentVO_KGH> departList = sqlsession.selectList("KangGH.getDepartmentName");
 		return departList;
 	}
 

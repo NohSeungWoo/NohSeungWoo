@@ -3,6 +3,7 @@ package com.spring.finalProject.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.finalProject.model.DepartmentVO_KGH;
 import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.model.PositionVO_KGH;
 
@@ -18,7 +19,7 @@ public interface InterKGHService {
 	List<Map<String, String>> getEmpListWithPaging(Map<String, String> paraMap);
 
 	// 부서목록 가져오기(select)
-	List<String> getDepartmentName();
+	List<DepartmentVO_KGH> getDepartmentName();
 
 	// 직급 목록 가져오기(select)
 	List<String> getPosition();

@@ -5,6 +5,7 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.finalProject.model.DepartmentVO_KGH;
 import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.model.InterKGHDAO;
 import com.spring.finalProject.model.PositionVO_KGH;
@@ -42,9 +43,9 @@ public class KGHService implements InterKGHService {
 	}
 
 	@Override
-	public List<String> getDepartmentName() {
+	public List<DepartmentVO_KGH> getDepartmentName() {
 		// === 부서목록 가져오기(select) === //
-		List<String> departList = dao.getDepartmentName();
+		List<DepartmentVO_KGH> departList = dao.getDepartmentName();
 		return departList;
 	}
 

@@ -88,7 +88,15 @@
 			
 		});
 		
-	});// end of $(document).ready(function() {})
+		
+		/////////////////////////////////////////////////////
+		
+		sessionStorage.setItem("department","전체");
+		sessionStorage.setItem("position","전체");
+		
+		/////////////////////////////////////////////////////
+		
+	});// end of $(document).ready(function() {})------------------------------------------
 
 	
 	// Function Declaration
@@ -100,15 +108,33 @@
 			dataType:"JSON",
 			success:function(json) {
 				if(json.length > 0) {
-					var html = "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=전체'>전체</a>";
+			<%--	var html = "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=전체'>전체</a>"; --%>
+					
+					var html = "<a class='dropdown-item department'>전체</a>";
 					
 					$.each(json, function(index, item) {
-						var departmentname = item.departmentName;
-					
-						html += "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=" + departmentname + "'>" + departmentname + "</a>";
+						var departmentname = item.depart;
+						var departno = item.departno
+							
+						html += "<a class='dropdown-item department'>"+ departmentname +"</a>";
+						
+					<%--	html += "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=" + departmentname + "'>" + departmentname + "</a>";
+					--%>
 					});
 					
 					$("div#departmentName").html(html);
+					
+					$(document).on("click","a.department", function(){
+						var department = $(this).text();
+						sessionStorage.setItem("department",department);
+						var position = sessionStorage.getItem("position");
+						
+						alert("부서명 : " + department + ", 직급 : " + position);
+						// $.ajax
+						
+						departPositionSearch(department, position);
+						
+					});
 				}
 			},
 			error: function(request, status, error){
@@ -125,15 +151,25 @@
 			dataType:"JSON",
 			success:function(json) {
 				if(json.length > 0) {
-					var html = "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?position=전체'>전체</a>";
+					var html = "<a class='dropdown-item position'>전체</a>";
 					
 					$.each(json, function(index, item) {
 						var positionname = item.position;
 					
-						html += "<a class='dropdown-item position' href='<%= ctxPath%>/admin/empList.gw?position=" + positionname + "'>" + positionname + "</a>";
+						html += "<a class='dropdown-item position'>" + positionname + "</a>";
 					});
 					
 					$("div#positionName").html(html);
+					
+					$(document).on("click","a.position", function(){
+						var position = $(this).text();
+						sessionStorage.setItem("position",position);
+						var department = sessionStorage.getItem("department");
+						
+						alert("부서명 : " + department + ", 직급 : " + position);
+						// $.ajax
+						departPositionSearch(department, position);
+					});
 				}
 			},
 			error: function(request, status, error){
@@ -147,7 +183,32 @@
 	function searchEMP() {
 		var searchemp = $("input#searchEmp").val();
 		
-		location.href = "<%= ctxPath%>/admin/empList.gw?searchEmp=" + searchemp;
+		var department = $("a.department").val();
+		
+		var position = $("a.position").val();
+		
+		<%-- location.href = "<%= ctxPath%>/admin/empList.gw?searchEmp=" + searchemp; --%>
+	}
+	
+	function departPositionSearch(department, position) {
+	//	console.log(department);
+	//	console.log(position);
+	
+		$.ajax({
+			url:"<%= ctxPath%>/admin/empList.gw",
+			type:"GET",
+			data:{"department":department,
+				  "position":position},
+			dataType:"JSON",
+			success:function(json) {
+				
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		});
+		
+	
 	}
 	
 </script>

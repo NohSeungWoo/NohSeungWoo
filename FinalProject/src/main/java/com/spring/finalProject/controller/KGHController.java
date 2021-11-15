@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.finalProject.common.MyUtil_KGH;
+import com.spring.finalProject.model.DepartmentVO_KGH;
 import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.service.InterKGHService;
 
@@ -133,10 +134,16 @@ public class KGHController {
 		// 직원목록 가져오기 메서드
 		// empList = service.getEmpList();
 		
+		HttpSession session = request.getSession();
+		
+		
 		String department = request.getParameter("department");
 		String position = request.getParameter("position");
 		String searchEmp = request.getParameter("searchEmp");
 		
+		System.out.println(department);
+		System.out.println(position);
+
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
 		
@@ -293,20 +300,31 @@ public class KGHController {
 		return mav;
 	}
 	
+	
+	// === 직원등록 페이지 이동 === //
+	@RequestMapping(value = "admin/empRegister.gw")
+	public ModelAndView empRegister(ModelAndView mav) {
+		mav.setViewName("admin/empRegister.tiles_KKH");
+		
+		return mav;
+	}
+	
+	
 	// === 부서목록 가져오기(ajax) === //
 	@ResponseBody
 	@RequestMapping(value = "/getDepartmentName.gw", method = {RequestMethod.GET}, produces = "text/plain;charset=UTF-8")
 	public String getDepartmentName(HttpServletRequest request) {
 		
 		// === 부서목록 가져오기(select) === //
-		List<String> departList = service.getDepartmentName();
+		List<DepartmentVO_KGH> departList = service.getDepartmentName();
 		
 		JSONArray jsonArr = new JSONArray();	// []
 		
 		if(departList != null) {
-			for(String departmentName : departList) {
+			for(DepartmentVO_KGH department : departList) {
 				JSONObject jsonObj = new JSONObject();
-				jsonObj.put("departmentName", departmentName);
+				jsonObj.put("depart", department.getDepartmentname());
+				jsonObj.put("departno", department.getDepartno());
 				
 				jsonArr.put(jsonObj);
 			}

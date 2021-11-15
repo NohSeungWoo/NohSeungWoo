@@ -85,8 +85,8 @@
 	</select>
 	
 	<!-- === 부서목록 가져오기 === -->
-	<select id="getDepartmentName" resultType="String">
-		select departmentname
+	<select id="getDepartmentName" resultType="com.spring.finalProject.model.DepartmentVO_KGH">
+		select departno, departmentname
 		from tbl_department
 		order by departno
 	</select>
@@ -116,5 +116,7 @@
 		and email = #{email} 
 		and password = #{password}
 	</select>
+	
+	
 	
 </mapper>
