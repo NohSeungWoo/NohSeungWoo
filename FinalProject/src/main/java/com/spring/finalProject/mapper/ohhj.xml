@@ -25,9 +25,13 @@
 	
 	<!-- === &65. 글1개 조회하기 === -->
 	<select id="getView" parameterType="HashMap" resultType="com.spring.finalProject.model.BoardVO_OHJ">
-		select boardSeq, subject, fk_employeeid, name, content, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
-		from tbl_board B JOIN tbl_employee E
+		select boardSeq, bCategoryName, subject, fk_employeeid, name, positionName, content, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		from tbl_board B JOIN tbl_boardCategory C
+		ON B.fk_bCategorySeq = C.bCategorySeq
+		JOIN tbl_employee E
 		ON B.fk_employeeId = E.employeeId
+		JOIN tbl_position P
+		ON E.fk_positionNo = P.positionNo
 		where boardSeq = #{boardSeq}
 	</select>
 	

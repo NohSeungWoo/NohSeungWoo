@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -114,6 +115,13 @@ public class OHJController {
 		System.out.println("확인용 content => " + boardvo.getContent());
 	*/	
 		
+		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 작성하기 **** // 
+		String content = boardvo.getContent();
+		content = content.replaceAll("<", "&lt;");
+		content = content.replaceAll(">", "&gt;");
+		content = content.replaceAll("\r\n", "<br>"); // 입력한 엔터는 <br>처리하기
+		boardvo.setContent(content);
+		
 		int n = service.boardWrite(boardvo); // <== 파일첨부가 없는 글쓰기
 		
 		mav.setViewName("redirect:/recentList.gw");
@@ -158,6 +166,9 @@ public class OHJController {
 		try {
 			
 			Integer.parseInt(boardSeq); // "하하하호호호", "1", "1324654"
+			
+			HttpSession session = request.getSession();
+			
 			
 			boardvo = service.getView(paraMap);
 			

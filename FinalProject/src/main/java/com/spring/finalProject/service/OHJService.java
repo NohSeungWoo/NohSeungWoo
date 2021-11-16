@@ -45,7 +45,12 @@ public class OHJService implements InterOHJService {
 	// === &63. 글1개를 보여주는 페이지 요청 === //
 	@Override
 	public BoardVO_OHJ getView(Map<String, String> paraMap) {
+		
 		BoardVO_OHJ boardvo = dao.getView(paraMap); // 글1개 조회하기
+		
+		// 글조회수 증가는 로그인을 한 상태에서 다른 사람의 글을 읽을 때만 증가하도록 해야 한다.
+		
+		
 		return boardvo;
 	}
 	

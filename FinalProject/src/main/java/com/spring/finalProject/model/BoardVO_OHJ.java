@@ -24,7 +24,9 @@ public class BoardVO_OHJ {
 */
 	
 	////////////////////////////////////////////
-	private String name; // select용. 글쓴이 -> ohhj.xml에서 join한 결과를 자동으로 set해서 담는 용도임.
+	private String name; 			// select용. 글쓴이 -> ohhj.xml에서 join한 결과를 자동으로 set해서 담는 용도임.
+	private String positionName; 	// select용. 직급명
+	private String bCategoryName; 	// select용. 게시판 카테고리명
 	////////////////////////////////////////////
 	
 	public BoardVO_OHJ() {}
@@ -106,6 +108,22 @@ public class BoardVO_OHJ {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getPositionName() {
+		return positionName;
+	}
+
+	public void setPositionName(String positionName) {
+		this.positionName = positionName;
+	}
+
+	public String getbCategoryName() {
+		return bCategoryName;
+	}
+
+	public void setbCategoryName(String bCategoryName) {
+		this.bCategoryName = bCategoryName;
 	}	
 	
 	
