@@ -45,8 +45,8 @@ public class KGHDAO implements InterKGHDAO {
 
 	// === 직급 목록 가져오기(select) === //
 	@Override
-	public List<String> getPosition() {
-		List<String> positionList = sqlsession.selectList("KangGH.getPosition");
+	public List<PositionVO_KGH> getPosition() {
+		List<PositionVO_KGH> positionList = sqlsession.selectList("KangGH.getPosition");
 		return positionList;
 	}
 
@@ -63,5 +63,45 @@ public class KGHDAO implements InterKGHDAO {
 		EmployeeVO_KGH empvo = sqlsession.selectOne("KangGH.getLogin", paraMap);
 		return empvo;
 	}
+
+	// === 이메일 중복여부 검사하기(select) === //
+	@Override
+	public boolean emailDuplicateCheck(String email) {
+		boolean isExists = false;
+		
+		String useremail = sqlsession.selectOne("KangGH.emailDuplicateCheck", email);
+		
+		if(useremail == null) {
+			isExists = false;
+		}
+		else {
+			isExists = true;
+		}
+		
+		return isExists;
+	}
+
+	// === 새로 생성될 사원번호 조회하기(select) === //
+	@Override
+	public String selectEmpId(String departmentno) {
+		String empId = sqlsession.selectOne("KangGH.selectEmpId", departmentno);
+		return empId;
+	}
+
+	
+	// === 직원 정보 등록하기(insert) === //
+	@Override
+	public int empRegister(EmployeeVO_KGH emp) {
+		int n = sqlsession.insert("KangGH.empRegister", emp);
+		return n;
+	}
+
+	// === 첨부파일과 함께 직원 정보 등록하기(insert) === //
+	@Override
+	public int empRegisterWithProfile(EmployeeVO_KGH emp) {
+		int n = sqlsession.insert("KangGH.empRegisterWithProfile", emp);
+		return n;
+	}
+
 
 }

@@ -50,9 +50,9 @@ public class KGHService implements InterKGHService {
 	}
 
 	@Override
-	public List<String> getPosition() {
+	public List<PositionVO_KGH> getPosition() {
 		// === 직급 목록 가져오기(select) === //
-		List<String> positionList = dao.getPosition();
+		List<PositionVO_KGH> positionList = dao.getPosition();
 		return positionList;
 	}
 
@@ -69,5 +69,35 @@ public class KGHService implements InterKGHService {
 		EmployeeVO_KGH empvo = dao.getLogin(paraMap);
 		return empvo;
 	}
+
+	@Override
+	public boolean emailDuplicateCheck(String email) {
+		// === 이메일 중복 여부 검사하기(select) === //
+		boolean isExists = dao.emailDuplicateCheck(email);
+		return isExists;
+	}
+
+	@Override
+	public String selectEmpId(String departmentno) {
+		// === 새로 생성될 사원번호 조회하기(select) === //
+		String empid = dao.selectEmpId(departmentno);
+		return empid;
+	}
+
+	
+	@Override
+	public int empRegister(EmployeeVO_KGH emp) {
+		// === 직원 정보 등록하기(insert) === //
+		int n = dao.empRegister(emp);
+		return n;
+	}
+
+	@Override
+	public int empRegisterWithProfile(EmployeeVO_KGH emp) {
+		// === 첨부파일과 함께 직원 정보 등록하기(insert) === //
+		int n = dao.empRegisterWithProfile(emp);
+		return n;
+	}
+
 
 }

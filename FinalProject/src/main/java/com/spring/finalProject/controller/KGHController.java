@@ -1,5 +1,7 @@
 package com.spring.finalProject.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,14 +12,19 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.finalProject.common.FileManager;
 import com.spring.finalProject.common.MyUtil_KGH;
 import com.spring.finalProject.model.DepartmentVO_KGH;
 import com.spring.finalProject.model.EmployeeVO_KGH;
+import com.spring.finalProject.model.PositionVO_KGH;
 import com.spring.finalProject.service.InterKGHService;
 
 @Controller
@@ -25,6 +32,9 @@ public class KGHController {
 	
 	@Autowired
 	private InterKGHService service;
+	
+	@Autowired
+	private FileManager FileManager;
 	
 	@RequestMapping(value = "/login.gw")
 	public ModelAndView login(ModelAndView mav) {
@@ -340,14 +350,15 @@ public class KGHController {
 	public String getPositionName(HttpServletRequest request) {
 		
 		// === 직급 목록 가져오기(select) === //
-		List<String> positionList = service.getPosition();
+		List<PositionVO_KGH> positionList = service.getPosition();
 		
 		JSONArray jsonArr = new JSONArray();
 		
 		if(positionList != null) {
-			for(String position : positionList) {
+			for(PositionVO_KGH position : positionList) {
 				JSONObject jsonObj = new JSONObject();
-				jsonObj.put("position", position);
+				jsonObj.put("position", position.getPositionname());
+				jsonObj.put("positionno", position.getPositionno());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -382,6 +393,95 @@ public class KGHController {
 		return jsonArr.toString();
 	}
 	
+	
+	// === 이메일 중복 여부 체크 메서드 === //
+	@ResponseBody
+	@RequestMapping(value = "/emailDuplicateCheck.gw", method = {RequestMethod.POST})
+	public String emailDuplicateCheck(HttpServletRequest request) {
+		String email = request.getParameter("email");
+		
+		// === 이메일 중복 여부 검사하기(select) === //
+		boolean isExists = service.emailDuplicateCheck(email);
+
+		// System.out.println(isExists);
+		
+		JSONObject jsonObj = new JSONObject(); // {}
+		jsonObj.put("isExists", isExists);
+		
+		String json = jsonObj.toString();
+		
+		return json;
+	}
+	
+	// === 직원 등록 완료 메서드 === //
+	@RequestMapping(value = "/empRegisterEnd.gw", method = {RequestMethod.POST})
+	public ModelAndView empRegisterEnd(ModelAndView mav, EmployeeVO_KGH emp, MultipartHttpServletRequest mrequest) {
+		
+		String departmentno = mrequest.getParameter("selectDepart");
+		String positionno = mrequest.getParameter("selectPosition");
+		
+		System.out.println(departmentno);
+		System.out.println(positionno);
+		
+		emp.setFk_departNo(departmentno);
+		emp.setFk_positionNo(positionno);
+		
+		MultipartFile attach = emp.getAttach();
+		
+		if(!attach.isEmpty()) {
+			HttpSession session = mrequest.getSession();
+			
+			String root = session.getServletContext().getRealPath("/");
+			
+			String path = root + "resources" + File.separator + "files";
+			
+			String profilename = "";
+			
+			byte[] bytes = null;
+			
+			long fileSize = 0;
+			
+			try {
+				bytes = attach.getBytes();
+				
+				// 새로운 프로필 사진 업로드하기
+				profilename = FileManager.doFileUpload(bytes, attach.getOriginalFilename(), path);
+				
+				emp.setProfilename(profilename);
+				emp.setOrgProfilename(attach.getOriginalFilename());
+				
+				fileSize = attach.getSize();
+				emp.setFileSize(String.valueOf(fileSize));
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		// 새로 생성될 사원번호 조회하기
+		String employeeId = service.selectEmpId(departmentno);
+		emp.setEmployeeid(employeeId);
+
+		if(attach.isEmpty()) {
+			// 프로필 사진이 없는 경우
+			// 직원 정보 insert 하기
+			service.empRegister(emp);
+		}
+		else {
+			// 프로필 사진이 있는 경우
+			// 프로필사진과 함께직원 정보 insert 하기
+			int n = service.empRegisterWithProfile(emp);
+			
+			if(n == 1) {
+				System.out.println("성공!");
+			}
+		}
+		
+		mav.setViewName("redirect:/index.gw");
+		
+		return mav;
+	}
 	
 	
 	////////////////////////////////////////////////////////

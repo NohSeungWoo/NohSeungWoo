@@ -92,8 +92,8 @@
 	</select>
 	
 	<!-- === 직급 목록 가져오기 === -->
-	<select id="getPosition" resultType="String">
-		select positionname
+	<select id="getPosition" resultType="com.spring.finalProject.model.PositionVO_KGH">
+		select positionno, positionname
 		from tbl_position
 		order by positionno
 	</select>
@@ -117,6 +117,29 @@
 		and password = #{password}
 	</select>
 	
+	<!-- === 이메일 중복 여부 검사하기(select) === -->
+	<select id="emailDuplicateCheck" parameterType="String" resultType="String">
+		select email
+		from tbl_employee
+		where email = #{email}
+	</select>
 	
+	<!-- === 새로 생성될 사원번호 조회하기(select) === -->
+	<select id="selectEmpId" parameterType="String" resultType="String">
+		select to_char(sysdate, 'yy') || #{departmentno} || employeSeq.nextval AS empID
+		from dual
+	</select>
+	
+	<!-- === 직원 정보 등록하기(insert) === -->
+	<select id="empRegister" parameterType="com.spring.finalProject.model.EmployeeVO_KGH" resultType="int">
+		insert into tbl_employee(employeeId, fk_departNo, fk_positionNo, name, password ,mobile, email, hiredate, retiredate, retire, salary, dayoff, admin, address, detailAddress, extraAddress, postcode)
+		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{employeeid}, #{mobile}, #{email}, sysdate, default, 0, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
+	</select>
+	
+	<!-- === 첨부파일과 함께 직원정보 등록하기(insert) === -->
+	<select id="empRegisterWithProfile" parameterType="com.spring.finalProject.model.EmployeeVO_KGH" resultType="int">
+		insert into tbl_employee(employeeId, fk_departNo, fk_positionNo, name, password ,mobile, email, hiredate, retiredate, retire, profilename, orgProfilename, fileSize, salary, dayoff, admin, address, detailAddress, extraAddress, postcode)
+		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{employeeid}, #{mobile}, #{email}, sysdate, default, 0, #{profilename}, #{orgProfilename}, #{fileSize}, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
+	</select>
 	
 </mapper>
