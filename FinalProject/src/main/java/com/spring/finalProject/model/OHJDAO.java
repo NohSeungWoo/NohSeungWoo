@@ -8,6 +8,8 @@ import javax.annotation.Resource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.spring.board.model.BoardVO_OHJ;
+
 //==== #32. DAO 선언 ====
 @Repository // 원래 bean에 올려주기 위해서 @Component를 써야하는데 @Repository를 쓰기 때문에 자동적으로 bean에 올라간다.
 public class OHJDAO implements InterOHJDAO {

@@ -3,7 +3,7 @@ package com.spring.finalProject.service;
 import java.util.List;
 import java.util.Map;
 
-import com.spring.finalProject.model.BoardVO_OHJ;
+import com.spring.board.model.BoardVO_OHJ;
 
 public interface InterOHJService {
 

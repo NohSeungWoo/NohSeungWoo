@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.spring.finalProject.model.BoardVO_OHJ;
+import com.spring.board.model.BoardVO_OHJ;
 import com.spring.finalProject.model.InterOHJDAO;
 
 //==== #31. Service 선언 ====

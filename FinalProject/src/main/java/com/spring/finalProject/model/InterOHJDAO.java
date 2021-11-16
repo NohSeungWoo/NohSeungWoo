@@ -3,6 +3,8 @@ package com.spring.finalProject.model;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.board.model.BoardVO_OHJ;
+
 public interface InterOHJDAO {
 
 	// 글쓰기(파일첨부가 없는 글쓰기)

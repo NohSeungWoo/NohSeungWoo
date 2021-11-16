@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.spring.finalProject.model.BoardVO_OHJ;
+import com.spring.board.model.BoardVO_OHJ;
+import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.service.InterOHJService;
 
 //==== #30. 컨트롤러 선언 ====
@@ -168,6 +169,7 @@ public class OHJController {
 			Integer.parseInt(boardSeq); // "하하하호호호", "1", "1324654"
 			
 			HttpSession session = request.getSession();
+//			EmployeeVO_KGH loginuser = (EmployeeVO_KGH) session.getAttribute("loginuser");
 			
 			
 			boardvo = service.getView(paraMap);
