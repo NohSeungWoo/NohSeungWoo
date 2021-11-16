@@ -6,5 +6,42 @@
 <!-- ==== #29. 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="woohc"> <!-- ohhj는 고유해야하는 식별자이므로, hr.xml에도 namespace명을 똑같이하게되면 충돌난다. => 보통 파일명과 일치시킨다. -->
 
+	<!--  === 기안양식 카테고리 얻어오기 ===  -->
+	<select id="getApcategoryList" resultType="com.spring.approval.model.ApcategoryVO">
+		select apcano, apcaname
+		from tbl_apcategory
+		order by apcano
+	</select>
+	
+	<!--  === 부서명, 부서번호 받아오기 ===  -->
+	<select id="getDepartment" resultType="com.spring.finalProject.model.DepartmentVO_KGH">
+		select departno, departmentname
+		from tbl_department
+		order by departno
+	</select>
 
+	
+	<!-- === 결제선에 이용할 사원 리스트 === 부서명, 부서번호 받아오기 ===  -->
+	<resultMap type ="HashMap" id="empDeptMap">
+		<result property="employeeid" 		column="employeeid" 	 javaType="String"/>
+		<result property="name" 			column="name" 			 javaType="String"/>
+		<result property="departno" 		column="departno" 	 	 javaType="String"/>
+		<result property="departmentname"  	column="departmentname"  javaType="String"/>
+		<result property="positionno" 		column="positionno" 	 javaType="String"/>
+		<result property="positionname" 	column="positionname" 	 javaType="String"/>
+	</resultMap>
+	<select id="getEmployeeList" resultMap="empDeptMap" parameterType="HashMap">
+		select employeeid, name, departno, departmentname, positionno, positionname
+		from TBL_EMPLOYEE E
+		join tbl_department D
+		on e.fk_departno = d.departno
+		join tbl_position P
+		on e.fk_positionno = p.positionno
+		where retire = 0
+		<if test='searchWord != "" '>
+			and (lower( departmentname ) like '%'|| lower( #{searchWord} ) || '%' 
+			or lower( name ) like '%'|| lower( #{searchWord} ) || '%')
+		</if>
+	</select>
+	
 </mapper>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- === mapper 기본 설정 === -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- === 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체 내에서 유일해야 한다.) === -->
+<mapper namespace="KangGH">
+	
+	<!-- === 직원 목록 가져오기(select) 메서드 === -->
+	<resultMap type="HashMap" id="empListMap">
+		<result property="employeeid"		column="employeeid" 		javaType="String" />
+		<result property="fk_departno"		column="fk_departno" 		javaType="String" />
+		<result property="departmentname"	column="departmentname" 	javaType="String" />
+		<result property="fk_positionno"	column="fk_positionno" 		javaType="String" />
+		<result property="positionname"		column="positionname" 		javaType="String" />
+		<result property="name"		 		column="name" 				javaType="String" />
+		<result property="mobile"		 	column="mobile" 			javaType="String" />
+		<result property="email"		 	column="email" 				javaType="String" />
+	</resultMap>
+	<select id="getEmpList" resultMap="empListMap">
+		select employeeid, fk_departno, departmentname, 
+			   fk_positionno, positionname, name, mobile, email
+		from 
+		(
+		    select employeeid, fk_departno, departmentname, fk_positionno, 
+		    	   name, mobile, email, retire
+		    from tbl_employee E
+		    JOIN tbl_department D
+		    ON E.fk_departno = D.departno
+		) V
+		JOIN tbl_position P
+		ON V.fk_positionno = P.positionno
+		where V.retire = 0
+		order by fk_positionNo, fk_departno, employeeID asc
+	</select>
+	
+	<!-- 총 게시물 건수(totalCount) -->
+	<select id="getTotalCount" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_employee
+	</select>
+	
+	<!-- === 페이징 처리한 직원 목록 가져오기(검색이 있든지, 검색이 없든지 다 포함된 것) === -->
+	<resultMap type="HashMap" id="empPagingListMap">
+		<result property="employeeid"		column="employeeid" 		javaType="String" />
+		<result property="fk_departno"		column="fk_departno" 		javaType="String" />
+		<result property="departmentname"	column="departmentname" 	javaType="String" />
+		<result property="fk_positionno"	column="fk_positionno" 		javaType="String" />
+		<result property="positionname"		column="positionname" 		javaType="String" />
+		<result property="name"		 		column="name" 				javaType="String" />
+		<result property="mobile"		 	column="mobile" 			javaType="String" />
+		<result property="email"		 	column="email" 				javaType="String" />
+	</resultMap>
+	<select id="getEmpListWithPaging" parameterType="HashMap" resultMap="empPagingListMap">
+		select employeeid, fk_departno, departmentname, 
+			   fk_positionno, positionname, name, mobile, email
+		from
+		(
+		    select row_number() over(order by fk_positionNo, fk_departno, employeeID) AS RNO,
+		           employeeid, fk_departno, departmentname, 
+		           fk_positionno, positionname, name, mobile, email
+		    from 
+		    (
+		        select employeeid, fk_departno, departmentname, fk_positionno, 
+		               name, mobile, email, retire
+		        from tbl_employee E
+		        JOIN tbl_department D
+		        ON E.fk_departno = D.departno
+		    ) V
+		    JOIN tbl_position P
+		    ON V.fk_positionno = P.positionno
+		    where V.retire = 0
+		    <if test='department != ""'>
+		    	and departmentname = #{department}
+		    </if>
+		    <if test='position != ""'>
+		    	and positionname = #{position}
+		    </if>
+		    <if test='searchEmp != ""'>
+		    	and name = #{searchEmp}
+		    </if>
+		)
+		where rno between #{startRno} and #{endRno}
+		
+	</select>
+	
+	<!-- === 부서목록 가져오기 === -->
+	<select id="getDepartmentName" resultType="com.spring.finalProject.model.DepartmentVO_KGH">
+		select departno, departmentname
+		from tbl_department
+		order by departno
+	</select>
+	
+	<!-- === 직급 목록 가져오기 === -->
+	<select id="getPosition" resultType="String">
+		select positionname
+		from tbl_position
+		order by positionno
+	</select>
+	
+	<!-- === 검색어 결과 조회하기(select) === -->
+	<select id="employeeSearch" parameterType="HashMap" resultType="String">
+		select name
+		from tbl_employee
+		where retire = 0
+		and name like '%'|| #{searchEmployee} ||'%'
+	</select>
+	
+	<!-- === 로그인 처리 메서드(select) === -->
+	<select id="getLogin" parameterType="HashMap" resultType="com.spring.finalProject.model.EmployeeVO_KGH">
+		select employeeid, fk_departNo, fk_positionNo, name, password, mobile, email,
+			   hiredate, retiredate, retire, profilename, orgProfilename, fileSize, 
+			   salary, dayoff, admin, postcode, address, detailAddress, extraAddress
+		from tbl_employee
+		where retire = 0
+		and email = #{email} 
+		and password = #{password}
+	</select>
+	
+	
+	
+</mapper>
