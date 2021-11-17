@@ -99,5 +99,19 @@ public class KGHService implements InterKGHService {
 		return n;
 	}
 
+	@Override
+	public Map<String, String> empListEdit(String employeeID) {
+		// === 특정 회원에 대한 정보 가져오기(select) === //
+		Map<String, String> map = dao.empListEdit(employeeID);
+		return map;
+	}
+
+	@Override
+	public int empEdit(EmployeeVO_KGH emp) {
+		// === 직원 정보 수정하기(update) === //
+		int n = dao.empEdit(emp);
+		return n;
+	}
+
 
 }

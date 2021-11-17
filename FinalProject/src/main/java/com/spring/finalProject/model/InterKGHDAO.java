@@ -37,6 +37,12 @@ public interface InterKGHDAO {
 
 	// 첨부파일과 함께 직원 정보 등록하기(insert)
 	int empRegisterWithProfile(EmployeeVO_KGH emp);
+
+	// 특정 회원에 대한 정보 가져오기(select)
+	Map<String, String> empListEdit(String employeeID);
+
+	// 직원 정보 수정하기(update)
+	int empEdit(EmployeeVO_KGH emp);
 	
 
 }

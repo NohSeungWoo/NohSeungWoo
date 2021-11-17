@@ -103,5 +103,19 @@ public class KGHDAO implements InterKGHDAO {
 		return n;
 	}
 
+	// === 특정 회원에 대한 정보 가져오기(select) === //
+	@Override
+	public Map<String, String> empListEdit(String employeeID) {
+		Map<String, String> map = sqlsession.selectOne("KangGH.empListEdit", employeeID);
+		return map;
+	}
+
+	// === 직원 정보 수정하기(update) === //
+	@Override
+	public int empEdit(EmployeeVO_KGH emp) {
+		int n = sqlsession.update("KangGH.empEdit", emp);
+		return n;
+	}
+
 
 }

@@ -96,6 +96,22 @@
 		
 		/////////////////////////////////////////////////////
 		
+		
+		$("td").click(function() {
+			
+			var empId = $(this).parent().find(".employeeid").html();
+			
+			var url = "<%= ctxPath%>/admin/empListEdit.gw?empId=" + empId;
+			
+			var pop_width = 700;
+		    var pop_height = 1000;
+		    var pop_left = Math.ceil( (window.screen.width - pop_width) / 2 ); 		// 정수로 형변환
+		    var pop_top  = Math.ceil( (window.screen.height - pop_height) / 2 );	// 정수로 형변환
+			
+		    window.open(url, "empListEdit", 
+		    			"left=" + pop_left + ", top=" + pop_top + ", width=" + pop_width + ", height=" + pop_height);
+		}); 		
+		
 	});// end of $(document).ready(function() {})------------------------------------------
 
 	

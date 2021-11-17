@@ -146,14 +146,14 @@ public class KGHController {
 		
 		HttpSession session = request.getSession();
 		
-		
-		String department = request.getParameter("department");
-		String position = request.getParameter("position");
-		String searchEmp = request.getParameter("searchEmp");
+		String department = (String)session.getAttribute("department");
+		String position = (String) session.getAttribute("position");
+		String searchEmp = (String) session.getAttribute("searchEmp");
 		
 		System.out.println(department);
 		System.out.println(position);
-
+		// System.out.println(searchEmp);
+		
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
 		
@@ -483,6 +483,57 @@ public class KGHController {
 		return mav;
 	}
 	
+	
+	// === 멤버 상세 정보 및 수정 페이지 이동 === //
+	@RequestMapping(value = "admin/empListEdit.gw")
+	public ModelAndView empListEdit(ModelAndView mav, HttpServletRequest request) {
+		
+		String employeeID = request.getParameter("empId");
+		
+		// System.out.println(employeeID);
+		
+		// === 특정 회원에 대한 정보 가져오기(select) === //
+		Map<String, String> map = service.empListEdit(employeeID);
+		
+		mav.addObject("map", map);
+		mav.setViewName("admin/empListEdit");
+		
+		return mav;
+	}
+	
+	
+	// === 멤버 정보 수정 완료 === //
+	@RequestMapping(value = "/empEditEnd.gw")
+	public ModelAndView empEditEnd(ModelAndView mav, HttpServletRequest request, EmployeeVO_KGH emp) {
+		
+		String departno = request.getParameter("selectDepart");
+		String positionno = request.getParameter("selectPosition");
+		
+		emp.setFk_departNo(departno);
+		emp.setFk_positionNo(positionno);;
+		
+		// === 직원 정보 수정하기(update) === //
+		int n = service.empEdit(emp);
+		
+		if(n == 1) {
+			String msg = "수정이 완료되었습니다.";
+			String loc = request.getContextPath() + "/admin/empList.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		else {
+			String msg = "수정이 실패되었습니다.";
+			String loc = request.getContextPath() + "/admin/empList.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		
+		mav.setViewName("msg");
+		
+		return mav;
+	}
 	
 	////////////////////////////////////////////////////////
 	// === 로그인 또는 로그아웃을 할 때 현재 페이지로 돌아가는 메서드 생성 === //

@@ -142,4 +142,42 @@
 		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{employeeid}, #{mobile}, #{email}, sysdate, default, 0, #{profilename}, #{orgProfilename}, #{fileSize}, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
 	</select>
 	
+	<!-- === 특정 회원에 대한 정보 가져오기(select) === -->
+	<resultMap type="HashMap" id="empListEditMap">
+		<result property="employeeid"		column="employeeid" 		javaType="String" />
+		<result property="email"		 	column="email" 				javaType="String" />
+		<result property="name"		 		column="name" 				javaType="String" />
+		<result property="mobile"		 	column="mobile" 			javaType="String" />
+		<result property="departno"			column="departno" 			javaType="String" />
+		<result property="departmentname"	column="departmentname" 	javaType="String" />
+		<result property="positionno"		column="positionno" 		javaType="String" />
+		<result property="positionname"		column="positionname" 		javaType="String" />
+		<result property="hiredate"			column="hiredate" 			javaType="String" />
+		<result property="salary"			column="salary" 			javaType="String" />
+	</resultMap>
+	<select id="empListEdit" parameterType="String" resultMap="empListEditMap">
+		select employeeid, email, name, mobile, departno, departmentname, 
+		       positionno, positionname, hiredate, salary
+		from 
+		(
+		    select employeeid, email, name, mobile, D.departno, d.departmentname, P.positionno, P.positionname, 
+		           to_char(hiredate, 'yyyy-mm-dd') AS hiredate, salary
+		    from tbl_employee E
+		    JOIN tbl_department D
+		    ON E.fk_departno = D.departno
+		    JOIN tbl_position P
+		    ON e.fk_positionno = p.positionno
+		)
+		where employeeid = #{employeeID}
+	</select>
+	
+	<!-- 직원 정보 수정하기(update) -->
+	<update id="empEdit">
+		update tbl_employee set name = #{name},
+		                        mobile = #{mobile},
+		                        fk_departno = #{fk_departNo},
+		                        fk_positionno = #{fk_positionNo},
+		                        salary = #{salary}
+		where employeeid = #{employeeid}
+	</update>
 </mapper>
