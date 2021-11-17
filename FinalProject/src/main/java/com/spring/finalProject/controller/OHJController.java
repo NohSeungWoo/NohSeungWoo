@@ -169,10 +169,17 @@ public class OHJController {
 			Integer.parseInt(boardSeq); // "하하하호호호", "1", "1324654"
 			
 			HttpSession session = request.getSession();
-//			EmployeeVO_KGH loginuser = (EmployeeVO_KGH) session.getAttribute("loginuser");
+			EmployeeVO_KGH loginuser = (EmployeeVO_KGH) session.getAttribute("loginuser");
 			
+			String login_employeeId = null;
 			
-			boardvo = service.getView(paraMap);
+			if(loginuser != null) { // 로그인된 경우
+				login_employeeId = loginuser.getEmployeeid();
+				// login_employeeId 는 로그인 되어진 사용자의 userid 이다.
+			}
+			
+			boardvo = service.getView(paraMap, login_employeeId);
+			// 글조회수 증가와 함께 글1개를 조회를 해주는 것
 			
 			
 		} catch (NumberFormatException e) {

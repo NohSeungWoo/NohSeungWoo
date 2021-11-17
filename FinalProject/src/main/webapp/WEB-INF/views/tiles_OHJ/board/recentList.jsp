@@ -94,7 +94,7 @@
 		</div>
 		
 		<div>
-			<div class="mt-3" style="display: inline-block; margin-right: 100px;">
+			<div class="mt-3" style="display: inline-block;">
 				<div style="display: inline-block; width: 100px;">게시판 종류</div>
 				<select style="width: 350px; height: 28.76px;">
 					<option>전체</option>
@@ -103,6 +103,8 @@
 					<option>건의사항</option>
 				</select>
 			</div>
+			
+			&nbsp;&nbsp;&nbsp;&nbsp; <!-- float을 주면 화면사이즈가 작아질때 정렬 이상해짐. margin-r를 주면 화면사이즈 작아질때 공백 생김 -->
 			
 			<div class="mt-3" style="display: inline-block;">
 				<span style="display: inline-block; width: 100px;">검색</span>

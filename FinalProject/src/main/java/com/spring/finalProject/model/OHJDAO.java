@@ -62,6 +62,12 @@ public class OHJDAO implements InterOHJDAO {
 		BoardVO_OHJ boardvo = sqlsession.selectOne("ohhj.getView", paraMap);
 		return boardvo;
 	}
+
+	// === &66. 글조회수 1증가 하기 === //
+	@Override
+	public void addReadCount(String boardSeq) {
+		sqlsession.update("ohhj.addReadCount", boardSeq);
+	}
 	
 	
 	

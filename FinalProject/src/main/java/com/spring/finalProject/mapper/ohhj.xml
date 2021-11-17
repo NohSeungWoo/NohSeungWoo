@@ -35,8 +35,11 @@
 		where boardSeq = #{boardSeq}
 	</select>
 	
-	
-	
+	<!-- === &67. 글조회수 1증가 하기 === -->
+	<update id="addReadCount" parameterType="String">
+		update tbl_board set readCount = readCount + 1
+		where boardSeq = #{boardSeq}
+	</update>
 	
 	
 	

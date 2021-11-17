@@ -44,12 +44,20 @@ public class OHJService implements InterOHJService {
 
 	// === &63. 글1개를 보여주는 페이지 요청 === //
 	@Override
-	public BoardVO_OHJ getView(Map<String, String> paraMap) {
+	public BoardVO_OHJ getView(Map<String, String> paraMap, String login_employeeId) {
+			// login_employeeId 는 로그인을 한 상태이라면 사용자의 employeeId 이고,
+			// 로그인을 하지 않은 상태이라면 login_employeeId 는 null 이다.
 		
 		BoardVO_OHJ boardvo = dao.getView(paraMap); // 글1개 조회하기
 		
 		// 글조회수 증가는 로그인을 한 상태에서 다른 사람의 글을 읽을 때만 증가하도록 해야 한다.
-		
+		if(login_employeeId != null &&
+		   boardvo != null &&
+		  !login_employeeId.equals(boardvo.getFk_employeeId())) {
+			
+			dao.addReadCount(boardvo.getBoardSeq()); // 글조회수 1증가 하기
+			
+		}
 		
 		return boardvo;
 	}

@@ -57,7 +57,7 @@
 		<table class="table">
 			<tr>
 				<th rowspan="2" width="10%" style="padding: 0; text-align: center;">
-					<img alt="기본프로필.jpg" src="<%= request.getContextPath()%>/resources/images/기본프로필.JPG" width="90" height="100">
+					<img alt="기본프로필_kh.jpg" src="<%= request.getContextPath()%>/resources/images/기본프로필_kh.jpg" width="90" height="100">
 				</th>
 				<td colspan="4"><strong style="font-size: 18px;">${requestScope.boardvo.subject}</strong></td>
 			</tr>
