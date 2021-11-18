@@ -3,12 +3,18 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<% String ctxPath = request.getContextPath(); %>
+
 <style>
 	
 	.linkStyle{ /* 링크의 디자인처리 */
 		color: #37f; 
 		font-weight: bold;
 	} 
+	
+	#aStyle{ /* 삭제링크에 마우스올리면 커서 모양 변경 */
+		cursor: pointer;
+	}
 	
 	.brStyle{border-right: solid 1px #dee2e6;} /* 댓글 테이블에서 부트스트랩으로 table-bordered하면 border가 0이 안됨. 따라서 내가 원하는 디자인처리하려고 class="table"에다가 border-right 디자인처리해줌. */
 	
@@ -21,6 +27,18 @@
 	});// end of $(document).ready(function(){})----------------------------
 	
 	// Functional Declaration
+	
+	// 정말로 삭제할것인지 아닌지 물어봄.
+	function delConfirm(){
+
+		var bool = confirm("정말로 글을 삭제하시겠습니까?");
+	//	console.log("확인용 bool => " + bool);
+		
+		if(bool){
+			location.href = "<%= ctxPath%>/boardDel.gw?boardSeq=${requestScope.boardvo.boardSeq}";
+		}
+		// 확인을 누르면 삭제하고, 취소를 누르면 그냥 냅둠.
+	}
 	
 </script>
 
@@ -42,8 +60,8 @@
 			<!-- 링크 (답글, 수정, 삭제, 게시글종류 이동) -->
 			<span class="mr-auto d-flex"> <!-- 바깥에 d-flex를 주고, 내부에 오른쪽margin을 auto로 주면 [*     **] 이런식으로 배치된다. -->
 				<a href="#" class="linkStyle mr-2 my-auto">답글</a> <!-- 세로중 가운데에 정렬하기 위해서 바깥에 d-flex를 주고 내부에 y축으로 auto를 줌. -->
-				<a href="#" class="linkStyle mr-2 my-auto">수정</a>
-				<a href="#" class="linkStyle mr-2 my-auto">삭제</a>
+				<a href="<%= ctxPath%>/boardEdit.gw?boardSeq=${requestScope.boardvo.boardSeq}" class="linkStyle mr-2 my-auto">수정</a>
+				<a id="aStyle" onclick="delConfirm()" class="linkStyle mr-2 my-auto">삭제</a>
 				<a href="#" class="linkStyle my-auto">이동</a>
 			</span>
 			
@@ -57,19 +75,25 @@
 		<table class="table">
 			<tr>
 				<th rowspan="2" width="10%" style="padding: 0; text-align: center;">
-					<img alt="기본프로필.jpg" src="<%= request.getContextPath()%>/resources/images/기본프로필.JPG" width="90" height="100">
+					<img alt="기본프로필_kh.jpg" src="<%= ctxPath%>/resources/images/기본프로필_kh.jpg" width="90" height="100">
 				</th>
-				<td colspan="4"><strong style="font-size: 18px;">정보보호, 장애인인식개선 법정의무교육 실시 안내</strong></td>
+				<td colspan="4"><strong style="font-size: 18px;">${requestScope.boardvo.subject}</strong></td>
 			</tr>
 			<tr style="border-bottom: solid 1px #dee2e6;">
-				<td>작성자 : 팀장 이순신</td>
-				<td>글종류 : 공지사항</td>
-				<td>조회수 : <span>16</span></td>
-				<td>작성일자 : 2021-11-10 10:00:05</td>
+				<td>작성자 : ${requestScope.boardvo.positionName} ${requestScope.boardvo.name}</td>
+				<td>글종류 : ${requestScope.boardvo.bCategoryName}</td>
+				<td>조회수 : <span>${requestScope.boardvo.readCount}</span></td>
+				<td>작성일자 : ${requestScope.boardvo.regDate}</td>
 			</tr>
 		</table>
 		<!-- 글내용 -->
-		<div style="border: solid 1px #dee2e6;">글<br>내<br>용<br>부분<br>입니다.<br>글내용<br>부분<br>입니다.</div>
+		<div class="p-3" style="border: solid 1px #dee2e6; word-break: break-all; min-height: 300px;">${requestScope.boardvo.content}</div>
+		<%-- 
+		      style="word-break: break-all; 은 공백없는 긴영문일 경우 width 크기를 뚫고 나오는 것을 막는 것임. 
+		             그런데 style="word-break: break-all; 나 style="word-wrap: break-word; 은
+		             테이블태그의 <td>태그에는 안되고 <p> 나 <div> 태그안에서 적용되어지므로 <td>태그에서 적용하려면
+		      <table>태그속에 style="word-wrap: break-word; table-layout: fixed;" 을 주면 된다.
+		--%>
 		
 	</c:if>
 	<!-- 글1개에 대한 정보 보여주기 종료 -->
@@ -93,7 +117,7 @@
 	
 	
 	
-	
+<%-- 	
 	
 	<!-- 댓글쓰기 시작 -->
 	<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
@@ -156,7 +180,7 @@
 	</div>
 	<!-- 댓글내용 보여주기 종료 -->
 
-
+--%>
 
 
 	
