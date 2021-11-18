@@ -22,11 +22,17 @@ public class BoardVO_OHJ {
 	private String orgFilename; 	// 실제파일명
 	private String fileSize; 		// 파일크기
 */
-	
+
+	// == select용 ==
 	////////////////////////////////////////////
-	private String name; 			// select용. 글쓴이 -> ohhj.xml에서 join한 결과를 자동으로 set해서 담는 용도임.
-	private String positionName; 	// select용. 직급명
-	private String bCategoryName; 	// select용. 게시판 카테고리명
+	private String name; 			 // 글쓴이 -> ohhj.xml에서 join한 결과를 자동으로 set해서 담는 용도임.
+	private String positionName; 	 // 직급명
+	private String bCategoryName; 	 // 게시판 카테고리명
+	////////////////////////////////////////////
+	private String previousBoardSeq; // 이전글번호
+	private String previousSubject;	 // 이전글제목
+	private String nextBoardSeq;	 // 다음글번호
+	private String nextSubject;		 // 다음글제목
 	////////////////////////////////////////////
 	
 	public BoardVO_OHJ() {}
@@ -124,9 +130,43 @@ public class BoardVO_OHJ {
 
 	public void setbCategoryName(String bCategoryName) {
 		this.bCategoryName = bCategoryName;
+	}
+
+	///////////////////////////////////////////////////////
+	
+	public String getPreviousBoardSeq() {
+		return previousBoardSeq;
+	}
+
+	public void setPreviousBoardSeq(String previousBoardSeq) {
+		this.previousBoardSeq = previousBoardSeq;
+	}
+
+	public String getPreviousSubject() {
+		return previousSubject;
+	}
+
+	public void setPreviousSubject(String previousSubject) {
+		this.previousSubject = previousSubject;
+	}
+
+	public String getNextBoardSeq() {
+		return nextBoardSeq;
+	}
+
+	public void setNextBoardSeq(String nextBoardSeq) {
+		this.nextBoardSeq = nextBoardSeq;
+	}
+
+	public String getNextSubject() {
+		return nextSubject;
+	}
+
+	public void setNextSubject(String nextSubject) {
+		this.nextSubject = nextSubject;
 	}	
 	
-	
+	///////////////////////////////////////////////////////
 	
 	
 	

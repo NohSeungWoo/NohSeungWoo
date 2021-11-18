@@ -16,6 +16,12 @@
 		cursor: pointer;
 	}
 	
+	.tdStyle{ /* 이전글제목,다음글제목에 효과 주기 */
+		cursor: pointer;
+		color: blue;
+		font-size: 1.1rem; /* 기본 폰트에 1.1배 */
+	}
+	
 	.brStyle{border-right: solid 1px #dee2e6;} /* 댓글 테이블에서 부트스트랩으로 table-bordered하면 border가 0이 안됨. 따라서 내가 원하는 디자인처리하려고 class="table"에다가 border-right 디자인처리해줌. */
 	
 </style>
@@ -23,6 +29,28 @@
 <script type="text/javascript">
 	
 	$(document).ready(function(){
+		
+		// 이전글제목에 효과주기
+		$(".previous").hover(
+			function(){ // mouserover
+				$("td#previous1").css({"cursor":"pointer"}); // i태그인 화살표에 css주기
+				$("span#previous2").addClass("tdStyle");
+			},
+			function(){ // mouseout
+				$("span#previous2").removeClass("tdStyle");
+			}
+		);
+		
+		// 다음글제목에 효과주기
+		$(".next").hover(
+			function(){ // mouserover
+				$("td#next1").css({"cursor":"pointer"}); // i태그인 화살표에 css주기
+				$("span#next2").addClass("tdStyle");
+			},
+			function(){ // mouseout
+				$("span#next2").removeClass("tdStyle");
+			}
+		);
 		
 	});// end of $(document).ready(function(){})----------------------------
 	
@@ -38,6 +66,15 @@
 			location.href = "<%= ctxPath%>/boardDel.gw?boardSeq=${requestScope.boardvo.boardSeq}";
 		}
 		// 확인을 누르면 삭제하고, 취소를 누르면 그냥 냅둠.
+	}
+	
+	// 이전글로 이동
+	function goPrevious(){
+		location.href = "boardView.gw?boardSeq=${requestScope.boardvo.previousBoardSeq}";
+	}
+	// 다음글로 이동
+	function goNext(){
+		location.href = "boardView.gw?boardSeq=${requestScope.boardvo.nextBoardSeq}";
 	}
 	
 </script>
@@ -99,20 +136,27 @@
 	<!-- 글1개에 대한 정보 보여주기 종료 -->
 	
 	
-	
-	
-	
-	
-	
 	<!-- 이전글, 다음글 보기 -->
-	<div class="mt-3 d-flex">
-		<i class="fas fa-arrow-circle-left mr-1 fa-2x"></i>
-		<span class="mr-auto">이전글의 제목은 무엇입니다1</span>
-		
-		<span class="mr-1">다음글의 제목은 무엇입니다2</span>
-		<i class="fas fa-arrow-alt-circle-right fa-2x"></i>
-	</div>
-	
+	<table class="mt-3">
+		<c:if test="${not empty requestScope.boardvo.previousBoardSeq}">
+			<tr>
+				<th style="font-size: 1.2rem;">이전글</th>
+				<td>&nbsp;</td> <!-- 여백을 주기위해 td태그 추가함 -->
+				<td class="previous" id="previous1" onclick="goPrevious();"><i class="fas fa-arrow-circle-up fa-2x"></i></td>
+				<td>&nbsp;</td>
+				<td><span class="previous" id="previous2" onclick="goPrevious();">${requestScope.boardvo.previousSubject}</span></td>
+			</tr>
+		</c:if>
+		<c:if test="${not empty requestScope.boardvo.nextBoardSeq}">
+			<tr>
+				<th style="font-size: 1.2rem;">다음글</th>
+				<td>&nbsp;</td>
+				<td class="next" id="next1" onclick="goNext();"><i class="fas fa-arrow-circle-down fa-2x"></i></td>
+				<td>&nbsp;</td>
+				<td><span class="next" id="next2" onclick="goNext();">${requestScope.boardvo.nextSubject}</span></td>
+			</tr>
+		</c:if>
+	</table>
 	
 	
 	
@@ -125,7 +169,7 @@
 	</div>
 	
 	<div class="mt-3">
-		<input type="text" id="commentContent" style="width: 100%" placeholder="훈훈해지는 댓글 부탁드립니다."/>
+		<input type="text" id="commentContent" style="width: 100%" placeholder="로그인 후 이용하실 수 있습니다."/>
 		
 		<button type="button" class="btn btn-sm mt-1" style="border: solid 1px #dee2e6; color: #37f; float: right;">등록</button>
 	</div>

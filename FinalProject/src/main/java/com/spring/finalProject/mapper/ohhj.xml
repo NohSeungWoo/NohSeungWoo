@@ -25,13 +25,27 @@
 	
 	<!-- === &65. 글1개 조회하기 === -->
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
-		select boardSeq, bCategoryName, subject, fk_employeeid, name, positionName, content, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
-		from tbl_board B JOIN tbl_boardCategory C
-		ON B.fk_bCategorySeq = C.bCategorySeq
-		JOIN tbl_employee E
-		ON B.fk_employeeId = E.employeeId
-		JOIN tbl_position P
-		ON E.fk_positionNo = P.positionNo
+		select previousBoardSeq, previousSubject
+		     , boardSeq, bCategoryName, subject, fk_employeeid, name, positionName, content
+		     , regDate, readCount
+		     , nextBoardSeq,nextSubject
+		from
+		(
+		    select lag(boardSeq,1) over(order by regDate desc) AS previousBoardSeq
+		         , lag(subject,1) over(order by regDate desc) AS previousSubject
+		              
+		         , boardSeq, bCategoryName, subject, fk_employeeid, name, positionName, content
+		         , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		    
+		         , lead(boardSeq,1) over(order by regDate desc) AS nextBoardSeq
+		         , lead(subject,1) over(order by regDate desc) AS nextSubject
+		    from tbl_board B JOIN tbl_boardCategory C
+		    ON B.fk_bCategorySeq = C.bCategorySeq
+		    JOIN tbl_employee E
+		    ON B.fk_employeeId = E.employeeId
+		    JOIN tbl_position P
+		    ON E.fk_positionNo = P.positionNo
+		) V
 		where boardSeq = #{boardSeq}
 	</select>
 	
