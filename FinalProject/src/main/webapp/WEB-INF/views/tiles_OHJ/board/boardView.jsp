@@ -28,7 +28,7 @@
 	
 	// Functional Declaration
 	
-	// 정말로 삭제할것인지 아닌지 물어봄.
+	// 정말로 삭제할것인지 아닌지 물어봄. (=== &77. 나는 강사님과 달리 암호확인페이지 없으니 &77 진행안함. ===)
 	function delConfirm(){
 
 		var bool = confirm("정말로 글을 삭제하시겠습니까?");
