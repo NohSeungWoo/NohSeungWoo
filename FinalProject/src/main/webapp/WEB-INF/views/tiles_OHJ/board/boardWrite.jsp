@@ -101,9 +101,9 @@
 							<option value="0">-[필수]옵션을 선택해주세요-</option>
 							<optgroup label="전사 게시판">
 							
-							<%-- <c:if test="${sessionScope.loginuser.admin == 1}"> --%> <!-- 공지사항 게시판은 관리자만 글쓰기가 가능하다. --> <!-- &&&&&&&&&&&&&&&&&&&&&& 로그인 코딩 후 주석해제 &&&&&&&&&&&&&&&&&&&&&&&& -->
+							<c:if test="${sessionScope.loginuser.admin == 1}"> <!-- 공지사항 게시판은 관리자만 글쓰기가 가능하다. --> 
 								<option value="1">공지사항</option>
-							<%-- </c:if> --%>
+							</c:if>
 							
 								<option value="2">자유</option>
 								<option value="3">건의사항</option>

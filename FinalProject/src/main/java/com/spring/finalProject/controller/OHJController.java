@@ -352,8 +352,7 @@ public class OHJController {
 	
 	
 	
-	
-	
+	// -- 어떤 것을 보여주는 페이지들은 getCurrentURL(request); 를 써줘야한다. --
 	////////////////////////////////////////////////////////////////////////////////
 	//  === 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 생성 === 
 	public void getCurrentURL(HttpServletRequest request) {
