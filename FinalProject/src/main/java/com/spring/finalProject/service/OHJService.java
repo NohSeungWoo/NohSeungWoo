@@ -56,11 +56,37 @@ public class OHJService implements InterOHJService {
 		  !login_employeeId.equals(boardvo.getFk_employeeId())) {
 			
 			dao.addReadCount(boardvo.getBoardSeq()); // 글조회수 1증가 하기
-			
+			boardvo = dao.getView(paraMap); // 증가한 조회수때문에 글1개를 다시 조회해와야한다!!
 		}
 		
 		return boardvo;
 	}
+
+
+	// === &70. 글조회수 증가는 없고 단순히 글1개 조회 === //
+	@Override
+	public BoardVO_OHJ getViewWithNoAddCount(Map<String, String> paraMap) {
+		BoardVO_OHJ boardvo = dao.getView(paraMap); // 글1개 조회하기
+		return boardvo;
+	}
+
+	
+	// === &73. 1개글 수정하기 === //
+	@Override
+	public int boardEdit(BoardVO_OHJ boardvo) {
+		int n = dao.boardEdit(boardvo);
+		return n;
+	}
+
+
+	// === &78. 1개글 삭제하기 === //
+	@Override
+	public int boardDel(Map<String, String> paraMap) {
+		int n = dao.boardDel(paraMap);
+		return n;
+	}
+	
+
 	
 	
 	

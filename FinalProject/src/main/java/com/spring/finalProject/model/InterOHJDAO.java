@@ -15,6 +15,12 @@ public interface InterOHJDAO {
 	
 	BoardVO_OHJ getView(Map<String, String> paraMap); // 글1개를 조회 해주는 것
 	void addReadCount(String boardSeq); // 글조회수 1증가 하기
+
+	// 1개글 수정하기
+	int boardEdit(BoardVO_OHJ boardvo);
+
+	// 1개글 삭제하기
+	int boardDel(Map<String, String> paraMap);
 	
 	
 	

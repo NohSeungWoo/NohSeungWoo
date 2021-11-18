@@ -68,6 +68,22 @@ public class OHJDAO implements InterOHJDAO {
 	public void addReadCount(String boardSeq) {
 		sqlsession.update("ohhj.addReadCount", boardSeq);
 	}
+
+
+	// === &74. 1개글 수정하기 === //
+	@Override
+	public int boardEdit(BoardVO_OHJ boardvo) {
+		int n = sqlsession.update("ohhj.boardEdit", boardvo);
+		return n;
+	}
+
+
+	// === &79. 1개글 삭제하기 === //
+	@Override
+	public int boardDel(Map<String, String> paraMap) {
+		int n = sqlsession.delete("ohhj.boardDel", paraMap);
+		return n;
+	}
 	
 	
 	

@@ -42,6 +42,26 @@
 	</update>
 	
 	
+	<!-- === &75. 1개글 수정하기 === -->
+	<update id="boardEdit" parameterType="com.spring.board.model.BoardVO_OHJ">
+		update tbl_board set subject = #{subject}, content = #{content}
+		where boardSeq = #{boardSeq}
+	</update>
+	
+	
+	<!-- === &80. 1개글 삭제하기 === -->
+	<delete id="boardDel" parameterType="HashMap">
+		delete from tbl_board
+		where boardSeq = #{boardSeq}
+	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
