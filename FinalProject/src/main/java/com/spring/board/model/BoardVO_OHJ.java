@@ -11,9 +11,11 @@ public class BoardVO_OHJ {
 	private String content; 		// 글내용
 	private String regDate; 		// 작성일자
 	private String readCount; 		// 조회수
-/*	
+	
+	// === &81. 댓글형 게시판을 위한 commentCount 필드 추가하기 
+    //          먼저 tbl_board 테이블에 commentCount 라는 컬럼이 존재해야 한다. 
 	private String commentCount; 	// 댓글수
-
+/*
 	private String groupno; 		// 답글의 그룹번호
 	private String fk_boardSeq; 	// 답글의 원글번호
 	private String depthno; 		// 답글의 들여쓰기
@@ -38,7 +40,8 @@ public class BoardVO_OHJ {
 	public BoardVO_OHJ() {}
 	
 	public BoardVO_OHJ(String boardSeq, String fk_bCategorySeq, String fk_employeeId, String subject, String content,
-			String regDate, String readCount) {
+			String regDate, String readCount,
+			String commentCount) {
 		//super();
 		this.boardSeq = boardSeq;
 		this.fk_bCategorySeq = fk_bCategorySeq;
@@ -47,6 +50,7 @@ public class BoardVO_OHJ {
 		this.content = content;
 		this.regDate = regDate;
 		this.readCount = readCount;
+		this.commentCount = commentCount;
 	}
 
 	
@@ -164,9 +168,19 @@ public class BoardVO_OHJ {
 
 	public void setNextSubject(String nextSubject) {
 		this.nextSubject = nextSubject;
-	}	
+	}
 	
 	///////////////////////////////////////////////////////
+	
+	public String getCommentCount() {
+		return commentCount;
+	}
+
+	public void setCommentCount(String commentCount) {
+		this.commentCount = commentCount;
+	}	
+	
+
 	
 	
 	

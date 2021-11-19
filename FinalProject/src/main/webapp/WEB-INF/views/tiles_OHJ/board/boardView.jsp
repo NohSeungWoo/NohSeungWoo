@@ -163,6 +163,12 @@
 	
 <%-- 	
 	
+	공지사항은 댓글X
+	건의사항은 댓글O
+	
+	${requestScope.boardvo.fk_bCategorySeq}
+	
+	
 	<!-- 댓글쓰기 시작 -->
 	<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
 		<strong style="border-bottom: solid 2px #37f;">댓글쓰기</strong>
