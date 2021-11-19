@@ -177,13 +177,16 @@
 			) V
 		where rno between #{startRno} and #{endRno}
 	</select>
+	
 	<!-- 페이징처리를 한 결재할목록 받아오기 -->
 	<select id="receiveDocapproval" resultMap="approvalMap" parameterType="HashMap">
-		select apno, fk_employeeid, fk_apcano, subject, appremp, coopemp, reciemp, apdate, apstatus ,apcaname, fileName, name, departmentname, positionname
+		select apno, fk_employeeid, fk_apcano, subject, appremp, coopemp, reciemp, apdate, eddate, apstatus ,apcaname, fileName, name, departmentname, positionname
 		from 
 		(
 		    select row_number() over(order by apno desc) AS rno,
-		           apno, a.fk_employeeid, fk_apcano, subject, appremp, coopemp, reciemp,to_char(apdate,'yyyy-mm-dd hh24:mi') as apdate, a.apstatus ,apcaname, fileName, name, departmentname, positionname
+		           apno, a.fk_employeeid, fk_apcano, subject, appremp, coopemp, reciemp, to_char(apdate,'yyyy-mm-dd hh24:mi') as apdate,
+		           to_char(eddate,'yyyy-mm-dd hh24:mi') as eddate,
+		           a.apstatus ,apcaname, fileName, name, departmentname, positionname
 		    from tbl_approval A
 		    join tbl_apcategory C
 		    on a.fk_apcano = c.apcano
@@ -277,7 +280,10 @@
 	
 	<!-- 문서상세 조회하기 -->
 	<select id="getDocdetail" resultType="com.spring.approval.model.ApprovalVO" parameterType="HashMap">
-		select apno, fk_employeeid, fk_apcano, subject, content, apprEmp, coopEmp, reciEmp, apdate, apstatus, fileName, orgFilename, fileSize
+		select apno, fk_employeeid, fk_apcano, subject, content, apprEmp, coopEmp, reciEmp, 
+		to_char(apdate,'yyyy-mm-dd hh24:mi') as apdate,
+        to_char(eddate,'yyyy-mm-dd hh24:mi') as eddate, 
+		apstatus, fileName, orgFilename, fileSize
 		from tbl_approval
 		where apno = #{apno}
 	</select>
@@ -336,4 +342,37 @@
 			where fk_apcano = #{apcano} and fk_apno = #{apno}
 		</if>
 	</select>
+	
+	<!-- 결재의견 테이블에 insert 하기 -->
+	<insert id="addOpnion" parameterType="com.spring.approval.model.OpinionVO">
+		insert into tbl_apopinion(opno, fk_apno, fk_employeeid, opdate, opinion, apstatus)
+		values(seq_opno.nextval, #{fk_apno}, #{fk_employeeid}, default, #{opinion}, #{apstatus})
+	</insert>
+	
+	<!-- 결재차례 테이블 update -->
+	<update id="updateYN" parameterType="HashMap">
+		update tbl_apturn set yn = #{yn}
+		where fk_employeeid = #{fk_employeeid} and fk_apno = #{fk_apno}
+	</update>
+	
+	<!-- 결재테이블 문서 상태 변경 update -->
+	<update id="updateApStatus" parameterType="HashMap">
+		update tbl_approval set apstatus = #{apstatus}, eddate = sysdate
+		where apno = #{fk_apno}
+	</update>
+	
+	<select id="readOpinion" resultType="com.spring.approval.model.OpinionVO" parameterType="HashMap">
+		select opno, fk_apno, d.departmentname || '부 ' || p.positionname || ' ' || e.name as apprEmp, o.fk_employeeid
+	     	, to_char(opdate,'yyyy-mm-dd hh24:mi') as opdate , opinion, apstatus
+		from tbl_apopinion O
+		join tbl_employee E
+		on o.fk_employeeid = e.employeeid
+		join tbl_department D
+		on e.fk_departno = d.departno
+		join tbl_position P
+		on e.fk_positionno = p.positionno
+		where o.fk_apno = ${fk_apno}
+	</select>
+	
+	
 </mapper>

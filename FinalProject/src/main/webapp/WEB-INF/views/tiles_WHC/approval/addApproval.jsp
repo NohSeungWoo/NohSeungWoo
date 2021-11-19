@@ -370,19 +370,25 @@
 	      	<%-- === 스마트에디터 유효성 검사 끝 === --%>
 			////////////////////////////////////////////////////////////////
 			
+			var go = confirm("기안을 보내시겠습니까?");
 			
-			var frm = document.addApprFrm;
+			if(go == true) {
+				
+				var frm = document.addApprFrm;
+				
+				if(frm.fk_apcano.value == 50){
+					frm.midate.value = frm.sdate.value +" "+ frm.stime.value +" ~ "+ frm.edate.value +" "+ frm.etime.value
+				}
+				else if (frm.fk_apcano.value == 51){
+					frm.taskdate.value = frm.tsdate.value +" "+ frm.tstime.value +" ~ "+ frm.tedate.value +" "+ frm.tetime.value
+				}			
+				
+				frm.method = "POST";
+				frm.action="<%= ctxPath%>/addApprovalEnd.gw"; 
+				frm.submit();
+				
+			} 
 			
-			if(frm.fk_apcano.value == 50){
-				frm.midate.value = frm.sdate.value +" "+ frm.stime.value +" ~ "+ frm.edate.value +" "+ frm.etime.value
-			}
-			else if (frm.fk_apcano.value == 51){
-				frm.taskdate.value = frm.tsdate.value +" "+ frm.tstime.value +" ~ "+ frm.tedate.value +" "+ frm.tetime.value
-			}			
-			
-			frm.method = "POST";
-			frm.action="<%= ctxPath%>/addApprovalEnd.gw"; 
-			frm.submit();
 		});
 		
 	});
@@ -621,7 +627,7 @@
 								<div>~</div>
 								<input type="date" name="edate" />
 								<input type="time" name="etime"/>
-								<input type="text" name="midate"/>
+								<input type="hidden" name="midate"/>
 							</td>
 						</tr>
 						<tr>
@@ -642,7 +648,7 @@
 								<div>~</div>
 								<input type="date" name="tedate" />
 								<input type="time" name="tetime"/>
-								<input type="text" name="taskdate"/>
+								<input type="hidden" name="taskdate"/>
 							</td>
 						</tr>
 						<tr>

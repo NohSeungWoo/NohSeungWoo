@@ -12,25 +12,146 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
+		goReadOpinion();
+		
 		var authority = "${requestScope.authority}";
 		
-		if(authority == "a1"}){
+		if(authority == "a1"){
 			
 			$("button#agrBtn").click(function(){
 				
-				var frm = document.agrFrm;
+				var apstatusLength = $("input:radio[name=apstatus]:checked").length;
+				
+				if(apstatusLength==0){
+					alert("결재상태를 선택하세요!");
+					return;
+				}
+				if($("textarea#opinion").val().trim() == ""){
+					alert("결재의견을 작성하세요!");
+					return;
+				}
+				
+				var yn = confirm("결재 하시겠습니까?");
+				
+				if(yn == true){
+					goAddOpinion();
+				}
 				
 			});
 			
 		}
 		
 	});
+	
+	// Function Declaration
+	function goReadOpinion() {
+		
+		$.ajax({
+			url:"<%= ctxPath%>/readOpinion.gw",
+			data:{"fk_apno":"${requestScope.approval.apno}"},
+			dataType:"JSON",
+			success:function(json){
+				
+				var html = "";
+				
+				if(json.length > 0) {
+					
+					$("div#opinionContent").show();
+					
+					$.each(json, function(index, item){
+						html += "<tr>";
+						html += "<td style='text-align:center;'>"+item.apprEmp+"</td>";
+						if(item.apstatus == 1){
+							html += "<td style='text-align:center; color:blue;'>승인</td>";
+						}
+						else {
+							html += "<td style='text-align:center; color:red;'>반려</td>";
+						}
+						html += "<td>"+item.opinion+"</td>";
+						html += "<td style='text-align:center;'>"+item.opdate+"</td>";
+						html += "</tr>";
+						
+						var html2 = "";
+						
+						if(item.apstatus == 1){
+							html2 += "<span style='color:blue;'>승인 " + item.opdate;
+							
+						}
+						else {
+							html2 += "<span style='color:red;'>반려 " + item.opdate;
+						}
+						html2 += "</span>";
+						
+						$("div#"+item.fk_employeeid).html(html2);
+						
+					});
+				}
+				else {
+					$("div#opinionContent").hide();
+				}
+				
+				$("tbody#opinionDisplay").html(html);
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		 	}
+		}); 
+		
+	}// end of function goReadOpinion() {}------------------------------
+	
+	function goAddOpinion() {
+		
+		var form_data = $("form[name=agrFrm]").serialize();
+		// form 태그에 name 을 써줘야 사용할 수 있다.
+		
+		$("form[name=agrFrm]").ajaxForm({
+			url:"<%= ctxPath%>/addOpinion.gw",
+			data:form_data,
+			type:"POST",
+			dataType:"JSON",
+			success:function(json){  //      {"n":1, "name":"이순신"}
+			                         // 또는    {"n":0, "name":"이순신"}
+			    var n = json.n; 
+			    
+			    if(n==1) {
+			    	alert("결재의견 작성 완료");
+			    	
+					$("button.hiddenBtn").trigger("click");
+			    	// 모달창을 닫아준다.
+			    	
+			    	$("button#moadlAgr").hide();
+			    	
+			    	goReadOpinion();  // 결재의견 보여주기
+			    
+			    }
+			    
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		 	}
+		});
+		
+		$("form[name=agrFrm]").submit();
+		
+	}
 </script>
 
 <div class="container-fluid">
-
-	<%-- 선택한 기안종류에 맞게 --%>
-	<h4 class="mb-3"><b>${requestScope.approval.subject}</b></h4>
+	
+	<div class="mb-2">
+	<span style="font-size:15pt;">[${requestScope.apcaname}]</span>
+		<c:if test="${requestScope.approval.apstatus == 0}">	
+			<span style="font-size:13pt; font-weight: bold;">진행중</span>
+		</c:if>
+		<c:if test="${requestScope.approval.apstatus == 1}">	
+			<span style="font-size:13pt; font-weight: bold; color:blue;">완료</span>
+		</c:if>
+		<c:if test="${requestScope.approval.apstatus == 2}">	
+			<span style="font-size:13pt; font-weight: bold; color:red;">반려</span>
+		</c:if>
+	</div>	
+	<h3 class="mb-4"><b>${requestScope.approval.subject}</b></h3>
+	
 	<div class="mb-2" style="display: flex; border-bottom: 1px solid black;">
 		<div style="font-weight: bold;">결재선</div>
 	</div>
@@ -43,6 +164,7 @@
 		    		<p class="card-text">${requestScope.sendEmp.name}</p>
 		    	</div>
 		    	<div class="text-center"><small>${requestScope.sendEmp.positionname}<br>${requestScope.sendEmp.departmentname}</small></div>
+		    	<div class="mt-1" style="text-align:center;"><span>${requestScope.approval.apdate}</span></div>
 	    	</div>
 	  	</div>
 	  	<c:forEach var="arrEmps" items="${requestScope.apprList}">
@@ -53,6 +175,7 @@
 			    		<p class="card-text">${arrEmps.name}</p>
 			    	</div>
 			    	<div class="text-center"><small>${arrEmps.positionname}<br>${arrEmps.departmentname}</small></div>
+			    	<div class="mt-1" id="${arrEmps.employeeid}" style="text-align:center;">-</div>
 		    	</div>
 		  	</div>
 	  	</c:forEach>
@@ -100,11 +223,6 @@
 		<div class="mb-1 pb-1" style="display: flex; border-bottom: 1px solid black;">
 			<div style="font-weight: bold;">기안내용</div>
 		</div>
-		<input type="hidden" name="apprEmp" value="" />
-		<input type="hidden" name="coopEmp" value="" />
-		<input type="hidden" name="reciEmp" value="" />
-		<input type="hidden" name="fk_apcano" value="${requestScope.apcano}" />
-		<input type="hidden" name="fk_employeeid" value="${sessionScope.loginuser.employeeid}" />
 		
 		<table class="table " style="width:100%; margin-bottom:5px;">
 			<tbody class="border-bottom" style="background-color: #f7f7f7;" >
@@ -123,7 +241,7 @@
 				<tr>
 					<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">파일첨부</th>
 					<td>
-						<a href="#">${requestScope.approval.orgFilename}</a>
+						<a href="<%= request.getContextPath()%>/downloadApAttach.gw?apno=${requestScope.approval.apno}">${requestScope.approval.orgFilename}</a>
 					</td>
 				</tr>
 				<%-- 회의록 --%>
@@ -178,10 +296,29 @@
 		<div class="mb-3" style="border: 1px solid #dee2e6; padding:10px;">
 			<p style="width: 100%; min-height:150px; word-break: break-all;">${requestScope.approval.content}</p>
 		</div>
+		
+		<%-- 결재의견 --%>
+		<div id="opinionContent">
+			<div class="mb-1 pb-1" style="display: flex; border-bottom: 1px solid black;">
+				<div style="font-weight: bold;">결재의견</div>
+			</div>
+			<table class="table table-bordered" style="margin-top: 2%; margin-bottom: 3%;">
+				<thead>
+				<tr>
+				   <th style="width: 15%; text-align: center;">결재자</th>
+				   <th style="width: 10%; text-align: center;">결재상태</th>
+				   <th style="text-align: center;">결재의견</th>
+				   <th style="width: 20%; text-align: center;">일시</th>
+				</tr>
+				</thead>
+				<tbody id="opinionDisplay"></tbody>
+			</table>
+		</div>
+		
 		<div class="" style="text-align: center;">
 			<input type="button" class="btn btn-secondary" value="목록으로" onclick="javascript:history.back();">
 			<c:if test="${requestScope.authority == 'a1'}">
-				<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">결재</button>
+				<button class="btn btn-primary" data-toggle="modal" data-target="#myModal" id="moadlAgr">결재</button>
 		        <div class="modal fade" id="myModal" data-backdrop="static">
 			    	<div class="modal-dialog modal-dialog-centered">
 				    	<div class="modal-content">
@@ -201,19 +338,22 @@
 												<th class="border-right" style="width: 30%; vertical-align: middle; text-align: center;">결재상태</th>
 												<td style="text-align: left; vertical-align: middle;">
 													<div class="mt-2">
-														<input type="radio" name="agr" id="yagr"><label class="ml-1 mr-3" for="yagr">승인</label>
-														<input type="radio" name="agr" id="nagr"><label class="ml-1 "for="nagr">반려</label>
+														<input type="radio" name="apstatus" value="1" id="yagr"><label class="ml-1 mr-3" for="yagr">승인</label>
+														<input type="radio" name="apstatus" value="2" id="nagr"><label class="ml-1 "for="nagr">반려</label>
 													</div>
 												</td>
 											</tr>
 											<tr>
 												<th class="border-right" style="width: 30%; vertical-align: middle; text-align: center;">결재의견</th>
 												<td>
-													<textarea style="width: 100%; height: 150px; resize: none;" name="opinion" placeholder="내용을 입력해주세요"></textarea>
+													<textarea style="width: 100%; height: 150px; resize: none;" id="opinion" name="opinion" placeholder="내용을 입력해주세요"></textarea>
 												</td>
 											</tr>
 										</tbody>
-									</table>	
+									</table>
+									<input type="hidden" name="fk_employeeid" value="${requestScope.login_userid}">	
+									<input type="hidden" name="fk_apno" value="${requestScope.approval.apno}">	
+									<input type="hidden" name="apprEmp" value="${requestScope.approval.apprEmp}" />
 				          		</form>
 				          	</div>
 				          	<!-- Modal footer -->

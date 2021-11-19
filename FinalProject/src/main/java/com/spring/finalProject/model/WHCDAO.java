@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.spring.approval.model.ApcategoryVO;
 import com.spring.approval.model.ApprovalVO;
+import com.spring.approval.model.OpinionVO;
 
 //==== #32. DAO 선언 ====
 @Repository // 원래 bean에 올려주기 위해서 @Component를 써야하는데 @Repository를 쓰기 때문에 자동적으로 bean에 올라간다.
@@ -146,6 +147,36 @@ public class WHCDAO implements InterWHCDAO {
 	public Map<String, String> cateApdetail(Map<String, String> cateMap) {
 		Map<String, String> resultMap = sqlsession.selectOne("woohc.cateApdetail", cateMap);
 		return resultMap;
+	}
+
+	// 결재의견 테이블에 insert 하기
+	@Override
+	public int addOpnion(OpinionVO opnvo) {
+		int n = sqlsession.insert("woohc.addOpnion", opnvo);
+		return n;
+	}
+	
+	// 결재차례 테이블 update
+	@Override
+	public int updateYN(Map<String, String> nextEmp) {
+		int n = sqlsession.update("woohc.updateYN", nextEmp);
+		return n;
+	}
+	
+	// 결재테이블 문서 상태 변경
+	@Override
+	public int updateApStatus(Map<String, String> nextEmp) {
+		int n = sqlsession.update("woohc.updateApStatus", nextEmp);
+		return n;
+	}
+	
+	// 결재의견 읽어오기
+	@Override
+	public List<OpinionVO> readOpinion(Map<String, String> paraMap) {
+		
+		List<OpinionVO> opinionList = sqlsession.selectList("woohc.readOpinion",paraMap);
+		return opinionList;
+		
 	}
 	
 	

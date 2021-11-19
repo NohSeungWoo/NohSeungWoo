@@ -72,7 +72,7 @@
 	<ul class="list-group list-group-horizontal mt-5">
 	  	<li class="list-group-item tabmenu">내가 상신한문서</li>
 	  	<li class="list-group-item tabmenu">내가 결재할 문서</li>
-	  	<li class="list-group-item tabmenu">최근 결재 의견</li>
+	  	<%-- <li class="list-group-item tabmenu">최근 결재 의견</li> --%>
 	</ul>
 	
 	<div class="mt-2 tabcontent">
@@ -138,7 +138,7 @@
 			</tbody>
 		</table>
 	</div>
-	
+	<%-- 
 	<div class="mt-2 tabcontent">
 		<table class="table table-bordered">
 			<thead>
@@ -152,5 +152,5 @@
 			</thead>
 		</table>
 	</div>
-	
+	--%>
 </div>

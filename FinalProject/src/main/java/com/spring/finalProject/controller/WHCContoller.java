@@ -1,6 +1,7 @@
 package com.spring.finalProject.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -835,6 +836,7 @@ public class WHCContoller {
 		
 		if(loginuser != null) {
 			login_userid = loginuser.getEmployeeid();
+			mav.addObject("login_userid", login_userid);
 		}
 		
 		// 기안양식 카테고리 얻어오기
@@ -967,5 +969,156 @@ public class WHCContoller {
 		
 		return mav;
 	}
+	
+	// 결재의견 작성하기
+	@ResponseBody
+	@RequestMapping(value="/addOpinion.gw", method={RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	public String addOpinion(OpinionVO opnvo) {
 		
+		String apprEmp = opnvo.getApprEmp();
+		String[] arrApprs = apprEmp.split(",");
+		
+		String nextAppEmp = "";
+		
+		// [0,1,2]
+		for(int i=0; i<arrApprs.length;i++){
+			if(arrApprs[i].equals(opnvo.getFk_employeeid())) {
+				if(i+1 < arrApprs.length) {
+					nextAppEmp = arrApprs[i+1];
+				}
+				break;
+			}
+		}
+		
+		Map<String,String> nextEmp = new HashMap<>();
+		
+		nextEmp.put("nextAppEmp", nextAppEmp);
+		nextEmp.put("fk_employeeid", opnvo.getFk_employeeid());
+		nextEmp.put("fk_apno", opnvo.getFk_apno());
+		nextEmp.put("yn", "0");
+		
+		int n = service.addOpinion(opnvo,nextEmp);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString();
+	}
+	
+	// 결재의견 읽어오기
+	@ResponseBody
+	@RequestMapping(value="/readOpinion.gw", method={RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	public String readOpinion(HttpServletRequest request) {
+		
+		String fk_apno = request.getParameter("fk_apno");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("fk_apno", fk_apno);
+		
+		List<OpinionVO> opinionList = service.readOpinion(paraMap);
+		
+		JSONArray jsonArr = new JSONArray(); // []
+		if(opinionList != null) {
+			for(OpinionVO opnvo : opinionList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("apprEmp", opnvo.getApprEmp());
+				jsonObj.put("fk_employeeid", opnvo.getFk_employeeid());
+				jsonObj.put("opdate", opnvo.getOpdate());
+				jsonObj.put("opinion", opnvo.getOpinion());
+				jsonObj.put("apstatus", opnvo.getApstatus());
+				
+				jsonArr.put(jsonObj);
+			}
+		}
+		
+		return jsonArr.toString();
+	}
+	
+	
+	// === 기안문서 첨부파일 다운로드 받기 === //
+	@RequestMapping(value="/downloadApAttach.gw")
+	public void requiredLogin_downloadApAttach(HttpServletRequest request, HttpServletResponse response) {
+		
+		String apno = request.getParameter("apno");
+		// 첨부파일이 있는 글번호
+		
+		/*
+		   첨부파일이 있는 글번호에서
+		  202111081247281137857237780500.png 처럼
+		   이러한 fileName 값을 DB 에서 가져와야 한다.
+		   또한 orgFilename 값도 DB 에서 가져와야 한다.
+		*/
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("apno", apno);
+		
+		response.setContentType("text/html; charset=UTF-8");
+		PrintWriter out = null;
+		
+		try {
+			Integer.parseInt(apno);
+			
+			ApprovalVO approval = service.getDocdetail(paraMap);
+			
+			if(approval == null || (approval != null && approval.getFileName() == null) ) {
+				out = response.getWriter();
+				// 웹브라우저상에 메시지를 쓰기 위한 객체생성
+				out.println("<script type='text/javascript'>alert('존재하지 않는 글번호 또는 첨부파일이 없습니다.'); history.back();</script>");
+				
+				return; // 종료
+			}
+			
+			else {
+				String fileName = approval.getFileName();
+				// 202111081247281137857237780500.png was(톰캣) 디스크에 저장된 파일이름
+				
+				String orgFilename = approval.getOrgFilename();
+				// 강아지.png  다운로드시 보여줄 파일명
+				approval.getFileSize();
+				
+				// 첨부파일이 저장되어 있는 WAS(톰캣)의 디스크 경로명을 알아와야만 다운로드를 해줄수 있다. 
+	            // 이 경로는 우리가 파일첨부를 위해서 /addEnd.action 에서 설정해두었던 경로와 똑같아야 한다.
+				// WAS의 webapp 의 절대경로를 알아와야 한다.
+				HttpSession session = request.getSession();
+				String root = session.getServletContext().getRealPath("/");
+				// System.out.println("확인용 webapp 의 절대경로 : " + root);
+				// 확인용 webapp 의 절대경로 : C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
+				
+				String path = root + "resources" + File.separator +"apfiles";
+				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+			             운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+			             운영체제가 UNIX, Linux 이라면  File.separator 는 "/" 이다. 
+				 */
+				// path 가 첨부파일이 저장될 WAS(톰캣) 의 폴더가 된다.
+				// System.out.println("확인용 path : " + path);
+				
+				// **** file 다운로드 하기 **** //
+				boolean flag = fileManager.doFileDownload(fileName, orgFilename, path, response);
+				// flag 값이 true 로 받아오면 다운로드 성공을 말하고 
+				// flag 값이 false 로 받아오면 다운로드 실패를 말한다.
+			
+				if(flag == false) {
+					// 다운로드가 실패할 경우 메시지를 띄워준다.
+					out = response.getWriter();
+					// 웹브라우저상에 메시지를 쓰기 위한 객체생성
+					out.println("<script type='text/javascript'>alert('파일 다운로드 실패.'); history.back();</script>");
+				}
+				
+			}
+			
+		} catch(NumberFormatException e) {
+			
+			try {
+				out = response.getWriter();
+				// 웹브라우저상에 메시지를 쓰기 위한 객체생성
+				out.println("<script type='text/javascript'>alert('존재하지 않는 글번호 입니다.'); history.back();</script>");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+		} catch (IOException e) {
+			
+		}
+		
+	}
+	
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.spring.approval.model.ApcategoryVO;
 import com.spring.approval.model.ApprovalVO;
+import com.spring.approval.model.OpinionVO;
 import com.spring.finalProject.model.DepartmentVO_KGH;
 
 public interface InterWHCService {
@@ -50,6 +51,12 @@ public interface InterWHCService {
 	
 	// 문서종류에 따른 상세내용 select
 	Map<String, String> cateApdetail(Map<String, String> cateMap);
+
+	// 결재의견 작성하기
+	int addOpinion(OpinionVO opnvo, Map<String, String> nextEmp);
+	
+	// 결재의견 읽어오기
+	List<OpinionVO> readOpinion(Map<String, String> paraMap);
 
 
 }

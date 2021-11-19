@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.approval.model.ApcategoryVO;
 import com.spring.approval.model.ApprovalVO;
+import com.spring.approval.model.OpinionVO;
 import com.spring.finalProject.model.DepartmentVO_KGH;
 import com.spring.finalProject.model.InterWHCDAO;
 
@@ -48,7 +49,7 @@ public class WHCService implements InterWHCService {
 		return empList;
 	}
 
-	// 첨부파일이 없는 기안쓰기
+	// 기안쓰기
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int addAP(ApprovalVO approvalvo, Map<String, String> paraMap) {
@@ -90,7 +91,6 @@ public class WHCService implements InterWHCService {
 		return result;
 	}
 
-	// 첨부파일이 있는 기안쓰기
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int addAP_withFile(ApprovalVO approvalvo, Map<String, String> paraMap) {
@@ -159,6 +159,43 @@ public class WHCService implements InterWHCService {
 	public Map<String, String> cateApdetail(Map<String, String> cateMap) {
 		Map<String, String> resultMap = whcdao.cateApdetail(cateMap);
 		return resultMap;
+	}
+
+	// 결재의견 작성하기
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public int addOpinion(OpinionVO opnvo, Map<String, String> nextEmp) {
+		
+		int n=0,m=0,result=0; 
+		
+		// 결재의견 테이블에 insert 하기
+		n = whcdao.addOpnion(opnvo);
+		
+		if(n==1) {
+			
+			m = whcdao.updateYN(nextEmp); // 본인 yn 0 으로 변경
+			
+			if(m==1) {
+				
+				if("1".equals(opnvo.getApstatus()) && !"".equals(nextEmp.get("nextAppEmp")) ) { // 결재이면서 다음결재자가 있다면
+					nextEmp.put("yn", "1");
+					nextEmp.put("fk_employeeid", nextEmp.get("nextAppEmp"));
+					result = whcdao.updateYN(nextEmp); 		// 다음사람 yn 1로 변경
+				}
+				else { // 결재이면서 다음결재자가 없거나 반려 라면
+					nextEmp.put("apstatus", opnvo.getApstatus());
+					result = whcdao.updateApStatus(nextEmp);// 문서상태 변경
+				}
+			}
+		}
+		return result;
+	}
+	
+	// 결재의견 읽어오기
+	@Override
+	public List<OpinionVO> readOpinion(Map<String, String> paraMap) {
+		List<OpinionVO> opnionList = whcdao.readOpinion(paraMap);
+		return opnionList;
 	}
 	
 	
