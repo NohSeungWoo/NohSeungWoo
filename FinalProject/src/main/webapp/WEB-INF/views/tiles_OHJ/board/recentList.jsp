@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
 
 <% String ctxPath = request.getContextPath(); %>
 
@@ -131,7 +132,7 @@
 		
 		<!-- 게시물 건수 시작 -->
 		<div class="d-flex mt-3">
-			<span style="color: #999; margin-right: auto;">총 <strong style="color: #000;">13213</strong>건</span>
+			<span style="color: #999; margin-right: auto;">총 <strong style="color: #000;">${fn:length(requestScope.boardList)}</strong>건</span>
 			
 			<select id="sizePerPage">
 				<option>3</option>
