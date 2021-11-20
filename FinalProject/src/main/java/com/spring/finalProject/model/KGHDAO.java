@@ -117,5 +117,12 @@ public class KGHDAO implements InterKGHDAO {
 		return n;
 	}
 
+	// === 부서별 인원 가져오기(select) === //
+	@Override
+	public List<String> getDepartempCnt() {
+		List<String> departEmpCnt = sqlsession.selectList("KangGH.getDepartempCnt");
+		return departEmpCnt;
+	}
+
 
 }

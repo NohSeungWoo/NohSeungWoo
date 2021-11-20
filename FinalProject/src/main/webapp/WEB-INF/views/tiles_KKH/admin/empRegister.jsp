@@ -190,7 +190,7 @@
 						html += "<option id='" + departno + "' name='department' value='" + departno + "'>" + departmentname + "</option>";
 					});
 					
-					$("select#selectDepart").html(html);
+					$("select#fk_departNo").html(html);
 				}
 			},
 			error: function(request, status, error){
@@ -217,7 +217,7 @@
 						html += "<option id='" + positionNo + "' name='position' value='" + positionNo + "'>" + positionname + "</option>";
 					});
 					
-					$("select#selectPosition").html(html);
+					$("select#fk_positionNo").html(html);
 				}
 			},
 			error: function(request, status, error){
@@ -278,7 +278,7 @@
 		       <label class="float-right">근무부서</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <select id="selectDepart" name="selectDepart" class='selectpicker' data-width='auto' style='width: 100%; height: 35px; border-radius: 3px;'>
+		       <select id="fk_departNo" name="fk_departNo" class='selectpicker' data-width='auto' style='width: 100%; height: 35px; border-radius: 3px;'>
 		       </select>
 		    </div>
 		    <div class="w-100 mb-4"></div>
@@ -287,7 +287,7 @@
 		       <label class="float-right">직책</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <select id="selectPosition" name="selectPosition" class='selectpicker' data-width='auto' style='width: 100%; height: 35px; border-radius: 3px;'>
+		       <select id="fk_positionNo" name="fk_positionNo" class='selectpicker' data-width='auto' style='width: 100%; height: 35px; border-radius: 3px;'>
 		       </select>
 		    </div>
 		    <div class="w-100 mb-4"></div>

@@ -113,5 +113,12 @@ public class KGHService implements InterKGHService {
 		return n;
 	}
 
+	@Override
+	public List<String> getDepartempCnt() {
+		// === 부서별 인원 가져오기(select) === //
+		List<String> departEmpCnt = dao.getDepartempCnt();
+		return departEmpCnt;
+	}
+
 
 }

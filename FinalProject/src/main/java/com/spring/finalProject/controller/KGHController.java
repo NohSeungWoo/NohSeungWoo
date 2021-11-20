@@ -1,10 +1,10 @@
 package com.spring.finalProject.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.map.HashedMap;
@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -146,25 +145,53 @@ public class KGHController {
 		
 		HttpSession session = request.getSession();
 		
-		String department = (String)session.getAttribute("department");
-		String position = (String) session.getAttribute("position");
+		String department = request.getParameter("departmentname");
+		String position = request.getParameter("positionname");
 		String searchEmp = (String) session.getAttribute("searchEmp");
 		
-		System.out.println(department);
-		System.out.println(position);
+//		String department = (String)session.getAttribute("department");
+//		String position = (String)session.getAttribute("positionname");
+		
+		
+//		System.out.println(department);
+//		System.out.println(position);
 		// System.out.println(searchEmp);
 		
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
-		
-		if(department == null || "전체".equals(department)) {
+		if(department == null) {
 			department = "";
+			System.out.println(department);
+			request.setAttribute("departmentname", "전체");
+		}
+		else if("전체".equals(department)) {
+			department = "";
+			System.out.println(department);
+		}
+		
+		if(position == null) {
+			position = "";
+			System.out.println(position);
+			request.setAttribute("positionname", "전체");
+		}
+		else if("전체".equals(position)) {
+			position = "";
+			System.out.println(position);
+		}
+		
+/*		if(department == null || "전체".equals(department)) {
+			
+			department = "";
+			// session.setAttribute("department", "전체");
+			System.out.println(department);
 		}
 		
 		if(position == null || "전체".equals(position)) {
 			position = "";
-	    }
-		
+			// session.setAttribute("position", "전체");
+			
+		}
+*/		
 		if(searchEmp == null || "".equals(searchEmp) || searchEmp.trim().isEmpty() ) {
 			searchEmp = "";
 	    }
@@ -274,7 +301,7 @@ public class KGHController {
 	    */
 		
 		String pageBar = "<ul style='list-style: none;'>";
-		String url = "admin/empList.gw";
+		String url = "/finalProject/admin/empList.gw";
 		
 		// === [맨처음][이전] 만들기 === //
 		if(pageNo != 1) {
@@ -417,14 +444,14 @@ public class KGHController {
 	@RequestMapping(value = "/empRegisterEnd.gw", method = {RequestMethod.POST})
 	public ModelAndView empRegisterEnd(ModelAndView mav, EmployeeVO_KGH emp, MultipartHttpServletRequest mrequest) {
 		
-		String departmentno = mrequest.getParameter("selectDepart");
-		String positionno = mrequest.getParameter("selectPosition");
+		// String departmentno = mrequest.getParameter("selectDepart");
+		// String positionno = mrequest.getParameter("selectPosition");
 		
-		System.out.println(departmentno);
-		System.out.println(positionno);
+		System.out.println(emp.getFk_departNo());
+		System.out.println(emp.getFk_positionNo());
 		
-		emp.setFk_departNo(departmentno);
-		emp.setFk_positionNo(positionno);
+		//emp.setFk_departNo(departmentno);
+		//emp.setFk_positionNo(positionno);
 		
 		MultipartFile attach = emp.getAttach();
 		
@@ -460,13 +487,13 @@ public class KGHController {
 		}
 		
 		// 새로 생성될 사원번호 조회하기
-		String employeeId = service.selectEmpId(departmentno);
-		emp.setEmployeeid(employeeId);
+		// String employeeId = service.selectEmpId(departmentno);
+		// emp.setEmployeeid(employeeId);
 
 		if(attach.isEmpty()) {
 			// 프로필 사진이 없는 경우
 			// 직원 정보 insert 하기
-			service.empRegister(emp);
+			// service.empRegister(emp);
 		}
 		else {
 			// 프로필 사진이 있는 경우
@@ -534,6 +561,48 @@ public class KGHController {
 		
 		return mav;
 	}
+	
+	
+	// === 직원 통계 차트 보여주는 페이지 === //
+	@RequestMapping(value = "/admin/empChart.gw")
+	public ModelAndView empChart(ModelAndView mav) {
+		
+		// === 부서목록 가져오기(select) === //
+		List<DepartmentVO_KGH> departList = service.getDepartmentName();
+		
+		String departToString = "";
+		
+		for (int i = 0; i < departList.size(); i++) {
+			if(i == departList.size() - 1) {
+				departToString += departList.get(i).getDepartmentname();
+			}
+			else {
+				departToString += departList.get(i).getDepartmentname() + ", ";
+			}
+		}
+		
+		// === 부서별 인원 가져오기(select) === //
+		List<String> departEmpCnt = service.getDepartempCnt();
+		
+		String departEmpCntToString = "";
+		
+		for (int i = 0; i < departEmpCnt.size(); i++) {
+			if(i == departList.size() - 1) {
+				departEmpCntToString += departEmpCnt.get(i);
+			}
+			else {
+				departEmpCntToString += departEmpCnt.get(i) + ", ";
+			}
+		}
+		
+		mav.addObject("departToString", departToString);
+		mav.addObject("departEmpCntToString", departEmpCntToString);
+		
+		mav.setViewName("admin/empChart.tiles_KKH");
+		
+		return mav;
+	}
+	
 	
 	////////////////////////////////////////////////////////
 	// === 로그인 또는 로그아웃을 할 때 현재 페이지로 돌아가는 메서드 생성 === //

@@ -87,13 +87,22 @@
 			$("div#displayList").hide();
 			
 		});
-		
-		
+/*		
+		if("${requestScope.departmentname == '전체'}") {
+			sessionStorage.setItem("department","전체");
+		}
+
+		if("${requestScope.positionname == '전체'}") {
+			sessionStorage.setItem("position","전체");
+			
+		}
+*/
 		/////////////////////////////////////////////////////
-		
-		sessionStorage.setItem("department","전체");
-		sessionStorage.setItem("position","전체");
-		
+		/*
+		if(${requestScope.department == ""} || ${requestScope.position == ""}) {
+			
+		}
+		*/
 		/////////////////////////////////////////////////////
 		
 		
@@ -145,10 +154,10 @@
 						sessionStorage.setItem("department",department);
 						var position = sessionStorage.getItem("position");
 						
-						alert("부서명 : " + department + ", 직급 : " + position);
+						// alert("부서명 : " + department + ", 직급 : " + position);
 						// $.ajax
 						
-						departPositionSearch(department, position);
+						departPositionSearch();
 						
 					});
 				}
@@ -182,7 +191,7 @@
 						sessionStorage.setItem("position",position);
 						var department = sessionStorage.getItem("department");
 						
-						alert("부서명 : " + department + ", 직급 : " + position);
+						// alert("부서명 : " + department + ", 직급 : " + position);
 						// $.ajax
 						departPositionSearch(department, position);
 					});
@@ -206,25 +215,17 @@
 		<%-- location.href = "<%= ctxPath%>/admin/empList.gw?searchEmp=" + searchemp; --%>
 	}
 	
-	function departPositionSearch(department, position) {
+	function departPositionSearch() {
 	//	console.log(department);
 	//	console.log(position);
 	
-		$.ajax({
-			url:"<%= ctxPath%>/admin/empList.gw",
-			type:"GET",
-			data:{"department":department,
-				  "position":position},
-			dataType:"JSON",
-			success:function(json) {
-				
-			},
-			error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-            }
-		});
+		var department = sessionStorage.getItem("department");
+		var position = sessionStorage.getItem("position");
 		
-	
+		alert("~~ 확인용 department : " + department + ", 확인용 position : " + position);
+		
+		location.href = "<%= ctxPath%>/admin/empList.gw?departmentname=" + department + "&positionname=" + position;
+		
 	}
 	
 </script>

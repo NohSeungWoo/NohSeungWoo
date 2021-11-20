@@ -48,4 +48,7 @@ public interface InterKGHService {
 	// 직원 정보 수정하기(update)
 	int empEdit(EmployeeVO_KGH emp);
 
+	// 부서별 인원 가져오기(select)
+	List<String> getDepartempCnt();
+
 }

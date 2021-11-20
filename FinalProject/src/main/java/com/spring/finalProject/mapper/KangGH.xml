@@ -180,4 +180,12 @@
 		                        salary = #{salary}
 		where employeeid = #{employeeid}
 	</update>
+	
+	<!-- 부서별 직원 인원수 가져오기(select) -->
+	<select id="getDepartempCnt" resultType="String">
+		select count(*)
+		from tbl_employee
+		group by fk_departno
+		order by fk_departno
+	</select>
 </mapper>
