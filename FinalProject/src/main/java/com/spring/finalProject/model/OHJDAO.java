@@ -8,6 +8,8 @@ import javax.annotation.Resource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.spring.board.model.BoardVO_OHJ;
+
 //==== #32. DAO 선언 ====
 @Repository // 원래 bean에 올려주기 위해서 @Component를 써야하는데 @Repository를 쓰기 때문에 자동적으로 bean에 올라간다.
 public class OHJDAO implements InterOHJDAO {
@@ -59,6 +61,28 @@ public class OHJDAO implements InterOHJDAO {
 	public BoardVO_OHJ getView(Map<String, String> paraMap) {
 		BoardVO_OHJ boardvo = sqlsession.selectOne("ohhj.getView", paraMap);
 		return boardvo;
+	}
+
+	// === &66. 글조회수 1증가 하기 === //
+	@Override
+	public void addReadCount(String boardSeq) {
+		sqlsession.update("ohhj.addReadCount", boardSeq);
+	}
+
+
+	// === &74. 1개글 수정하기 === //
+	@Override
+	public int boardEdit(BoardVO_OHJ boardvo) {
+		int n = sqlsession.update("ohhj.boardEdit", boardvo);
+		return n;
+	}
+
+
+	// === &79. 1개글 삭제하기 === //
+	@Override
+	public int boardDel(Map<String, String> paraMap) {
+		int n = sqlsession.delete("ohhj.boardDel", paraMap);
+		return n;
 	}
 	
 	
