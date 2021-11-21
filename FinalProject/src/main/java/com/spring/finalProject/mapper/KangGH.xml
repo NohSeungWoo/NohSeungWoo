@@ -77,7 +77,7 @@
 		    	and positionname = #{position}
 		    </if>
 		    <if test='searchEmp != ""'>
-		    	and name = #{searchEmp}
+		    	and name like '%'|| #{searchEmp} || '%'
 		    </if>
 		)
 		where rno between #{startRno} and #{endRno}
@@ -187,5 +187,48 @@
 		from tbl_employee
 		group by fk_departno
 		order by fk_departno
+	</select>
+	
+	<!-- 엑셀 파일 직원 목록 가져오기(select) -->
+	<resultMap type="HashMap" id="excelEmployeeList">
+		<result property="employeeid" 	  column="employeeid" 		javaType="String"/>
+		<result property="departmentname" column="departmentname" 	javaType="String"/>
+		<result property="positionname"   column="positionname" 	javaType="String"/>
+		<result property="name" 		  column="name" 			javaType="String"/>
+		<result property="mobile" 		  column="mobile" 			javaType="String"/>
+		<result property="email" 		  column="email" 			javaType="String"/>
+		<result property="salary" 		  column="salary" 			javaType="String"/>
+		<result property="hiredate" 	  column="hiredate" 		javaType="String"/>
+	</resultMap>
+	<select id="excelEmpList" parameterType="HashMap" resultMap="excelEmployeeList">
+		select employeeid, departmentname, positionname, 
+       		   name, mobile, email, salary, hiredate
+		from
+		(
+		    select row_number() over(order by fk_positionNo, fk_departno, employeeID) AS RNO,
+		           employeeid, fk_departno, departmentname, 
+		           fk_positionno, positionname, name, mobile, email, salary, hiredate
+		           
+		    from 
+		    (
+		        select employeeid, fk_departno, departmentname, fk_positionno, 
+		               name, mobile, email, retire, salary, to_char(hiredate, 'yyyy-mm-dd') AS hiredate
+		        from tbl_employee E
+		        JOIN tbl_department D
+		        ON E.fk_departno = D.departno
+		    ) V
+		    JOIN tbl_position P
+		    ON V.fk_positionno = P.positionno
+		    where V.retire = 0
+		    <if test='department != ""'>
+			    and departmentname = #{department}   
+		    </if>
+		    <if test='position != ""'>
+			    and positionname = #{position}   
+		    </if>
+		    <if test='searchEmp != ""'>
+			    and name like '%'||#{searchEmp}||'%'   
+		    </if>
+		)
 	</select>
 </mapper>

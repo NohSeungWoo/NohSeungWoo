@@ -124,5 +124,12 @@ public class KGHDAO implements InterKGHDAO {
 		return departEmpCnt;
 	}
 
+	// === 엑셀에 입력할 직원 정보 가져오기 === //
+	@Override
+	public List<Map<String, String>> excelEmpList(Map<String, String> paraMap) {
+		List<Map<String, String>> excelEmpList = sqlsession.selectList("KangGH.excelEmpList", paraMap);
+		return excelEmpList;
+	}
+
 
 }

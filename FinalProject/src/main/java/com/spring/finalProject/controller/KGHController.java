@@ -1,17 +1,32 @@
 package com.spring.finalProject.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+
 import java.io.File;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.map.HashedMap;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -143,64 +158,39 @@ public class KGHController {
 		// 직원목록 가져오기 메서드
 		// empList = service.getEmpList();
 		
-		HttpSession session = request.getSession();
-		
 		String department = request.getParameter("departmentname");
 		String position = request.getParameter("positionname");
-		String searchEmp = (String) session.getAttribute("searchEmp");
-		
-//		String department = (String)session.getAttribute("department");
-//		String position = (String)session.getAttribute("positionname");
-		
-		
-//		System.out.println(department);
-//		System.out.println(position);
-		// System.out.println(searchEmp);
+		String searchEmp = request.getParameter("searchEmp");
 		
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
-		if(department == null) {
+		if("전체".equals(department) || department == null) {
 			department = "";
-			System.out.println(department);
-			request.setAttribute("departmentname", "전체");
-		}
-		else if("전체".equals(department)) {
-			department = "";
-			System.out.println(department);
 		}
 		
-		if(position == null) {
+		if("전체".equals(position) || position == null) {
 			position = "";
-			System.out.println(position);
-			request.setAttribute("positionname", "전체");
-		}
-		else if("전체".equals(position)) {
-			position = "";
-			System.out.println(position);
 		}
 		
-/*		if(department == null || "전체".equals(department)) {
-			
-			department = "";
-			// session.setAttribute("department", "전체");
-			System.out.println(department);
-		}
-		
-		if(position == null || "전체".equals(position)) {
-			position = "";
-			// session.setAttribute("position", "전체");
-			
-		}
-*/		
 		if(searchEmp == null || "".equals(searchEmp) || searchEmp.trim().isEmpty() ) {
 			searchEmp = "";
 	    }
+		
+		if(!"".equals(searchEmp)) {
+			department = "";
+			position = "";
+			
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("searchEmp", searchEmp);
+			
+			mav.addObject("paraMap", paraMap);
+		}
 		
 		Map<String,String> paraMap = new HashMap<>();
 	    paraMap.put("department", department);
 	    paraMap.put("position", position);
 	    paraMap.put("searchEmp", searchEmp);
-		
+	    
 	    // 먼저 총 게시물 건수(totalCount)를 구해와야 한다.
 	    // 총 게시물 건수(totalCount)는 검색조건이 있을 때와 없을 때로 나뉘어진다.
 	    int totalCount = 0;			// 총 게시물 건수
@@ -602,6 +592,219 @@ public class KGHController {
 		
 		return mav;
 	}
+	
+	
+	// === 직원목록 엑셀파일 다운로드 받기 === //
+	@RequestMapping(value = "/admin/excelEmpList.gw", method = {RequestMethod.POST})
+	public String excelEmpList(HttpServletRequest request, Model model) {
+		
+		String depart = request.getParameter("excelDepart");
+		String position = request.getParameter("excelPosition");
+		String searchEmp = request.getParameter("excelSearchEmp");
+		
+		if("전체".equals(depart)) {
+			depart = "";
+		}
+		
+		if("전체".equals(position)) {
+			position = "";
+		}
+		
+		if(searchEmp != "") {
+			depart = "";
+			position = "";
+		}
+		
+		Map<String, String> paraMap = new HashedMap<>();
+		paraMap.put("department", depart);
+		paraMap.put("position", position);
+		paraMap.put("searchEmp", searchEmp);
+		
+		List<Map<String, String>> excelEmpList = null;
+		
+		// === 엑셀에 입력할 직원 정보 가져오기 === //
+		excelEmpList = service.excelEmpList(paraMap);
+		
+		// === 조회결과물인 empList 를 가지고 엑셀 시트 생성하기 ===
+		// 시트를 생성하고, 행을 생성하고, 셀을 생성하고, 셀안에 내용을 넣어주면 된다.
+		SXSSFWorkbook workbook = new SXSSFWorkbook();
+		
+		SXSSFSheet sheet = workbook.createSheet("코코아워크 사원정보");
+		
+		// 시트 열 너비 설정(ex:8열)
+		sheet.setColumnWidth(0, 4000);
+		sheet.setColumnWidth(1, 2000);
+		sheet.setColumnWidth(2, 2000);
+		sheet.setColumnWidth(3, 3000);
+		sheet.setColumnWidth(4, 4000);
+		sheet.setColumnWidth(5, 5000);
+		sheet.setColumnWidth(6, 2000);
+		sheet.setColumnWidth(7, 3500);
+		
+		// 행의 위치를 나타내는 변수
+		int rowLocation = 0;
+		
+		////////////////////////////////////////////////////////////////////////////////////////
+		// CellStyle 정렬하기(Alignment)
+		// CellStyle 객체를 생성하여 Alignment 세팅하는 메소드를 호출해서 인자값을 넣어준다.
+		// 아래는 HorizontalAlignment(가로)와 VerticalAlignment(세로)를 모두 가운데 정렬 시켰다.
+		
+		CellStyle mergeRowStyle = workbook.createCellStyle();
+		mergeRowStyle.setAlignment(HorizontalAlignment.CENTER);
+		mergeRowStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		
+		CellStyle headerStyle = workbook.createCellStyle();
+		headerStyle.setAlignment(HorizontalAlignment.CENTER);
+		headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		
+		// CellStyle 배경색(ForegroundColor)만들기
+        // setFillForegroundColor 메소드에 IndexedColors Enum인자를 사용한다.
+        // setFillPattern은 해당 색을 어떤 패턴으로 입힐지를 정한다.
+	    mergeRowStyle.setFillForegroundColor(IndexedColors.BLUE_GREY.index);
+	    mergeRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    
+	    headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
+	    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    
+	    Font mergeRowFont = workbook.createFont();
+	    mergeRowFont.setFontName("돋움");
+	    mergeRowFont.setFontHeight((short)500);
+	    mergeRowFont.setColor(IndexedColors.WHITE.getIndex());
+	    mergeRowFont.setBold(true);
+	    
+	    mergeRowStyle.setFont(mergeRowFont);
+	    
+	    // CellStyle 테두리 Border
+	    // 테두리는 각 셀마다 상하좌우 모두 설정해준다.
+	    // setBorderTop, Bottom, Left, Right 메서드와 인자로 POI 라이브러리의 BorderStyle 인자를 넣어서 적용한다.
+	    mergeRowStyle.setBorderTop(BorderStyle.THICK);
+	    mergeRowStyle.setBorderBottom(BorderStyle.THICK);
+	    mergeRowStyle.setBorderLeft(BorderStyle.THICK);
+	    mergeRowStyle.setBorderRight(BorderStyle.THICK);;
+	    
+	    headerStyle.setBorderTop(BorderStyle.THICK);
+	    headerStyle.setBorderBottom(BorderStyle.THICK);
+	    headerStyle.setBorderLeft(BorderStyle.THICK);
+	    headerStyle.setBorderRight(BorderStyle.THICK);
+	    
+	    // Cell Merge 셀 병합시키기
+	    /*
+	              셀병합은 시트의 addMergeRegion 메소드에 CellRangeAddress 객체를 인자로 하여 병합시킨다.
+           CellRangeAddress 생성자의 인자로(시작 행, 끝 행, 시작 열, 끝 열) 순서대로 넣어서 병합시킬 범위를 정한다. 배열처럼 시작은 0부터이다.  
+	    */
+	    // 병합할 행 만들기
+	    Row mergeRow = sheet.createRow(rowLocation);
+	    
+	    // 병합할 행에 "회사 사원정보"로 셀을 만들어 셀에 스타일 주기
+	    for (int i = 0; i < 8; i++) {
+	    	// 셀 8개 만들기
+			Cell cell = mergeRow.createCell(i);
+			cell.setCellStyle(mergeRowStyle);
+			cell.setCellValue("회사 사원정보");
+		}
+	    
+	    // 셀 병합하기
+	    sheet.addMergedRegion(new CellRangeAddress(rowLocation, rowLocation, 0, 7));
+		
+	    // CellStyle 천단위 쉼표, 금액
+	    CellStyle moneyStyle = workbook.createCellStyle();
+	    moneyStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
+	    
+	    // 헤더 행 생성
+	    // 엑셀에서 행의 시작은 0부터 시작
+	    Row headerRow = sheet.createRow(++rowLocation);
+	    
+	    // 해당 행의 첫번째 열에 대한 셀 생성
+	    Cell headerCell = headerRow.createCell(0);	// 엑셀에서 열의 시작은 0부터 시작
+	    headerCell.setCellValue("사원번호");
+	    headerCell.setCellStyle(headerStyle);
+	    
+	    // 해당 행의 두번째 열에 대한 셀 생성
+	    headerCell = headerRow.createCell(1);
+	    headerCell.setCellValue("부서명");
+	    headerCell.setCellStyle(headerStyle);
+	    
+	    // 해당 행의 세번째 열에 대한 셀 생성
+	    headerCell = headerRow.createCell(2);
+	    headerCell.setCellValue("직급");
+	    headerCell.setCellStyle(headerStyle);
+	    
+	    // 해당 행의 네번째 열에 대한 셀 생성
+	    headerCell = headerRow.createCell(3);
+	    headerCell.setCellValue("이름");
+	    headerCell.setCellStyle(headerStyle);
+	    
+	    // 해당 행의 다섯번째 열에 대한 셀 생성
+	    headerCell = headerRow.createCell(4);
+	    headerCell.setCellValue("연락처");
+	    headerCell.setCellStyle(headerStyle);
+	    
+	    // 해당 행의 여섯번째 열에 대한 셀 생성
+	    headerCell = headerRow.createCell(5);
+	    headerCell.setCellValue("이메일");
+	    headerCell.setCellStyle(headerStyle);
+	    
+	    // 해당 행의 일곱번째 열에 대한 셀 생성
+	    headerCell = headerRow.createCell(6);
+	    headerCell.setCellValue("급여");
+	    headerCell.setCellStyle(headerStyle);
+	    
+	    // 해당 행의 여덟번째 열에 대한 셀 생성
+	    headerCell = headerRow.createCell(7);
+	    headerCell.setCellValue("입사일자");
+	    headerCell.setCellStyle(headerStyle);
+	    
+	    // === 사원정보에 해당하는 행 및 셀 생성하기 === //
+	    Row bodyRow = null;
+	    Cell bodyCell = null;
+	    
+	    for (int i = 0; i < excelEmpList.size(); i++) {
+			Map<String, String> empMap = excelEmpList.get(i);
+		
+			// 행 생성
+			bodyRow = sheet.createRow(i + (rowLocation + 1));
+			
+			// 데이터 사원번호 표시
+			bodyCell = bodyRow.createCell(0);
+			bodyCell.setCellValue(empMap.get("employeeid"));
+
+			// 데이터 부서명 표시
+			bodyCell = bodyRow.createCell(1);
+			bodyCell.setCellValue(empMap.get("departmentname"));
+
+			// 데이터 직급 표시
+			bodyCell = bodyRow.createCell(2);
+			bodyCell.setCellValue(empMap.get("positionname"));
+
+			// 데이터 이름 표시
+			bodyCell = bodyRow.createCell(3);
+			bodyCell.setCellValue(empMap.get("name"));
+			
+			// 데이터 연락처 표시
+			bodyCell = bodyRow.createCell(4);
+			bodyCell.setCellValue(empMap.get("mobile"));
+			
+			// 데이터 이메일 표시
+			bodyCell = bodyRow.createCell(5);
+			bodyCell.setCellValue(empMap.get("email"));
+						
+			// 데이터 급여 표시
+			bodyCell = bodyRow.createCell(6);
+			bodyCell.setCellValue(Integer.parseInt(empMap.get("salary")));
+			
+			// 데이터 입사일자 표시
+			bodyCell = bodyRow.createCell(7);
+			bodyCell.setCellValue(empMap.get("hiredate"));
+									
+	    }
+	    
+	    model.addAttribute("locale", Locale.KOREA);
+	    model.addAttribute("workbook", workbook);
+	    model.addAttribute("workbookName", "사원정보");
+	    
+	    return "excelDownloadView";
+	}
+	
 	
 	
 	////////////////////////////////////////////////////////

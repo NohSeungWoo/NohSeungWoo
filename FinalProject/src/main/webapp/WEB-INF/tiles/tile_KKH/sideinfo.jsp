@@ -45,7 +45,7 @@
 	                <a href="#">완료한</a>
 	            </li>
 	        </ul>
-	  <a href="#" class="list-group-item list-group-item-action">수신함</a>
+	  <a href="<%= request.getContextPath()%>/admin/empChart.gw" class="list-group-item list-group-item-action">직원통계</a>
 	</div>
 </nav>
    

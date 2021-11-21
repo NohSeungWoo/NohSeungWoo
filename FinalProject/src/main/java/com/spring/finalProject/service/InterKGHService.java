@@ -51,4 +51,7 @@ public interface InterKGHService {
 	// 부서별 인원 가져오기(select)
 	List<String> getDepartempCnt();
 
+	// 엑셀에 입력할 직원 정보 가져오기
+	List<Map<String, String>> excelEmpList(Map<String, String> paraMap);
+
 }

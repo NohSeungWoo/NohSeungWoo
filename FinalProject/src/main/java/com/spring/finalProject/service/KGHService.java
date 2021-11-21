@@ -120,5 +120,12 @@ public class KGHService implements InterKGHService {
 		return departEmpCnt;
 	}
 
+	@Override
+	public List<Map<String, String>> excelEmpList(Map<String, String> paraMap) {
+		// === 엑셀에 입력할 직원 정보 가져오기 === //
+		List<Map<String, String>> excelEmpList = dao.excelEmpList(paraMap);
+		return excelEmpList;
+	}
+
 
 }
