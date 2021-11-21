@@ -47,6 +47,7 @@
 <body>
 	<div class="container-fluid" style="max-width:1600px">
 		<nav class="navbar navbar-expand-lg navbar-light pt-2" style="background-color: white;">
+		<!-- <nav class="navbar navbar-expand-lg navbar-dark pt-2" style="background-color: black;"> -->
 			<!-- Brand/logo --> <!-- Font Awesome 5 Icons -->
 			<a class="navbar-brand" href="<%= ctxPath %>/index.gw" style="margin-right: 10%; font-size:20pt; font-weight: bold;">그룹웨어</a>
 			
