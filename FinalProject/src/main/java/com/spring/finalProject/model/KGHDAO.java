@@ -131,5 +131,13 @@ public class KGHDAO implements InterKGHDAO {
 		return excelEmpList;
 	}
 
+	
+	// === 직원수 가져오기 메서드 === //
+	@Override
+	public int getEmpCnt() {
+		int empCnt = sqlsession.selectOne("KangGH.getEmpCnt");
+		return empCnt;
+	}
+
 
 }

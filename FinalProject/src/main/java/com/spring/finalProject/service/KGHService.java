@@ -127,5 +127,12 @@ public class KGHService implements InterKGHService {
 		return excelEmpList;
 	}
 
+	@Override
+	public int getEmpCnt() {
+		// === 직원수 가져오기 메서드 === //
+		int empCnt = dao.getEmpCnt();
+		return empCnt;
+	}
+
 
 }

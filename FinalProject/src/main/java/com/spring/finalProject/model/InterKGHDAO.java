@@ -49,6 +49,9 @@ public interface InterKGHDAO {
 
 	// 엑셀에 입력할 직원 정보 가져오기
 	List<Map<String, String>> excelEmpList(Map<String, String> paraMap);
+
+	// 직원수 가져오기 메서드
+	int getEmpCnt();
 	
 
 }

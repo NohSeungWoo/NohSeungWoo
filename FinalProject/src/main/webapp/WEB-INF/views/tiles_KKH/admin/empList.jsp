@@ -269,6 +269,7 @@
 		}
 	}
 	
+	// === 부서 또는 직급 클릭했을 때 검색 이벤트 함수 === //
 	function departPositionSearch() {
 		var department = sessionStorage.getItem("department");
 		var position = sessionStorage.getItem("position");

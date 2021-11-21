@@ -231,4 +231,10 @@
 		    </if>
 		)
 	</select>
+	
+	<!-- === 직원수 가져오기 메서드(select) === -->
+	<select id="getEmpCnt" resultType="int">
+		select count(*)
+		from tbl_employee
+	</select>
 </mapper>

@@ -806,6 +806,129 @@ public class KGHController {
 	}
 	
 	
+	// 부서 관리 페이지 이동
+	@RequestMapping(value = "admin/department.gw")
+	public ModelAndView department(ModelAndView mav, HttpServletRequest request) {
+		
+		List<Map<String, String>> empDepartList = null;
+		
+		// === 직원수 가져오기 메서드 === //
+		int empCnt = service.getEmpCnt();
+		mav.addObject("empCnt", empCnt);
+		
+		String department = request.getParameter("department");
+		String searchEmp = request.getParameter("searchEmp");
+		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
+		
+		if(department == null || "".equals(department) || department.trim().isEmpty()) {
+			department = "";
+		}
+		
+		if(searchEmp == null || "".equals(searchEmp) || searchEmp.trim().isEmpty() ) {
+			searchEmp = "";
+	    }
+		
+		Map<String,String> paraMap = new HashMap<>();
+	    paraMap.put("department", department);
+	    paraMap.put("position", "");
+	    paraMap.put("searchEmp", searchEmp);
+	    
+	    // 먼저 총 게시물 건수(totalCount)를 구해와야 한다.
+	    // 총 게시물 건수(totalCount)는 검색조건이 있을 때와 없을 때로 나뉘어진다.
+	    int totalCount = 0;			// 총 게시물 건수
+	    int sizePerPage = 5;		// 한 페이지당 보여줄 게시물 건수
+		int currentShowPageNo = 0;	// 현재 보여주는 페이지 번호로서, 초기값은 1 페이지로 설정해야 한다.
+	    int totalPage = 0;			// 총 페이지 수(웹브라우저 상에서 보여줄 총 페이지 개수, 페이지바)
+	    
+	    int startRno = 0;			// 시작 행번호
+	    int endRno = 0;				// 끝 행번호
+		
+		// === 총 게시물 건수(totalCount) 가져오기(select) === //
+		totalCount = service.getTotalCount(paraMap);
+		// System.out.println("~~~ 확인용 totalCount : " + totalCount);
+		// ~~~ 확인용 totalCount : 6
+		
+		// 총 게시물 건수(totalCount)가 127개 일 경우
+	    // 총 페이지 수(totalPage)는 13개 되어야 한다.
+	    totalPage = (int)Math.ceil((double)totalCount/sizePerPage);	// (double)127 / 10 => 12.7 => Math.ceil(12.7) => 13.0 => (int)13.0
+	    
+	    if(str_currentShowPageNo == null) {
+	    	// 게시판에 보여지는 초기화면
+	    	currentShowPageNo = 1; 
+	    }
+	    else {
+	    	try {
+	    		currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+			
+	    		if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+	    			currentShowPageNo = 1;
+	    		}
+	    	} catch (NumberFormatException e) {
+				currentShowPageNo = 1;
+			}
+	    }
+		
+	    startRno = ( (currentShowPageNo - 1) * sizePerPage ) + 1;
+	    endRno = startRno + sizePerPage - 1;
+
+	    paraMap.put("startRno", String.valueOf(startRno));
+	    paraMap.put("endRno", String.valueOf(endRno));
+		
+		// 페이징 처리한 직원 목록 가져오기(검색이 있든지, 검색이 없든지 다 포함된 것)
+	    empDepartList = service.getEmpListWithPaging(paraMap);
+		
+		// 아래는 검색대상 컬럼과 검색어를 유지시키기 위한 것임.
+		if(!"".equals(searchEmp) && !"".equals(searchEmp)) {
+			mav.addObject("paraMap", paraMap);
+		}
+		
+		// === 페이지바 만들기 === //
+		int blockSize = 10;
+		// blockSize는 1개 블럭(토막)당 보여지는 페이지 번호의 개수이다.
+	    
+		int loop = 1;
+		// loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize) ] 까지만 증가하는 용도이다.
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		String pageBar = "<ul style='list-style: none;'>";
+		String url = "/finalProject/admin/department.gw";
+		
+		// === [맨처음][이전] 만들기 === //
+		if(pageNo != 1) {
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "?department=" + department + "&searchEmp=" + searchEmp + "&currentShowPageNo=1'>[맨처음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "?department=" + department + "&searchEmp=" + searchEmp + "&currentShowPageNo=" + (pageNo-1) + "'>[이전]</a></li>";
+		}
+		
+		while(!(loop > blockSize || pageNo > totalPage)) {
+			if(pageNo == currentShowPageNo) {
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; background-color: #666666; font-weight:bold; color:white; padding:2px 4px;'>" + pageNo + "</li>";
+			}
+			else {
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='" + url + "?department=" + department + "&searchEmp=" + searchEmp + "&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
+			}
+			
+			loop++;
+			pageNo++;
+		}
+		
+		// === [다음][마지막] 만들기 ===
+		if(pageNo <= totalPage) {
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "?department=" + department + "&searchEmp=" + searchEmp + "&currentShowPageNo=" + pageNo + "'>[다음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "?department=" + department + "&searchEmp=" + searchEmp + "&currentShowPageNo=" + totalPage + "'>[마지막]</a></li>";
+		}
+		
+		pageBar += "</ul>";
+		
+		mav.addObject("pageBar", pageBar);
+		
+		mav.addObject("empDepartList", empDepartList);
+		
+		mav.setViewName("admin/department.tiles_KKH");
+		
+		return mav;
+	}
+	
 	
 	////////////////////////////////////////////////////////
 	// === 로그인 또는 로그아웃을 할 때 현재 페이지로 돌아가는 메서드 생성 === //
