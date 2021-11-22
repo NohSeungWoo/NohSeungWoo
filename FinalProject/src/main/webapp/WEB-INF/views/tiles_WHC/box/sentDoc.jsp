@@ -19,6 +19,9 @@
 		display: inline-block;
 		width: 180px;
 	}
+	.listtr:hover {
+   		background-color: #f2f6ff;
+   	}
 </style>
 
 <script type="text/javascript">
@@ -117,7 +120,7 @@
 		<div class="table-responsive">
 			<table class="table table-bordered">
 				<thead>
-					<tr style="text-align: center;">
+					<tr style="text-align: center; background-color: #fafafa;">
 						<th style="width: 160px;  text-align: center">기안양식</th>
 						<th style="text-align: center">기안제목</th>
 						<th style="width: 200px;  text-align: center">결제대기자</th>
@@ -127,7 +130,7 @@
 				<tbody>
 						<c:if test="${not empty requestScope.approvalList}">
 							<c:forEach var="apList" items="${requestScope.approvalList}">
-							<tr>
+							<tr class="listtr">
 								<td class="" align="center">${apList.apcaname}</td>
 								<td class="">
 									<a href="<%= ctxPath%>/docdetail.gw?apno=${apList.apno}">${apList.subject}</a>
@@ -139,7 +142,9 @@
 						</c:if>
 						<c:if test="${empty requestScope.approvalList}">
 						<tr style="height: 150px;">
-							<td colspan="4" align="center" class="pt-5">조회 결과가 존재하지 않습니다.</td>
+							<td colspan="4" align="center" >
+								<div class="my-5"><i class="fas fa-info-circle" style="color:#d9e4fe;"></i><br>조회 결과가 존재하지 않습니다.</div>
+							</td>
 						</tr>
 						</c:if>
 				</tbody>
@@ -151,7 +156,7 @@
 		<div class="table-responsive">
 			<table class="table table-bordered">
 				<thead>
-					<tr style="text-align: center;">
+					<tr style="text-align: center; background-color: #fafafa;">
 						<th style="width: 100px;  text-align: center">문서번호</th>
 						<th style="width: 160px;  text-align: center">기안양식</th>
 						<th style="text-align: center">기안제목</th>
@@ -162,7 +167,7 @@
 				<tbody>
 						<c:if test="${not empty requestScope.approvalList}">
 							<c:forEach var="apList" items="${requestScope.approvalList}">
-							<tr>
+							<tr class="listtr">
 								<td class="" align="center">${apList.apno}</td>
 								<td class="" align="center">${apList.apcaname}</td>
 								<td class="">
@@ -175,7 +180,9 @@
 						</c:if>
 						<c:if test="${empty requestScope.approvalList}">
 						<tr style="height: 150px;">
-							<td colspan="5" align="center" class="pt-5">조회 결과가 존재하지 않습니다.</td>
+							<td colspan="5" align="center" >
+								<div class="my-5"><i class="fas fa-info-circle" style="color:#d9e4fe;"></i><br>조회 결과가 존재하지 않습니다.</div>
+							</td>
 						</tr>
 						</c:if>
 				</tbody>
@@ -187,7 +194,7 @@
 		<div class="table-responsive">
 			<table class="table table-bordered">
 				<thead>
-					<tr style="text-align: center;">
+					<tr style="text-align: center; background-color: #fafafa;">
 						<th style="width: 160px;  text-align: center">기안양식</th>
 						<th style="text-align: center">기안제목</th>
 						<th style="width: 200px; text-align: center">상신일시</th>
@@ -197,7 +204,7 @@
 				<tbody>
 						<c:if test="${not empty requestScope.approvalList}">
 							<c:forEach var="apList" items="${requestScope.approvalList}">
-							<tr>
+							<tr class="listtr">
 								<td class="" align="center">${apList.apcaname}</td>
 								<td class="">
 									<a href="<%= ctxPath%>/docdetail.gw?apno=${apList.apno}">${apList.subject}</a>
@@ -209,7 +216,9 @@
 						</c:if>
 						<c:if test="${empty requestScope.approvalList}">
 						<tr style="height: 150px;">
-							<td colspan="4" align="center" class="pt-5">조회 결과가 존재하지 않습니다.</td>
+							<td colspan="4" align="center" >
+								<div class="my-5"><i class="fas fa-info-circle" style="color:#d9e4fe;"></i><br>조회 결과가 존재하지 않습니다.</div>
+							</td>
 						</tr>
 						</c:if>
 				</tbody>

@@ -7,7 +7,9 @@
 <% String ctxPath = request.getContextPath(); %>
 
 <style type="text/css">
-
+	.contentTbody th {
+		background-color : #fafafa;
+	}
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
@@ -225,7 +227,7 @@
 		</div>
 		
 		<table class="table " style="width:100%; margin-bottom:5px;">
-			<tbody class="border-bottom" style="background-color: #f7f7f7;" >
+			<tbody class="border-bottom contentTbody">
 				<tr>
 					<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">기안제목</th>
 					<td>
@@ -304,7 +306,7 @@
 			</div>
 			<table class="table table-bordered" style="margin-top: 2%; margin-bottom: 3%;">
 				<thead>
-				<tr>
+				<tr style="background-color: #fafafa;">
 				   <th style="width: 15%; text-align: center;">결재자</th>
 				   <th style="width: 10%; text-align: center;">결재상태</th>
 				   <th style="text-align: center;">결재의견</th>

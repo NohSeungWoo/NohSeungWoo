@@ -46,14 +46,16 @@
 </head>
 <body>
 	<div class="container-fluid" style="max-width:1600px">
-		<nav class="navbar navbar-expand-lg navbar-light pt-2" style="background-color: white;">
-		<!-- <nav class="navbar navbar-expand-lg navbar-dark pt-2" style="background-color: black;"> -->
+		<!-- <nav class="navbar navbar-expand-lg navbar-light pt-2" style="background-color: white;"> -->
+		<nav class="navbar navbar-expand-lg navbar-dark pt-2" style="background-color: black;">
 			<!-- Brand/logo --> <!-- Font Awesome 5 Icons -->
-			<a class="navbar-brand" href="<%= ctxPath %>/index.gw" style="margin-right: 10%; font-size:20pt; font-weight: bold;">그룹웨어</a>
+			<%-- <a class="navbar-brand" href="<%= ctxPath %>/index.gw" style="color: white;">그룹<i class="fab fa-google-wallet fa-lg"></i></a> --%>
+			<a href="<%= ctxPath %>/" style="margin-right: 10%; font-size:20pt; font-weight: bold; color: white;"><i class="fab fa-gofore"></i>roup<i class="fab fa-google-wallet fa-lg"></i>are</a>
 			
 			<!-- 아코디언 같은 Navigation Bar 만들기 -->
-		    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-		      <span class="navbar-toggler-icon"></span>
+		    <button class="navbar-toggler" style="border-color: white; " type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+		      <!-- <span class="navbar-toggler-icon"></span> -->
+		      <i class="fas fa-bars" style="color: white;"></i>
 		    </button>
 			
 			<div class="collapse navbar-collapse" id="collapsibleNavbar">
@@ -65,7 +67,7 @@
 			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/timemanager.gw"><i class="fas fa-stopwatch fa-lg"></i><br>근태관리</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/approval.gw"><i class="far fa-file-alt fa-lg"></i><br>전자결재</a>
+			     	<a class="nav-link menufont_size" href="<%= ctxPath %>/approval.gw"><i class="far fa-file-alt fa-lg"></i><br>전자결재</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
 			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/recentList.gw"><i class="fas fa-chalkboard fa-lg"></i><br>게시판</a>

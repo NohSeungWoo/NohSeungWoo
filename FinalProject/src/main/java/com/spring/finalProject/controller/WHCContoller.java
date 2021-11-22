@@ -53,7 +53,7 @@ public class WHCContoller {
 	
 	// === 전자결재 메인 페이지 === //
 	@RequestMapping(value="/approval.gw")
-	public ModelAndView approvalMain(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView requiredLogin_approval(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
 		Map<String,String> paraMap = new HashMap<>();
 		
@@ -425,7 +425,7 @@ public class WHCContoller {
 		String fk_employeeid = loginuser.getEmployeeid();
 		String apstatus = request.getParameter("apstatus");
 		
-		String str_currentShowPageNo = request.getParameter("str_currentShowPageNo");
+		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		String makeFromDate = request.getParameter("makeFromDate");
 		String makeToDate = request.getParameter("makeToDate");
 		String fk_apcano = request.getParameter("fk_apcano");
@@ -521,11 +521,18 @@ public class WHCContoller {
 		int pageNo = (( currentShowPageNo - 1)/blockSize ) * blockSize + 1;
 		
 		String pageBar = "<ul style='list-style: none;'>";
-		String url = "list.action";
+		String url = "";
+		if("".equals(yn)) {
+			url = "sentDoc.gw?";
+		}
+		else {
+			url = "receiveDoc.gw?yn="+yn;
+		}
+		
 		// **** [맨처음][이전] 만들기  **** //
 		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; font-size:12pt; width:70px;'><a href='"+url+"?currentShowPageNo=1&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+searchWord+"'>[맨처음]</a></li>";
-			pageBar += "<li style='display:inline-block; font-size:12pt; width:50px;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+searchWord+"'>[이전]</a></li>";
+			pageBar += "<li style='display:inline-block; font-size:12pt; width:70px;'><a href='"+url+"currentShowPageNo=1&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>[맨처음]</a></li>";
+			pageBar += "<li style='display:inline-block; font-size:12pt; width:50px;'><a href='"+url+"currentShowPageNo="+(pageNo-1)+"&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>[이전]</a></li>";
 		}
 		
 		while( !(loop > blockSize || pageNo > totalPage ) ) {
@@ -534,7 +541,7 @@ public class WHCContoller {
 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; padding:2px 4px;'><a href='#' style='color:red;'>"+pageNo+"</a></li>";
 			}
 			else {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+searchWord+"'>"+pageNo+"</a></li>";
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>"+pageNo+"</a></li>";
 			}
 			loop++;   // 1 2 3 4 5 6 7 8 9 10
 			
@@ -549,8 +556,8 @@ public class WHCContoller {
 		// **** [다음][마지막] 만들기  **** //
 		// pageNo ==> 11
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; font-size:12pt; width:50px;'><a href='"+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+"'>[다음]</a></li>";
-			pageBar += "<li style='display:inline-block; font-size:12pt; width:70px;'><a href='"+url+"?currentShowPageNo="+totalPage+"&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; font-size:12pt; width:50px;'><a href='"+url+"currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>[다음]</a></li>";
+			pageBar += "<li style='display:inline-block; font-size:12pt; width:70px;'><a href='"+url+"currentShowPageNo="+totalPage+"&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>[마지막]</a></li>";
 		}
 		pageBar += "</ul>";
 				
@@ -689,7 +696,7 @@ public class WHCContoller {
 		String fk_employeeid = loginuser.getEmployeeid();
 		String apstatus = request.getParameter("apstatus");
 		
-		String str_currentShowPageNo = request.getParameter("str_currentShowPageNo");
+		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		String makeFromDate = request.getParameter("makeFromDate");
 		String makeToDate = request.getParameter("makeToDate");
 		String fk_apcano = request.getParameter("fk_apcano");
@@ -780,11 +787,18 @@ public class WHCContoller {
 		int pageNo = (( currentShowPageNo - 1)/blockSize ) * blockSize + 1;
 		
 		String pageBar = "<ul style='list-style: none;'>";
-		String url = "list.action";
+		String url = "";
+		if("c".equals(emptype)){
+			url = "cooDoc.gw";
+		}
+		else if("r".equals(emptype)){
+			url = "rbeDoc.gw";
+		}
+		
 		// **** [맨처음][이전] 만들기  **** //
 		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; font-size:12pt; width:70px;'><a href='"+url+"?currentShowPageNo=1&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+searchWord+"'>[맨처음]</a></li>";
-			pageBar += "<li style='display:inline-block; font-size:12pt; width:50px;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+searchWord+"'>[이전]</a></li>";
+			pageBar += "<li style='display:inline-block; font-size:12pt; width:70px;'><a href='"+url+"?currentShowPageNo=1&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>[맨처음]</a></li>";
+			pageBar += "<li style='display:inline-block; font-size:12pt; width:50px;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>[이전]</a></li>";
 		}
 		
 		while( !(loop > blockSize || pageNo > totalPage ) ) {
@@ -793,7 +807,7 @@ public class WHCContoller {
 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; padding:2px 4px;'><a href='#' style='color:red;'>"+pageNo+"</a></li>";
 			}
 			else {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+searchWord+"'>"+pageNo+"</a></li>";
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>"+pageNo+"</a></li>";
 			}
 			loop++;   // 1 2 3 4 5 6 7 8 9 10
 			
@@ -808,8 +822,8 @@ public class WHCContoller {
 		// **** [다음][마지막] 만들기  **** //
 		// pageNo ==> 11
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; font-size:12pt; width:50px;'><a href='"+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+"'>[다음]</a></li>";
-			pageBar += "<li style='display:inline-block; font-size:12pt; width:70px;'><a href='"+url+"?currentShowPageNo="+totalPage+"&sizePerPage="+sizePerPage+"&searchType="+"&searchWord="+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; font-size:12pt; width:50px;'><a href='"+url+"?currentShowPageNo="+pageNo+"&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>[다음]</a></li>";
+			pageBar += "<li style='display:inline-block; font-size:12pt; width:70px;'><a href='"+url+"?currentShowPageNo="+totalPage+"&sizePerPage="+sizePerPage+"&apstatus="+apstatus+"&makeFromDate="+makeFromDate+"&makeToDate="+makeToDate+"&fk_apcano="+fk_apcano+"&searchWord="+searchWord+"'>[마지막]</a></li>";
 		}
 		pageBar += "</ul>";
 				

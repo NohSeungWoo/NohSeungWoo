@@ -44,25 +44,25 @@
 	<h4><b>나의 현황</b></h4>
 	
 	<div class="card-group">
-		<div class="card py-lg-3">
+		<div class="card py-lg-3" style="background-color: #fafafa;">
 	  		<div class="card-body text-center">
 	    		<h5 class="card-title mb-3">상신한</h5>
 			    <a href="<%=ctxPath%>/box/sentDoc.gw?apstatus=0" class="stretched-link" style="font-size:18pt; font-weight: bold;">${requestScope.totalSentCount}</a>
 		  	</div>
 		</div>
-		<div class="card py-lg-3">
+		<div class="card py-lg-3" style="background-color: #fafafa;">
 		  	<div class="card-body text-center">
 		    	<h5 class="card-title mb-3">반려된</h5>
 			    <a href="<%=ctxPath%>/box/sentDoc.gw?apstatus=2" class="stretched-link" style="font-size:18pt; font-weight: bold;">${requestScope.totalreturnCount}</a>
 	  		</div>
 		</div>
-		<div class="card py-lg-3">
+		<div class="card py-lg-3" style="background-color: #fafafa;">
 		  	<div class="card-body text-center">
 		    	<h5 class="card-title mb-3">결재전</h5>
 			    <a href="<%=ctxPath%>/box/receiveDoc.gw?apstatus=0&yn=1" class="stretched-link" style="font-size:18pt; font-weight: bold;">${requestScope.totaldoCount}</a>
 		  	</div>
 		</div>
-		<div class="card py-lg-3">
+		<div class="card py-lg-3" style="background-color: #fafafa;">
 		  	<div class="card-body text-center">
 		    	<h5 class="card-title mb-3">협조/수신</h5>
 			    <a href="<%=ctxPath%>/box/cooDoc.gw?apstatus=0" class="" style="font-size:18pt; font-weight: bold;">${requestScope.cototalCount}</a>
