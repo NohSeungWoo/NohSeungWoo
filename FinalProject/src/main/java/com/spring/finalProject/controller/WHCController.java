@@ -35,7 +35,7 @@ import com.spring.finalProject.service.InterWHCService;
 //==== #30. 컨트롤러 선언 ====
 @Component
 @Controller
-public class WHCContoller {
+public class WHCController {
 	
 	@RequestMapping(value = "/index.gw")
 	public String index(HttpServletRequest request) {
@@ -54,6 +54,8 @@ public class WHCContoller {
 	// === 전자결재 메인 페이지 === //
 	@RequestMapping(value="/approval.gw")
 	public ModelAndView requiredLogin_approval(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
 		Map<String,String> paraMap = new HashMap<>();
 		
@@ -111,8 +113,10 @@ public class WHCContoller {
 	
 	// === 기안하기 버튼 클릭시 기안양식 페이지 === //
 	@RequestMapping(value="/approvalForm.gw")
-	public ModelAndView approvalForm(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView requiredLogin_approvalForm(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 
+		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
+		
 		// 기안양식 카테고리 얻어오기
 		List<ApcategoryVO> apcList = service.getApcategoryList();
 		
@@ -126,6 +130,8 @@ public class WHCContoller {
 	// === 기안양식을 골랐을때 기안작성하는 페이지 === //
 	@RequestMapping(value="/addApproval.gw")
 	public ModelAndView addApproval(HttpServletRequest request, ModelAndView mav) {
+		
+		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
 		// 로그인한 유저의 사원번호로  부서,직급 알아오기
 		HttpSession session = request.getSession();
@@ -382,7 +388,9 @@ public class WHCContoller {
 	
 	// === 내가 상신한 문서 === //
 	@RequestMapping(value="/box/sentDoc.gw")
-	public ModelAndView sentDoc(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView requiredLogin_sentDoc(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
 		// 기안양식 카테고리 얻어오기
 		List<ApcategoryVO> apcList = service.getApcategoryList();
@@ -416,7 +424,7 @@ public class WHCContoller {
 	}
 	
 	
-	
+	// 기안함, 결재함
 	public Map<String,String> getStartandEndRno (HttpServletRequest request, String yn) {
 		
 		
@@ -573,7 +581,9 @@ public class WHCContoller {
 	
 	// === 결재함 문서 === //
 	@RequestMapping(value="/box/receiveDoc.gw")
-	public ModelAndView receiveDoc(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView requiredLogin_receiveDoc(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
 		// 기안양식 카테고리 얻어오기
 		List<ApcategoryVO> apcList = service.getApcategoryList();
@@ -619,7 +629,9 @@ public class WHCContoller {
 	
 	// === 협조함 문서 === //
 	@RequestMapping(value="/box/cooDoc.gw")
-	public ModelAndView cooDoc(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView requiredLogin_cooDoc(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
 		// 기안양식 카테고리 얻어오기
 		List<ApcategoryVO> apcList = service.getApcategoryList();
@@ -654,7 +666,9 @@ public class WHCContoller {
 	
 	// === 수신함 문서 === //
 	@RequestMapping(value="/box/rbeDoc.gw")
-	public ModelAndView rbeDoc(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView requiredLogin_rbeDoc(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
 		// 기안양식 카테고리 얻어오기
 		List<ApcategoryVO> apcList = service.getApcategoryList();
@@ -687,7 +701,7 @@ public class WHCContoller {
 		return mav;
 	}
 	
-	
+	// 협조, 수신
 	public Map<String,String> getCooStartandEndRno (HttpServletRequest request, String emptype) {
 		
 		
@@ -840,8 +854,9 @@ public class WHCContoller {
 	
 	// === 문서상세 조회하기 === //
 	@RequestMapping(value="/docdetail.gw")
-	public ModelAndView docdetail(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView requiredLogin_docdetail(HttpServletRequest request, HttpServletResponse response ,ModelAndView mav) {
 		
+		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
 		HttpSession session = request.getSession();
 		EmployeeVO_KGH loginuser = (EmployeeVO_KGH) session.getAttribute("loginuser");
@@ -1135,4 +1150,11 @@ public class WHCContoller {
 		
 	}
 	
+	////////////////////////////////////////////////////////////////////////////////
+	//  === 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 생성 ===    
+	public void getCurrentURL(HttpServletRequest request) {
+	HttpSession session = request.getSession();
+	session.setAttribute("goBackURL", MyUtil_KGH.getCurrentURL(request));
+	}
+	////////////////////////////////////////////////////////////////////////////////
 }
