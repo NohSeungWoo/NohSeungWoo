@@ -30,14 +30,22 @@
 %>
 	
 <style type="text/css">
-	
+	.hovereditem {
+		color:white;
+	}
 </style>
 
 <script type="text/javascript">
 	
 	$(document).ready(function(){
 		
-		
+		$(".hovmenu").hover(function(){
+			
+			$(this).css("color","lightgray");
+			
+		},function(){
+			$(this).css("color","gray");
+		})
 		
 	});
 
@@ -61,28 +69,29 @@
 			<div class="collapse navbar-collapse" id="collapsibleNavbar">
 			  <ul class="navbar-nav mx-auto" style="font-size:14pt;">
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			        <a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="fas fa-home fa-lg"></i><br>홈</a>
+			        <a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>"><i class="fas fa-home fa-lg"></i><br>홈</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/timemanager.gw"><i class="fas fa-stopwatch fa-lg"></i><br>근태관리</a>
+			     	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>/timemanager.gw"><i class="fas fa-stopwatch fa-lg"></i><br>근태관리</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			     	<a class="nav-link menufont_size" href="<%= ctxPath %>/approval.gw"><i class="far fa-file-alt fa-lg"></i><br>전자결재</a>
+			     	<a class="nav-link menufont_size " href="<%= ctxPath %>/approval.gw"><i class="far fa-file-alt fa-lg"></i><br>전자결재</a>
+			     	<%-- 본인 페이지에  hovmenu 클래스 없애고 style="color:gray;" 지우면 스타일적용됩니다--%>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/recentList.gw"><i class="fas fa-chalkboard fa-lg"></i><br>게시판</a>
+			     	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>/recentList.gw"><i class="fas fa-chalkboard fa-lg"></i><br>게시판</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			     	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="fas fa-user-friends fa-lg"></i><br>조직도</a>
+			     	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>"><i class="fas fa-user-friends fa-lg"></i><br>조직도</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">          
-	             	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>"><i class="far fa-calendar-alt fa-lg"></i><br>일정</a>
+	             	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>"><i class="far fa-calendar-alt fa-lg"></i><br>일정</a>
 	          	 </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-	             	<a class="nav-link menufont_size" style="color:gray;" href="<%= ctxPath %>/chat.gw"><i class="far fa-envelope fa-lg"></i><br>웹채팅</a>
+	             	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>/chat.gw"><i class="far fa-envelope fa-lg"></i><br>웹채팅</a>
 	          	 </li>
 	          	 <li class="nav-item active mx-2" style="text-align: center;">  
-                   <a class="nav-link menufont_size" style="color:gray;" href="<%=ctxPath%>/survey.gw"><i class="fas fa-book-reader"></i><br>설문조사</a>
+                   <a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%=ctxPath%>/survey.gw"><i class="fas fa-book-reader"></i><br>설문조사</a>
                  </li>
 			     <c:if test="${sessionScope.loginuser != null and sessionScope.loginuser.admin == '1' }"> <%-- admin 으로 로그인 했으면 --%>
 					 <li class="nav-item dropdown">
@@ -99,9 +108,17 @@
 		     	</c:if>
 			  </ul>
 			  <ul class="navbar-nav list-group-horizontal mt-sm-0 mt-2 ml-auto nav_text">
+		    	<%--
 		    	<li class="nav-item ml-2" ><a class="nav-link fas fa-search fa-lg" style="color:gray" href="<%= ctxPath%>"></a></li>
 		    	<li class="nav-item ml-2" ><a class="nav-link far fa-bell fa-lg" style="color:gray" href="<%= ctxPath%>"></a></li>
-		    	<li class="nav-item ml-2" ><a class="nav-link far fa-user fa-lg" style="color:gray" href="<%= ctxPath%>"></a></li>
+		    	--%>
+		    	<c:if test="${sessionScope.loginuser == null}">
+		    		<li class="nav-item ml-2" ><a class="nav-link fas fa-sign-in-alt hovmenu" style="color:gray" href="<%= ctxPath%>/login.gw">로그인</a></li>
+		    	</c:if>
+		    	<c:if test="${sessionScope.loginuser != null}">
+			    	<li class="nav-item ml-2" ><a class="nav-link far fa-user fa-lg hovmenu" style="color:gray" href="<%= ctxPath%>"></a></li>
+			    	<li class="nav-item ml-2" ><a class="nav-link fas fa-sign-out-alt hovmenu" style="color:gray" href="<%= ctxPath%>/logout.gw">로그아웃</a></li>
+		    	</c:if>
 	   		  </ul>	  
 			</div>
 		</nav>
