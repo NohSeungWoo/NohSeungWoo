@@ -1307,35 +1307,38 @@ public class WHCController {
         Row bodyRow = null;
         Cell bodyCell = null;
         
-        for(int i=0; i<approvalList.size(); i++) {
-        	
-        	Map<String,String> apMap = approvalList.get(i);
-        	
-        	// 행생성
-        	bodyRow = sheet.createRow(i+ (rowLocation+1)); // i + 2
-        	
-        	bodyCell = bodyRow.createCell(0);
-        	bodyCell.setCellValue(apMap.get("apno"));
-        	
-        	bodyCell = bodyRow.createCell(1);
-        	bodyCell.setCellValue(apMap.get("apcaname"));
-        	
-        	bodyCell = bodyRow.createCell(2);
-        	bodyCell.setCellValue(apMap.get("subject"));
-        	
-        	bodyCell = bodyRow.createCell(3);
-        	bodyCell.setCellValue(apMap.get("apdate"));
-        	
-        	bodyCell = bodyRow.createCell(4);
-        	if("0".equals(request.getParameter("apstatus"))) {
-             	bodyCell.setCellValue(apMap.get("departmentname")+"부 "+ apMap.get("positionname") +" "+ apMap.get("name"));
-         	}
-         	else {
-         		bodyCell.setCellValue(apMap.get("eddate"));
-         	}
-        	
-        }// end of for---------------------------
+        if(approvalList.size() >0 && approvalList != null) {
         
+	        for(int i=0; i<approvalList.size(); i++) {
+	        	
+	        	Map<String,String> apMap = approvalList.get(i);
+	        	
+	        	// 행생성
+	        	bodyRow = sheet.createRow(i+ (rowLocation+1)); // i + 2
+	        	
+	        	bodyCell = bodyRow.createCell(0);
+	        	bodyCell.setCellValue(apMap.get("apno"));
+	        	
+	        	bodyCell = bodyRow.createCell(1);
+	        	bodyCell.setCellValue(apMap.get("apcaname"));
+	        	
+	        	bodyCell = bodyRow.createCell(2);
+	        	bodyCell.setCellValue(apMap.get("subject"));
+	        	
+	        	bodyCell = bodyRow.createCell(3);
+	        	bodyCell.setCellValue(apMap.get("apdate"));
+	        	
+	        	bodyCell = bodyRow.createCell(4);
+	        	if("0".equals(request.getParameter("apstatus"))) {
+	             	bodyCell.setCellValue(apMap.get("departmentname")+"부 "+ apMap.get("positionname") +" "+ apMap.get("name"));
+	         	}
+	         	else {
+	         		bodyCell.setCellValue(apMap.get("eddate"));
+	         	}
+	        	
+	        }// end of for---------------------------
+	        
+        }
         model.addAttribute("locale", Locale.KOREA); // 원화로 하기위해
         model.addAttribute("workbook", workbook); 
         model.addAttribute("workbookName", "기안한 문서");  // 파일명에 사용
