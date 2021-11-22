@@ -116,7 +116,7 @@
 		    		<li class="nav-item ml-2" ><a class="nav-link fas fa-sign-in-alt hovmenu" style="color:gray" href="<%= ctxPath%>/login.gw">로그인</a></li>
 		    	</c:if>
 		    	<c:if test="${sessionScope.loginuser != null}">
-			    	<li class="nav-item ml-2" ><a class="nav-link far fa-user fa-lg hovmenu" style="color:gray" href="<%= ctxPath%>"></a></li>
+			    	<li class="nav-item ml-2" ><a class="nav-link far fa-user fa-lg hovmenu" style="color:gray" href="<%= ctxPath%>/mypage.gw"></a></li>
 			    	<li class="nav-item ml-2" ><a class="nav-link fas fa-sign-out-alt hovmenu" style="color:gray" href="<%= ctxPath%>/logout.gw">로그아웃</a></li>
 		    	</c:if>
 	   		  </ul>	  
