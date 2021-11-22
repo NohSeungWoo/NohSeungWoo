@@ -134,7 +134,7 @@
 					<tr style="text-align: center; background-color: #fafafa;">
 						<th style="width: 160px;  text-align: center">기안양식</th>
 						<th style="text-align: center">기안제목</th>
-						<th style="width: 200px;  text-align: center">결제대기자</th>
+						<th style="width: 200px;  text-align: center">결재대기자</th>
 						<th style="width: 200px; text-align: center">상신일시</th>
 					</tr>
 				</thead>

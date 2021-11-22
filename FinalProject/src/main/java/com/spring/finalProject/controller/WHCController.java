@@ -1187,8 +1187,8 @@ public class WHCController {
 		sheet.setColumnWidth(0, 2000);
 		sheet.setColumnWidth(1, 4000);
 		sheet.setColumnWidth(2, 15000);
-		sheet.setColumnWidth(3, 4000);
-		sheet.setColumnWidth(4, 4000);
+		sheet.setColumnWidth(3, 5000);
+		sheet.setColumnWidth(4, 5000);
 		
 		// 행의 위치를 나타내는 변수
 		int rowLocation = 0;
@@ -1291,9 +1291,16 @@ public class WHCController {
         
         // 해당 행의 5번째 열 셀 생성
         headerCell = headerRow.createCell(4); 
-        headerCell.setCellValue("결재일시");
+        if("0".equals(request.getParameter("apstatus"))) {
+        	headerCell.setCellValue("결재대기자");
+    	}
+    	else if("1".equals(request.getParameter("apstatus"))) {
+    		headerCell.setCellValue("완료일시");
+    	}
+    	else if("2".equals(request.getParameter("apstatus"))) {
+    		headerCell.setCellValue("반려일시");
+    	}
         headerCell.setCellStyle(headerStyle);
-  
         
         
         // ==== HR 사원정보 내용에 해당하는 행 및 셀 생성하기 ==== //
@@ -1320,8 +1327,12 @@ public class WHCController {
         	bodyCell.setCellValue(apMap.get("apdate"));
         	
         	bodyCell = bodyRow.createCell(4);
-        	bodyCell.setCellValue(apMap.get("eddate"));
-        	
+        	if("0".equals(request.getParameter("apstatus"))) {
+             	bodyCell.setCellValue(apMap.get("departmentname")+"부 "+ apMap.get("positionname") +" "+ apMap.get("name"));
+         	}
+         	else {
+         		bodyCell.setCellValue(apMap.get("eddate"));
+         	}
         	
         }// end of for---------------------------
         
