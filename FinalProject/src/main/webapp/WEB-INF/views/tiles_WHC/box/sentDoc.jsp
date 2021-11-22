@@ -52,6 +52,14 @@
 			frm.submit();
 		});
 		
+		$("button#excelBtn").click(function(){
+			
+			var frm = document.searchFrm;
+			frm.method = "POST";
+			frm.action = "<%= ctxPath%>/box/downloadExcelFile.gw";
+			frm.submit();
+		});
+		
 		
 		// === 검색 유지시키기 시작 === //
 		var makeFromDate = "${requestScope.searchmap.makeFromDate}";
@@ -115,7 +123,10 @@
 			<button type="button" style="margin:0 auto;" class="btn btn-primary px-5" name="searchBtn" id="searchBtn" >조회</button>
 		</div>
 	</form>
-	<div class="mb-1">총 ${requestScope.searchmap.totalCount}건</div>
+	<div class="mb-1" style="display:flex;">
+		<div class="my-auto">총 ${requestScope.searchmap.totalCount}건</div>
+		<button type="button" class="btn btn-info px-4 ml-auto" name="excelBtn" id="excelBtn" >Excel로저장</button>
+	</div>
 	<c:if test="${requestScope.searchmap.apstatus == 0}">
 		<div class="table-responsive">
 			<table class="table table-bordered">

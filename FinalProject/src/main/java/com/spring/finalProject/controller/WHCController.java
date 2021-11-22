@@ -7,17 +7,32 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -1149,6 +1164,177 @@ public class WHCController {
 		}
 		
 	}
+	// >>> #192. Excel 파일로 다운받기 예제 <<< //
+	@RequestMapping(value="/box/downloadExcelFile.gw", method= {RequestMethod.POST})
+	public String downloadExcelFile(HttpServletRequest request, Model model) {
+		
+		// === 페이징 처리를 한 검색어가 있는 목록 보여주기 시작 === //
+		List<Map<String, String>> approvalList = null;
+		String yn = "";
+		Map<String,String> searchmap = getStartandEndRno(request, yn);
+		
+		// 페이징 처리한 글 목록 가져오기(검색이 있는경우 없는경우 모두 다 포함)
+		approvalList = service.approvalListSearchPaging(searchmap);
+		
+		// === 조회결과물인 approvalList 를 가지고 엑셀 시트 생성하기 ===
+		// 시트를 생성하고, 행을 생성하고, 셀을 생성하고, 셀안에 내용을 넣어주면 된다.
+		SXSSFWorkbook workbook = new SXSSFWorkbook();
+		
+		// 시트생성
+		SXSSFSheet sheet = workbook.createSheet("기안한문서");
+		
+		// 시트 열 너비 설정
+		sheet.setColumnWidth(0, 2000);
+		sheet.setColumnWidth(1, 4000);
+		sheet.setColumnWidth(2, 15000);
+		sheet.setColumnWidth(3, 4000);
+		sheet.setColumnWidth(4, 4000);
+		
+		// 행의 위치를 나타내는 변수
+		int rowLocation = 0;
+		
+		////////////////////////////////////////////////////////////////////////////////////////
+		// CellStyle 정렬하기(Alignment)
+		// CellStyle 객체를 생성하여 Alignment 세팅하는 메소드를 호출해서 인자값을 넣어준다.
+		// 아래는 HorizontalAlignment(가로)와 VerticalAlignment(세로)를 모두 가운데 정렬 시켰다.
+		CellStyle mergeRowStyle = workbook.createCellStyle(); // 제목(셀병합할거임)
+		mergeRowStyle.setAlignment(HorizontalAlignment.CENTER);
+		mergeRowStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+										// import org.apache.poi.ss.usermodel.VerticalAlignment 으로 해야함.
+		
+		CellStyle headerStyle = workbook.createCellStyle(); // 제목아래 header부분
+	    headerStyle.setAlignment(HorizontalAlignment.CENTER);
+	    headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+	    
+	    // CellStyle 배경색(ForegroundColor)만들기
+        // setFillForegroundColor 메소드에 IndexedColors Enum인자를 사용한다.
+        // setFillPattern은 해당 색을 어떤 패턴으로 입힐지를 정한다.
+	    mergeRowStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex()); // IndexedColors.DARK_BLUE.getIndex() 는 색상(남색)의 인덱스값을 리턴시켜준다. 
+	    mergeRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    
+	    headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex()); // IndexedColors.LIGHT_YELLOW.getIndex() 는 연한파랑의 인덱스값을 리턴시켜준다.
+	    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    
+	    // Cell 폰트(Font) 설정하기
+        // 폰트 적용을 위해 POI 라이브러리의 Font 객체를 생성해준다.
+        // 해당 객체의 세터를 사용해 폰트를 설정해준다. 대표적으로 글씨체, 크기, 색상, 굵기만 설정한다.
+        // 이후 CellStyle의 setFont 메소드를 사용해 인자로 폰트를 넣어준다.
+	    Font mergeRowfont = workbook.createFont(); // import org.apache.poi.ss.usermodel.Font; 으로 한다.
+	    mergeRowfont.setFontName("나눔고딕");
+	    mergeRowfont.setFontHeight((short)500);
+	    mergeRowfont.setColor(IndexedColors.WHITE.getIndex());
+	    mergeRowfont.setBold(true);
+	    
+	    mergeRowStyle.setFont(mergeRowfont);
+	    
+	    // CellStyle 테두리 Border
+        // 테두리는 각 셀마다 상하좌우 모두 설정해준다.
+        // setBorderTop, Bottom, Left, Right 메소드와 인자로 POI라이브러리의 BorderStyle 인자를 넣어서 적용한다.
+	    headerStyle.setBorderTop(BorderStyle.THICK);
+	    headerStyle.setBorderBottom(BorderStyle.THICK);
+	    headerStyle.setBorderLeft(BorderStyle.THIN);
+	    headerStyle.setBorderRight(BorderStyle.THIN);
+	    
+	    // Cell Merge 셀 병합시키기
+        /* 셀병합은 시트의 addMergeRegion 메소드에 CellRangeAddress 객체를 인자로 하여 병합시킨다.
+           CellRangeAddress 생성자의 인자로(시작 행, 끝 행, 시작 열, 끝 열) 순서대로 넣어서 병합시킬 범위를 정한다. 배열처럼 시작은 0부터이다.  
+        */
+        // 병합할 행 만들기
+	    Row mergeRow = sheet.createRow(rowLocation); // 액셀에서 행의 시작은 0부터 시작한다.
+	    
+	    // 병합할 행에 "내가 기안한 문서" 로 셀을 만들어 셀에 스타일을 주기  
+	    for(int i=0; i<5; i++) {
+	    	Cell cell = mergeRow.createCell(i);
+	    	cell.setCellStyle(mergeRowStyle);
+	    	if("0".equals(request.getParameter("apstatus"))) {
+	    		cell.setCellValue("내가 기안한 진행중 문서");
+	    	}
+	    	else if("1".equals(request.getParameter("apstatus"))) {
+	    		cell.setCellValue("내가 기안한 완료된 문서");
+	    	}
+	    	else if("2".equals(request.getParameter("apstatus"))) {
+	    		cell.setCellValue("내가 기안한 반려된 문서");
+	    	}
+	    }
+	    
+	    // 셀 병합하기
+	    sheet.addMergedRegion(new CellRangeAddress(rowLocation, rowLocation, 0, 4));
+	    
+	 // CellStyle 천단위 쉼표, 금액
+        CellStyle moneyStyle = workbook.createCellStyle();
+        moneyStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        // 헤더 행 생성
+        Row headerRow = sheet.createRow(++rowLocation); // 엑셀에서 행의 시작은 0 부터 시작한다.
+        // ++rowLocation는 전위연산자임. 
+        
+        // 해당 행의 1번째 열 셀 생성
+        Cell headerCell = headerRow.createCell(0); // 액셀에서 열의 시작은 0부터 시작한다.
+        headerCell.setCellValue("문서번호");
+        headerCell.setCellStyle(headerStyle);
+        
+        // 해당 행의 2번째 열 셀 생성
+        headerCell = headerRow.createCell(1); 
+        headerCell.setCellValue("기안양식");
+        headerCell.setCellStyle(headerStyle);
+        
+        // 해당 행의 3번째 열 셀 생성
+        headerCell = headerRow.createCell(2); 
+        headerCell.setCellValue("기안제목");
+        headerCell.setCellStyle(headerStyle);
+        
+        // 해당 행의 4번째 열 셀 생성
+        headerCell = headerRow.createCell(3); 
+        headerCell.setCellValue("상신일시");
+        headerCell.setCellStyle(headerStyle);
+        
+        // 해당 행의 5번째 열 셀 생성
+        headerCell = headerRow.createCell(4); 
+        headerCell.setCellValue("결재일시");
+        headerCell.setCellStyle(headerStyle);
+  
+        
+        
+        // ==== HR 사원정보 내용에 해당하는 행 및 셀 생성하기 ==== //
+        Row bodyRow = null;
+        Cell bodyCell = null;
+        
+        for(int i=0; i<approvalList.size(); i++) {
+        	
+        	Map<String,String> apMap = approvalList.get(i);
+        	
+        	// 행생성
+        	bodyRow = sheet.createRow(i+ (rowLocation+1)); // i + 2
+        	
+        	bodyCell = bodyRow.createCell(0);
+        	bodyCell.setCellValue(apMap.get("apno"));
+        	
+        	bodyCell = bodyRow.createCell(1);
+        	bodyCell.setCellValue(apMap.get("apcaname"));
+        	
+        	bodyCell = bodyRow.createCell(2);
+        	bodyCell.setCellValue(apMap.get("subject"));
+        	
+        	bodyCell = bodyRow.createCell(3);
+        	bodyCell.setCellValue(apMap.get("apdate"));
+        	
+        	bodyCell = bodyRow.createCell(4);
+        	bodyCell.setCellValue(apMap.get("eddate"));
+        	
+        	
+        }// end of for---------------------------
+        
+        model.addAttribute("locale", Locale.KOREA); // 원화로 하기위해
+        model.addAttribute("workbook", workbook); 
+        model.addAttribute("workbookName", "기안한 문서");  // 파일명에 사용
+        
+		return "excelDownloadView";
+	//  "excelDownloadView" 은 
+	//  /WEB-INF/spring/appServlet/servlet-context.xml 파일에서
+	//  뷰리졸버 0 순위로 기술된 bean 의 id 값이다.
+	}
+	
 	
 	////////////////////////////////////////////////////////////////////////////////
 	//  === 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 생성 ===    
