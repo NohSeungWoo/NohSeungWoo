@@ -1209,7 +1209,7 @@ public class WHCController {
 	    // CellStyle 배경색(ForegroundColor)만들기
         // setFillForegroundColor 메소드에 IndexedColors Enum인자를 사용한다.
         // setFillPattern은 해당 색을 어떤 패턴으로 입힐지를 정한다.
-	    mergeRowStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex()); // IndexedColors.DARK_BLUE.getIndex() 는 색상(남색)의 인덱스값을 리턴시켜준다. 
+	    mergeRowStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex()); // IndexedColors.DARK_BLUE.getIndex() 는 색상(남색)의 인덱스값을 리턴시켜준다. 
 	    mergeRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 	    
 	    headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex()); // IndexedColors.LIGHT_YELLOW.getIndex() 는 연한파랑의 인덱스값을 리턴시켜준다.
