@@ -9,6 +9,9 @@
 
 <script type="text/javascript">
 
+	// 검색 클릭 유무 검사
+	var b_searchClick = false;
+
 	$(document).ready(function() {
 		
 		getDepartmentName();
@@ -16,13 +19,15 @@
 		
 		// == 검색 버튼 클릭했을 때 검색결과 나타내는 이벤트 == //
 		$("#searchEmployee").click(function() {
-			searchEMP();
+			b_searchClick = true;
+			searchEMP(b_searchClick);
 		});
 
 		// == 검색창 엔터를 했을 때 검색결과 나타내는 이벤트 == //
 		$("input#searchEmp").keyup(function(event) {
 			if(event.keyCode == 13) {
-				searchEMP();
+				b_searchClick = true;
+				searchEMP(b_searchClick);
 			}
 		});
 		
@@ -88,7 +93,88 @@
 			
 		});
 		
-	});// end of $(document).ready(function() {})
+		// 검색할 경우 검색조건 및 검색어 값 유지시키기
+		if( ${not empty requestScope.paraMap} ) {
+			$("input#searchEmp").val("${requestScope.paraMap.searchEmp}");
+		}
+		
+		///////////////////////////////////////////////////////////
+		// 초기에 들어왔을때 session값 전체로 셋팅해주기
+		console.log("확인용 : " + "${paraMap.department}");
+		console.log("확인용 : " + "${paraMap.position}");
+		
+		var department = sessionStorage.getItem("department");
+		var position = sessionStorage.getItem("position");
+		
+		if(${paraMap.department == ''}) {
+			sessionStorage.setItem("department", "전체");
+		}
+		
+		if(${paraMap.position == ''}) {
+			sessionStorage.setItem("position", "전체");
+		}
+		/////////////////////////////////////////////////////////////
+		
+		// === 직원 상세 수정 페이지 팝업창 이벤트 === //
+		$("td").click(function() {
+			
+			var empId = $(this).parent().find(".employeeid").html();
+			
+			var url = "<%= ctxPath%>/admin/empListEdit.gw?empId=" + empId;
+			
+			var pop_width = 700;
+		    var pop_height = 1000;
+		    var pop_left = Math.ceil( (window.screen.width - pop_width) / 2 ); 		// 정수로 형변환
+		    var pop_top  = Math.ceil( (window.screen.height - pop_height) / 2 );	// 정수로 형변환
+			
+		    window.open(url, "empListEdit", 
+		    			"left=" + pop_left + ", top=" + pop_top + ", width=" + pop_width + ", height=" + pop_height);
+		}); 		
+		
+		
+		// === 직원 목록 엑셀 파일 다운로드 === //
+		$("button#BtnExcelFile").click(function() {
+			// 검색창의 값이 없는 경우
+			if($("input#searchEmp").val() == "") {
+			
+				var department = sessionStorage.getItem("department");
+				var position = sessionStorage.getItem("position");
+				
+				if(department == null) {
+					department = "전체";
+				}
+				
+				if(position == null) {
+					position = "전체"
+				}
+				
+				var frm = document.excelFrm;
+				frm.excelDepart.value = department;
+				frm.excelPosition.value = position;
+				frm.excelSearchEmp.value = "";
+				frm.method = "POST";
+				frm.action = "<%= ctxPath%>/admin/excelEmpList.gw";
+				frm.submit();
+			}
+			// 검색창의 값이 있는 경우
+			else {
+				var searchEmp = $("input#searchEmp").val();
+				var department = "";
+				var position = "";
+				
+				console.log(searchEmp);
+				
+				var frm = document.excelFrm;
+				frm.excelDepart.value = department;
+				frm.excelPosition.value = position;
+				frm.excelSearchEmp.value = searchEmp;
+				frm.method = "POST";
+				frm.action = "<%= ctxPath%>/admin/excelEmpList.gw";
+				frm.submit();
+			}
+		});
+		
+	});// end of $(document).ready(function() {})------------------------------------------
 
 	
 	// Function Declaration
@@ -100,15 +186,33 @@
 			dataType:"JSON",
 			success:function(json) {
 				if(json.length > 0) {
-					var html = "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=전체'>전체</a>";
+			<%--	var html = "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=전체'>전체</a>"; --%>
+					
+					var html = "<a class='dropdown-item department'>전체</a>";
 					
 					$.each(json, function(index, item) {
-						var departmentname = item.departmentName;
-					
-						html += "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=" + departmentname + "'>" + departmentname + "</a>";
+						var departmentname = item.depart;
+						var departno = item.departno
+							
+						html += "<a class='dropdown-item department'>"+ departmentname +"</a>";
+						
+					<%--	html += "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=" + departmentname + "'>" + departmentname + "</a>";
+					--%>
 					});
 					
 					$("div#departmentName").html(html);
+					
+					$(document).on("click","a.department", function(){
+						var department = $(this).text();
+						sessionStorage.setItem("department",department);
+						var position = sessionStorage.getItem("position");
+						
+						// alert("부서명 : " + department + ", 직급 : " + position);
+						// $.ajax
+						
+						departPositionSearch();
+						
+					});
 				}
 			},
 			error: function(request, status, error){
@@ -125,15 +229,25 @@
 			dataType:"JSON",
 			success:function(json) {
 				if(json.length > 0) {
-					var html = "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?position=전체'>전체</a>";
+					var html = "<a class='dropdown-item position'>전체</a>";
 					
 					$.each(json, function(index, item) {
 						var positionname = item.position;
 					
-						html += "<a class='dropdown-item position' href='<%= ctxPath%>/admin/empList.gw?position=" + positionname + "'>" + positionname + "</a>";
+						html += "<a class='dropdown-item position'>" + positionname + "</a>";
 					});
 					
 					$("div#positionName").html(html);
+					
+					$(document).on("click","a.position", function(){
+						var position = $(this).text();
+						sessionStorage.setItem("position",position);
+						var department = sessionStorage.getItem("department");
+						
+						// alert("부서명 : " + department + ", 직급 : " + position);
+						// $.ajax
+						departPositionSearch(department, position);
+					});
 				}
 			},
 			error: function(request, status, error){
@@ -144,10 +258,25 @@
 	
 	
 	// === 검색창에 직원명 검색하기 === //
-	function searchEMP() {
-		var searchemp = $("input#searchEmp").val();
+	function searchEMP(b_searchClick) {
+		if(b_searchClick) {
+			sessionStorage.setItem("department", "전체");
+			sessionStorage.setItem("position", "전체");
+			
+			var searchemp = $("input#searchEmp").val();
+			
+			location.href = "<%= ctxPath%>/admin/empList.gw?searchEmp=" + searchemp;
+		}
+	}
+	
+	// === 부서 또는 직급 클릭했을 때 검색 이벤트 함수 === //
+	function departPositionSearch() {
+		var department = sessionStorage.getItem("department");
+		var position = sessionStorage.getItem("position");
 		
-		location.href = "<%= ctxPath%>/admin/empList.gw?searchEmp=" + searchemp;
+		alert("~~ 확인용 department : " + department + ", 확인용 position : " + position);
+		
+		location.href = "<%= ctxPath%>/admin/empList.gw?departmentname=" + department + "&positionname=" + position;
 	}
 	
 </script>
@@ -197,10 +326,10 @@
 	  </div>
 	  <div class="row mt-1 input-group mb-3">
 	  	<div id="empButton" class="col-12 col-lg-4 mt-3 mr-2">
-		  <button class="btn btn-outline-secondary float-right">관리자등록</button>
+		  <button id="BtnExcelFile" class="btn btn-outline-secondary float-right">엑셀파일</button>
 	  	</div>
 	  	<div class="col-10 col-lg-4 search-bar mt-3 ml-2">
-	      	<input id="searchEmp" type="text" class="form-control rounded-pill float-left" placeholder="직원 검색">
+	      	<input id="searchEmp" type="text" class="form-control rounded-pill float-left" placeholder="직원 검색" />
 	  	</div>
 	  	<div id="searchButton" class="mt-3">
 		  	<i id="searchEmployee" class="fas fa-search fa-lg mt-2 pt-1" style="cursor: pointer;"></i>
@@ -253,5 +382,11 @@
 	  <div align="center" style="width: 70%; border: solid 0px gray; margin: 20px auto;">
 	  	  ${requestScope.pageBar}
 	  </div>
+	  
+	  <form name="excelFrm">
+	  	<input type="hidden" name="excelDepart" id="excelDepart" />
+	  	<input type="hidden" name="excelPosition" id="excelPosition" />
+	  	<input type="hidden" name="excelSearchEmp" id="excelSearchEmp" />
+	  </form>
 	  
 	</div>

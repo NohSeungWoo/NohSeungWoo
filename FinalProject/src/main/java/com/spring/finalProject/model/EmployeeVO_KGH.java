@@ -1,5 +1,7 @@
 package com.spring.finalProject.model;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class EmployeeVO_KGH {
 	
 	private String employeeid;		// 사원번호
@@ -23,8 +25,13 @@ public class EmployeeVO_KGH {
 	private String detailAddress;	// 상세주소
 	private String extraAddress;	// 추가주소
 	
-	private DepartmentVO_KGH departvo;		// 부서 테이블
-	private PositionVO_KGH positionvo;		// 직급 테이블
+	private MultipartFile attach;
+    /* form 태그에서 type="file" 인 파일을 받아서 저장되는 필드이다. 
+              진짜파일 ==> WAS(톰캣) 디스크에 저장됨.
+              조심할것은 MultipartFile attach 는 오라클 데이터베이스 tbl_board 테이블의 컬럼이 아니다.   
+  	   /Board/src/main/webapp/WEB-INF/views/tiles1/board/add.jsp 파일에서 input type="file" 인 name 의 이름(attach)과 
+              동일해야만 파일첨부가 가능해진다.!!!!
+    */
 	
 	EmployeeVO_KGH() {}	// 기본생성자
 
@@ -215,20 +222,11 @@ public class EmployeeVO_KGH {
 		this.extraAddress = extraAddress;
 	}
 	
-	public DepartmentVO_KGH getDepartvo() {
-		return departvo;
+	public MultipartFile getAttach() {
+		return attach;
 	}
 
-	public void setDepartvo(DepartmentVO_KGH departvo) {
-		this.departvo = departvo;
+	public void setAttach(MultipartFile attach) {
+		this.attach = attach;
 	}
-
-	public PositionVO_KGH getPositionvo() {
-		return positionvo;
-	}
-
-	public void setPositionvo(PositionVO_KGH positionvo) {
-		this.positionvo = positionvo;
-	}
-	
 }

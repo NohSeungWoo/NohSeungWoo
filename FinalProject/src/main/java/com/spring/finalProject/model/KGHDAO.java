@@ -38,15 +38,15 @@ public class KGHDAO implements InterKGHDAO {
 
 	// === 부서목록 가져오기(select) === //
 	@Override
-	public List<String> getDepartmentName() {
-		List<String> departList = sqlsession.selectList("KangGH.getDepartmentName");
+	public List<DepartmentVO_KGH> getDepartmentName() {
+		List<DepartmentVO_KGH> departList = sqlsession.selectList("KangGH.getDepartmentName");
 		return departList;
 	}
 
 	// === 직급 목록 가져오기(select) === //
 	@Override
-	public List<String> getPosition() {
-		List<String> positionList = sqlsession.selectList("KangGH.getPosition");
+	public List<PositionVO_KGH> getPosition() {
+		List<PositionVO_KGH> positionList = sqlsession.selectList("KangGH.getPosition");
 		return positionList;
 	}
 
@@ -63,5 +63,81 @@ public class KGHDAO implements InterKGHDAO {
 		EmployeeVO_KGH empvo = sqlsession.selectOne("KangGH.getLogin", paraMap);
 		return empvo;
 	}
+
+	// === 이메일 중복여부 검사하기(select) === //
+	@Override
+	public boolean emailDuplicateCheck(String email) {
+		boolean isExists = false;
+		
+		String useremail = sqlsession.selectOne("KangGH.emailDuplicateCheck", email);
+		
+		if(useremail == null) {
+			isExists = false;
+		}
+		else {
+			isExists = true;
+		}
+		
+		return isExists;
+	}
+
+	// === 새로 생성될 사원번호 조회하기(select) === //
+	@Override
+	public String selectEmpId(String departmentno) {
+		String empId = sqlsession.selectOne("KangGH.selectEmpId", departmentno);
+		return empId;
+	}
+
+	
+	// === 직원 정보 등록하기(insert) === //
+	@Override
+	public int empRegister(EmployeeVO_KGH emp) {
+		int n = sqlsession.insert("KangGH.empRegister", emp);
+		return n;
+	}
+
+	// === 첨부파일과 함께 직원 정보 등록하기(insert) === //
+	@Override
+	public int empRegisterWithProfile(EmployeeVO_KGH emp) {
+		int n = sqlsession.insert("KangGH.empRegisterWithProfile", emp);
+		return n;
+	}
+
+	// === 특정 회원에 대한 정보 가져오기(select) === //
+	@Override
+	public Map<String, String> empListEdit(String employeeID) {
+		Map<String, String> map = sqlsession.selectOne("KangGH.empListEdit", employeeID);
+		return map;
+	}
+
+	// === 직원 정보 수정하기(update) === //
+	@Override
+	public int empEdit(EmployeeVO_KGH emp) {
+		int n = sqlsession.update("KangGH.empEdit", emp);
+		return n;
+	}
+
+	// === 부서별 인원 가져오기(select) === //
+	@Override
+	public List<String> getDepartempCnt() {
+		List<String> departEmpCnt = sqlsession.selectList("KangGH.getDepartempCnt");
+		return departEmpCnt;
+	}
+
+	// === 엑셀에 입력할 직원 정보 가져오기 === //
+	@Override
+	public List<Map<String, String>> excelEmpList(Map<String, String> paraMap) {
+		List<Map<String, String>> excelEmpList = sqlsession.selectList("KangGH.excelEmpList", paraMap);
+		return excelEmpList;
+	}
+
+	
+	// === 직원수 가져오기 메서드 === //
+	@Override
+	public int getEmpCnt() {
+		int empCnt = sqlsession.selectOne("KangGH.getEmpCnt");
+		return empCnt;
+	}
+
 
 }
