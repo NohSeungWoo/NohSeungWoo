@@ -28,6 +28,9 @@ public interface InterOHJService {
 
 	// 댓글쓰기(transaction 처리)
 	int boardCommentWrite(BoardCommentVO_OHJ commentvo) throws Throwable;
+
+	// 원게시물에 딸린 댓글들을 조회해오는 것
+	List<BoardCommentVO_OHJ> getCommentList(String fk_boardSeq);
 	
 	
 	

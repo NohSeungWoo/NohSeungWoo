@@ -99,6 +99,14 @@ public class OHJDAO implements InterOHJDAO {
 		int m = sqlsession.update("ohhj.updateCommentCount", fk_boardSeq);
 		return m;
 	}
+
+
+	// === &92. 원게시물에 딸린 댓글들을 조회해오는 것 === //
+	@Override
+	public List<BoardCommentVO_OHJ> getCommentList(String fk_boardSeq) {
+		List<BoardCommentVO_OHJ> commentList = sqlsession.selectList("ohhj.getCommentList", fk_boardSeq);
+		return commentList;
+	}
 	
 	
 	

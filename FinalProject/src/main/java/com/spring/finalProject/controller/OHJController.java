@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -350,6 +351,13 @@ public class OHJController {
 	public String boardCommentWrite(BoardCommentVO_OHJ commentvo) {
 		// 댓글쓰기에 첨부파일이 없는 경우
 		
+		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 작성하기 **** // 
+		String content = commentvo.getContent();
+		content = content.replaceAll("<", "&lt;");
+		content = content.replaceAll(">", "&gt;");
+	//	content = content.replaceAll("\r\n", "<br>"); // 입력한 엔터는 <br>처리하기 -> 댓글쓰기의 내용은 input태그라서 엔터가 안된다.
+		commentvo.setContent(content);
+		
 		int n = 0;
 		
 		try {
@@ -365,6 +373,52 @@ public class OHJController {
 		return jsonObj.toString();
 	}
 
+	
+	// === &90. 원게시물에 딸린 댓글들을 조회해오기(Ajax로 처리) === //
+	@ResponseBody
+	@RequestMapping(value="/readComment.gw", method = {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	public String readComment(HttpServletRequest request) {
+		
+		String fk_boardSeq = request.getParameter("fk_boardSeq");
+		
+		List<BoardCommentVO_OHJ> commentList = service.getCommentList(fk_boardSeq);
+		
+		JSONArray jsonArr = new JSONArray(); // []
+		
+		if(commentList != null) { // 해당하는 댓글이 존재하지 않을 수도 있음. 댓글이 존재할경우 실행함.
+			for(BoardCommentVO_OHJ bcmtvo: commentList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("content", bcmtvo.getContent());
+				jsonObj.put("positionName", bcmtvo.getPositionName());
+				jsonObj.put("name", bcmtvo.getName());
+				jsonObj.put("regDate", bcmtvo.getRegDate());
+				
+				jsonArr.put(jsonObj);
+			}
+		}
+		
+		return jsonArr.toString();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

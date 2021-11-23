@@ -86,7 +86,17 @@
 	</update>
 	
 	
-	
+	<!-- === &93. 원게시물에 딸린 댓글들을 조회해오는 것 === -->
+	<!-- 첨부파일이 없는 경우 -->
+	<select id="getCommentList" parameterType="String" resultType="com.spring.board.model.BoardCommentVO_OHJ">
+		select commentSeq, E.name, P.positionName, content, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
+		from tbl_boardComment C JOIN tbl_employee E
+		ON C.fk_employeeId = E.employeeId
+		JOIN tbl_position P
+		ON E.fk_positionNo = P.positionNo
+		where fk_boardSeq = #{fk_boardSeq}
+		order by commentSeq desc
+	</select>
 	
 	
 	

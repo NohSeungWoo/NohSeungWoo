@@ -25,6 +25,9 @@ public interface InterOHJDAO {
 
 	int boardCommentWrite(BoardCommentVO_OHJ commentvo); // 댓글쓰기(tbl_boardComment 테이블에  insert)
 	int updateCommentCount(String fk_boardSeq); // tbl_board 테이블에 commentCount 컬럼이 1증가(update)
+
+	// 원게시물에 딸린 댓글들을 조회해오는 것
+	List<BoardCommentVO_OHJ> getCommentList(String fk_boardSeq);
 	
 	
 	
