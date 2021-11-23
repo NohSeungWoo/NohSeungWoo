@@ -6,12 +6,15 @@
 <script type="text/javascript">
 	
 	$(document).ready(function() {
-		$(".error").hide();
-		
 		// 부서목록 보여주는 함수
 		getBoardList();
+		getPositionList();
 		
-		$("button#searchAddress").click(function(){
+		var b_emailDuplicate = false;
+		
+		$(".error").hide();
+		
+		$("span#searchAddress").click(function(){
 			new daum.Postcode({
                oncomplete: function(data) {
                   // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
@@ -61,10 +64,115 @@
            }).open();               
 		});// end of $("button#searchAddress").click(function(){})
 		
-	});
+		// === 이메일 중복 확인 === //
+		$("span#emailDuplicateCheck").click(function() {
+			b_emailDuplicate = true;
+			// 가입하기 버튼을 클릭시 "이메일중복확인" 을 클릭했는지 클릭안했는지를 알아보기위한 용도임.
+			
+			if($("input#email").val().trim() == "") {
+				alert("이메일을 입력하세요!");
+				return;
+			}
+			
+			var regExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; 
+		    // 이메일 정규표현식 객체 생성
+		    
+			var useremail = $("input#email").val();
+		    
+		    console.log(useremail);
+		    
+			var bool = regExp.test(useremail);
+		    
+			if(!bool) {
+				alert("이메일 형식에 맞지 않습니다.");
+				$("input#email").val("");
+				return;
+			}
+			else {
+				$.ajax({
+					url:"<%= request.getContextPath()%>/emailDuplicateCheck.gw",
+					type:"POST",
+		     		data:{"email":$("input#email").val()},
+		     		dataType:"json",
+		     		success:function(json) {
+		     			
+		     			var html = ""
+		     			
+		     			if(json.isExists) {
+		     				// 입력한 email 가 이미 사용중 이라면
+		     				alert("해당 이메일은 사용불가합니다.");
+		     				$("input#email").val("");
+		     			}
+		     			else {
+		     				// 입력한 email 가 DB 테이블에 존재하지 않는 경우라면 
+		     				$("input#email").val(useremail);
+		     				html += "<span style='color:blue;'>해당 이메일은 사용 가능합니다.</span>";
+		     			}
+		     			
+		     			$("div#emailCheckOK").html(html);
+		     		},
+		     		error: function(request, status, error){
+						alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					}
+				});
+			}
+		});
+		
+		
+		$("span#registerBtn").click(function() {
+			
+			if(!b_emailDuplicate) {
+		    	// "이메일중복확인" 을 클릭했는지 클릭안했는지를 알아보기위한 용도임.
+		    	alert("이메일중복확인 클릭하여 이메일중복검사를 하세요!!");
+		    	return; // 종료
+		    }
+			
+			if($("input#name").val().trim() == "") {
+				alert("이름을 입력하세요");
+				return;
+			}
+			
+			var regExp = /^01([0|1|6|7|8|9])([0-9]{3,4})([0-9]{4})$/;; 
+		    // 숫자 4자리만 들어오도록 검사해주는 정규표현식 객체 생성
+		    
+			var mobile = $("input#mobile").val();
+		    
+			var bool = regExp.test(mobile);
+		    
+			if(!bool) {
+				alert("휴대폰 번호를 정확하게 입력하세요.");
+				return;
+			}
+			
+			if( !($("input#salary").val() > 0) ) {
+				alert("급여를 숫자로만 정확히 입력하세요.");
+				return;
+			}
+		
+			if($("input#address").val().trim() == "") {
+				alert("주소를 입력하세요");
+				return;
+			}
+			
+			if($("input#detailAddress").val().trim() == "") {
+				alert("상세주소를 입력하세요");
+				return;
+			}
+			
+			var frm = document.registerFrm;
+			frm.method = "POST";
+			frm.action = "<%= request.getContextPath()%>/empRegisterEnd.gw";
+			frm.submit();
+			
+		});
+		
+		
+		
+	});// end of $(document).ready(function() {})
 	
 	
 	// === Function Declaration === //
+	// === 부서정보 가져오기 === //
 	function getBoardList() {
 		$.ajax({
 			url:"<%= request.getContextPath()%>/getDepartmentName.gw",
@@ -79,13 +187,37 @@
 						var departmentname = item.depart;
 						var departno = item.departno;
 						
-						// console.log(departno);
-						// console.log(departmentname);
-						
-						html += "<option id='" + departno + "' name='" + departno + "' value='" + departno + "'>" + departmentname + "</option>";
+						html += "<option id='" + departno + "' name='department' value='" + departno + "'>" + departmentname + "</option>";
 					});
 					
-					$("select#selectDepart").html(html);
+					$("select#fk_departNo").html(html);
+				}
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+        	}
+		});
+	}
+	
+	// === 직급 정보 가져오기
+	function getPositionList() {
+		$.ajax({
+			url:"<%= request.getContextPath()%>/getPositionName.gw",
+			type:"GET",
+			dataType:"JSON",
+			success:function(json) {
+				if(json.length > 0) {
+					
+					html = "";
+					
+					$.each(json, function(index, item) {
+						var positionname = item.position;
+						var positionNo = item.positionno;
+						
+						html += "<option id='" + positionNo + "' name='position' value='" + positionNo + "'>" + positionname + "</option>";
+					});
+					
+					$("select#fk_positionNo").html(html);
 				}
 			},
 			error: function(request, status, error){
@@ -104,24 +236,27 @@
 		</div>
 	</div>
 	<br>
-	<form name="registerFrm">
+	<form name="registerFrm" enctype="multipart/form-data"> 
 	    <div class="form-inline">
 	    	<div class="col-6 col-lg-8 offset-3 offset-lg-2 text-center">
 		    	<img src="<%= request.getContextPath()%>/resources/images/기본프로필_kh.jpg" class="rounded-circle" style="width: 190px; height: 200px;"><br>
-		    	<input type="file" class="custom-file-input" id="customFile">
-		        <label class="float-center" for="customFile">프로필 사진</label>
 	    	</div>
 	    	<div class="w-100 my-3"></div>
 	    	
 	    	<div class="col-3 col-lg-1 offset-lg-3">
 		       <label class="float-left">이메일<span class="ml-1" style="color: red;">*</span></label>
 	    	</div>
-		    <div class="col-8 col-lg-4">
-		       <input type="text" class="form-control mt-1" id="email" placeholder="로그인 시 ID로 사용되는 이메일" name="userid" style="width: 100%;">
+		    <div class="col-7 col-lg-4">
+		       <input type="text" class="form-control mt-1" id="email" placeholder="로그인 시 ID로 사용되는 이메일" name="email" style="width: 100%;">
+		    </div>
+		    <div class="col-2 col-lg-2">
+		       <span class="btn btn-sm btn-info" id="emailDuplicateCheck">중복확인</span>
 		    </div>
 		    <div class="w-100"></div>
-		       <span class="error col-8 col-lg-3 offset-3 offset-lg-4 mt-2" style="color: red;">이메일을 입력하세요</span>
-		    <div class="w-100 my-4"></div>
+		    <div id="emailCheckOK" class="col-8 col-lg-3 offset-3 offset-lg-4 mt-2">
+		       
+		    </div>
+		    <div class="w-100 my-3"></div>
 		    
 		    <div class="col-3 col-lg-1 offset-lg-3">
 		       <label class="float-left">이름<span class="ml-1" style="color: red;">*</span></label>
@@ -129,35 +264,48 @@
 		    <div class="col-8 col-lg-4">
 		       <input type="text" class="form-control mt-1" id="name" placeholder="이름" name="name" style="width: 100%;">
 		    </div>
-		    <div class="w-100"></div>
-		       <span class="error col-8 col-lg-3 offset-3 offset-lg-4 mt-2" style="color: red;">이름을 입력하세요</span>
-		    <div class="w-100 my-4"></div>
+		    <div class="w-100 mb-4"></div>
 		    
 		    <div class="col-3 col-lg-1 offset-lg-3">
 		       <label class="float-left">연락처<span class="ml-1" style="color: red;">*</span></label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <input type="text" class="form-control mt-1" id="mobile" placeholder="010-0000-0000" name="mobile" style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="mobile" placeholder="01012345678" name="mobile" style="width: 100%;">
 		    </div>
-		    <div class="w-100"></div>
-		       <span class="error col-8 col-lg-3 offset-3 offset-lg-4 mt-2" style="color: red;">연락처를 입력하세요</span>
-		    <div class="w-100 my-4"></div>
+		    <div class="w-100 mb-4"></div>
 		    
 		    <div class="col-3 col-lg-2 offset-lg-2 pull-right">
 		       <label class="float-right">근무부서</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <select id="selectDepart" class='selectpicker' data-width='auto' style='width: 100%; height: 35px; border-radius: 3px;'>
+		       <select id="fk_departNo" name="fk_departNo" class='selectpicker' data-width='auto' style='width: 100%; height: 35px; border-radius: 3px;'>
 		       </select>
 		    </div>
-		    <div class="w-100 my-4"></div>
+		    <div class="w-100 mb-4"></div>
+		    
+		    <div class="col-3 col-lg-2 offset-lg-2 pull-right">
+		       <label class="float-right">직책</label>
+	    	</div>
+		    <div class="col-8 col-lg-4">
+		       <select id="fk_positionNo" name="fk_positionNo" class='selectpicker' data-width='auto' style='width: 100%; height: 35px; border-radius: 3px;'>
+		       </select>
+		    </div>
+		    <div class="w-100 mb-4"></div>
+		    
+		    <div class="col-3 col-lg-2 offset-lg-2 pull-right">
+		       <label class="float-right">급여</label>
+	    	</div>
+		    <div class="col-8 col-lg-4">
+		       <input type="text" class="form-control mt-1" id="salary" placeholder="0000만원" name="salary" style="width: 100%;">
+		    </div>
+		    <div class="w-100 mb-4"></div>
 		    
 		    <div class="col-3 col-lg-2 offset-lg-2 pull-right">
 		       <label class="float-right">우편번호</label>
 	    	</div>
 		    <div class="col-9 col-lg-4">
 		       <input type="text" class="form-control mt-1" id="postcode" placeholder="우편번호" name="postcode" style="width: 40%;">
-		       <button id="searchAddress" class="btn btn-secondary btn-sm mt-1 ml-3" style="border-radius: 10px; display: inline;">주소찾기</button>
+		       <span id="searchAddress" class="btn btn-secondary btn-sm mt-1 ml-3" style="border-radius: 10px; display: inline;">주소찾기</span>
 		    </div>
 		    <div class="w-100 my-1"></div>
 		    
@@ -186,13 +334,18 @@
 		    </div>
 		    
 	    </div>
+	 
 	    <br>
 	    <div class="row justify-content-center mt-2">
 		    <div class="col-10 col-lg-8 offset-2 offset-lg-4">
-		       <button class="btn btn-primary mr-4" style="float:left; width: 120px; justify-content: center;">등록</button>
-		       <button class="btn btn-dark" style="float:left; width: 120px; justify-content: center;">취소</button>
+		       <span id="registerBtn" class="btn btn-primary mr-4" style="float:left; width: 120px; justify-content: center;">등록</span>
+		     
+		       <button type="reset" class="btn btn-dark" style="float:left; width: 120px; justify-content: center;">취소</button>
+		    
 		    </div>
 	    </div>
 	    
-    </form>
+	    </form> 
+	    
+    
 </div>

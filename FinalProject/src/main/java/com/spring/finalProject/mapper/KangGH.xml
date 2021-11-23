@@ -77,7 +77,7 @@
 		    	and positionname = #{position}
 		    </if>
 		    <if test='searchEmp != ""'>
-		    	and name = #{searchEmp}
+		    	and name like '%'|| #{searchEmp} || '%'
 		    </if>
 		)
 		where rno between #{startRno} and #{endRno}
@@ -92,8 +92,8 @@
 	</select>
 	
 	<!-- === 직급 목록 가져오기 === -->
-	<select id="getPosition" resultType="String">
-		select positionname
+	<select id="getPosition" resultType="com.spring.finalProject.model.PositionVO_KGH">
+		select positionno, positionname
 		from tbl_position
 		order by positionno
 	</select>
@@ -117,6 +117,124 @@
 		and password = #{password}
 	</select>
 	
+	<!-- === 이메일 중복 여부 검사하기(select) === -->
+	<select id="emailDuplicateCheck" parameterType="String" resultType="String">
+		select email
+		from tbl_employee
+		where email = #{email}
+	</select>
 	
+	<!-- === 새로 생성될 사원번호 조회하기(select) === -->
+	<select id="selectEmpId" parameterType="String" resultType="String">
+		select to_char(sysdate, 'yy') || #{departmentno} || employeSeq.nextval AS empID
+		from dual
+	</select>
 	
+	<!-- === 직원 정보 등록하기(insert) === -->
+	<select id="empRegister" parameterType="com.spring.finalProject.model.EmployeeVO_KGH" resultType="int">
+		insert into tbl_employee(employeeId, fk_departNo, fk_positionNo, name, password ,mobile, email, hiredate, retiredate, retire, salary, dayoff, admin, address, detailAddress, extraAddress, postcode)
+		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{employeeid}, #{mobile}, #{email}, sysdate, default, 0, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
+	</select>
+	
+	<!-- === 첨부파일과 함께 직원정보 등록하기(insert) === -->
+	<select id="empRegisterWithProfile" parameterType="com.spring.finalProject.model.EmployeeVO_KGH" resultType="int">
+		insert into tbl_employee(employeeId, fk_departNo, fk_positionNo, name, password ,mobile, email, hiredate, retiredate, retire, profilename, orgProfilename, fileSize, salary, dayoff, admin, address, detailAddress, extraAddress, postcode)
+		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{employeeid}, #{mobile}, #{email}, sysdate, default, 0, #{profilename}, #{orgProfilename}, #{fileSize}, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
+	</select>
+	
+	<!-- === 특정 회원에 대한 정보 가져오기(select) === -->
+	<resultMap type="HashMap" id="empListEditMap">
+		<result property="employeeid"		column="employeeid" 		javaType="String" />
+		<result property="email"		 	column="email" 				javaType="String" />
+		<result property="name"		 		column="name" 				javaType="String" />
+		<result property="mobile"		 	column="mobile" 			javaType="String" />
+		<result property="departno"			column="departno" 			javaType="String" />
+		<result property="departmentname"	column="departmentname" 	javaType="String" />
+		<result property="positionno"		column="positionno" 		javaType="String" />
+		<result property="positionname"		column="positionname" 		javaType="String" />
+		<result property="hiredate"			column="hiredate" 			javaType="String" />
+		<result property="salary"			column="salary" 			javaType="String" />
+	</resultMap>
+	<select id="empListEdit" parameterType="String" resultMap="empListEditMap">
+		select employeeid, email, name, mobile, departno, departmentname, 
+		       positionno, positionname, hiredate, salary
+		from 
+		(
+		    select employeeid, email, name, mobile, D.departno, d.departmentname, P.positionno, P.positionname, 
+		           to_char(hiredate, 'yyyy-mm-dd') AS hiredate, salary
+		    from tbl_employee E
+		    JOIN tbl_department D
+		    ON E.fk_departno = D.departno
+		    JOIN tbl_position P
+		    ON e.fk_positionno = p.positionno
+		)
+		where employeeid = #{employeeID}
+	</select>
+	
+	<!-- 직원 정보 수정하기(update) -->
+	<update id="empEdit">
+		update tbl_employee set name = #{name},
+		                        mobile = #{mobile},
+		                        fk_departno = #{fk_departNo},
+		                        fk_positionno = #{fk_positionNo},
+		                        salary = #{salary}
+		where employeeid = #{employeeid}
+	</update>
+	
+	<!-- 부서별 직원 인원수 가져오기(select) -->
+	<select id="getDepartempCnt" resultType="String">
+		select count(*)
+		from tbl_employee
+		group by fk_departno
+		order by fk_departno
+	</select>
+	
+	<!-- 엑셀 파일 직원 목록 가져오기(select) -->
+	<resultMap type="HashMap" id="excelEmployeeList">
+		<result property="employeeid" 	  column="employeeid" 		javaType="String"/>
+		<result property="departmentname" column="departmentname" 	javaType="String"/>
+		<result property="positionname"   column="positionname" 	javaType="String"/>
+		<result property="name" 		  column="name" 			javaType="String"/>
+		<result property="mobile" 		  column="mobile" 			javaType="String"/>
+		<result property="email" 		  column="email" 			javaType="String"/>
+		<result property="salary" 		  column="salary" 			javaType="String"/>
+		<result property="hiredate" 	  column="hiredate" 		javaType="String"/>
+	</resultMap>
+	<select id="excelEmpList" parameterType="HashMap" resultMap="excelEmployeeList">
+		select employeeid, departmentname, positionname, 
+       		   name, mobile, email, salary, hiredate
+		from
+		(
+		    select row_number() over(order by fk_positionNo, fk_departno, employeeID) AS RNO,
+		           employeeid, fk_departno, departmentname, 
+		           fk_positionno, positionname, name, mobile, email, salary, hiredate
+		           
+		    from 
+		    (
+		        select employeeid, fk_departno, departmentname, fk_positionno, 
+		               name, mobile, email, retire, salary, to_char(hiredate, 'yyyy-mm-dd') AS hiredate
+		        from tbl_employee E
+		        JOIN tbl_department D
+		        ON E.fk_departno = D.departno
+		    ) V
+		    JOIN tbl_position P
+		    ON V.fk_positionno = P.positionno
+		    where V.retire = 0
+		    <if test='department != ""'>
+			    and departmentname = #{department}   
+		    </if>
+		    <if test='position != ""'>
+			    and positionname = #{position}   
+		    </if>
+		    <if test='searchEmp != ""'>
+			    and name like '%'||#{searchEmp}||'%'   
+		    </if>
+		)
+	</select>
+	
+	<!-- === 직원수 가져오기 메서드(select) === -->
+	<select id="getEmpCnt" resultType="int">
+		select count(*)
+		from tbl_employee
+	</select>
 </mapper>

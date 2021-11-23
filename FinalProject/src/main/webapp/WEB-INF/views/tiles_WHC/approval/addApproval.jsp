@@ -57,24 +57,28 @@
 		});
 		
 		// 결재선 설정 모달창에서 결재 협조 수신 버튼을 클릭했을때 
-		$(".approvalTypeBtn").click(function(){
+		$(document).on("click", ".approvalTypeBtn", function(){
 			
 			var selectedEmpSeq = $("li.selectedEmp > input[name=employeeid]").val();
 			var selectedEmpDP = $("li.selectedEmp > input[name=departmentname]").val();
 			var selectedEmpName = $("li.selectedEmp > span.name").text();
 			var selectedEmpPO = $("li.selectedEmp > input[name=positionname]").val();
+			var loginID = ${requestScope.loginMap.employeeid};
 			
 			if( selectedEmpSeq == null ) {
 				alert("직원을 선택하세요!");
+			}
+			else if(selectedEmpSeq == loginID ) {
+				alert("기안자는 결재, 협조, 수신자에 포함될 수 없습니다!");
 			}
 			else {
 				
 				var flag = false;
 				
 				$("tbody.approvalPerson > tr.showedEmp > td.empSeq").each(function(index,item){
-					if ($(item).text() == selectedEmpSeq ) {
+					if ($(item).text() == selectedEmpSeq) {
 						flag = true;
-						alert("결제선 중복!");
+						alert("결재선 내 중복 설정은 불가능 합니다!");
 					}
 				});
 				
@@ -225,15 +229,113 @@
            	obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
 	        <%-- === 스마트 에디터 구현 끝 === --%>	
 	        
+	        ////////////////////////////////////////////////////////////////
+	        // 유효성 검사  //
+	        
 			// 글제목 유효성 검사
 			var subjectVal = $("input#subject").val().trim();
 			if(subjectVal == "") {
 				alert("글제목을 입력하세요!!");
 				return;
 			}
-	
-		
-			<%-- === 스마트에디터 구현 시작 === --%>
+			
+			// 결재자를 추가 했는지 검사
+			var apprEmpVal = $("input[name=apprEmp]").val().trim();
+			if(apprEmpVal == "") {
+				alert("결재자는 필수입력사항입니다!!");
+				return;
+			}
+			
+			// 회의록인 경우
+			if("${requestScope.apcano}" == 50) {
+				
+				var sdate = $("input[name=sdate]").val();
+				var edate = $("input[name=edate]").val();
+				
+				var stime = $("input[name=stime]").val();
+				var etime = $("input[name=etime]").val();
+			//	console.log(sdate);
+				
+				if(!sdate || !edate) { // 회의일을 입력하지 않은경우
+					alert("회의 날짜는 필수입력사항입니다!!");
+					return;
+				}
+				else {
+					if( Number(sdate.replace(/\-/g,'')) > Number(edate.replace(/\-/g,'')) ){
+						alert("종료일은 시작일보다 빠른 날짜로 설정할 수 없습니다!!");
+						return;
+					}
+					else if( Number(sdate.replace(/\-/g,'')) == Number(edate.replace(/\-/g,'')) && Number(stime.replace(":","")) > Number(etime.replace(":","")) ){
+						alert("종료 시간은 시작시간보다 빠른 시간으로 설정할 수 없습니다!!");
+						return;
+					}
+				}
+				
+				
+				var purposeVal = $("textarea[name=purpose]").val().trim();
+				
+				if(purposeVal == "") {
+					alert("회의목적을 입력하세요!!");
+					return;
+				}
+				
+			}
+			
+			// 업무보고인 경우
+			if("${requestScope.apcano}" == 51) {
+				
+				var sdate = $("input[name=tsdate]").val();
+				var edate = $("input[name=tedate]").val();
+				
+				var stime = $("input[name=tstime]").val();
+				var etime = $("input[name=tetime]").val();
+			//	console.log(sdate);
+				
+				if(!sdate || !edate) { // 회의일을 입력하지 않은경우
+					alert("업무기간은 필수입력사항입니다!!");
+					return;
+				}
+				else {
+					if( Number(sdate.replace(/\-/g,'')) > Number(edate.replace(/\-/g,'')) ){
+						alert("종료일은 시작일보다 빠른 날짜로 설정할 수 없습니다!!");
+						return;
+					}
+					else if( Number(sdate.replace(/\-/g,'')) == Number(edate.replace(/\-/g,'')) && Number(stime.replace(":","")) > Number(etime.replace(":","")) ){
+						alert("종료 시간은 시작시간보다 빠른 시간으로 설정할 수 없습니다!!");
+						return;
+					}
+				}
+				
+				
+				var issueVal = $("textarea[name=issue]").val().trim();
+				
+				if(issueVal == "") {
+					alert("이슈를 입력하세요!!");
+					return;
+				}
+				
+			}
+			
+			// 지출결의서인 경우
+			if("${requestScope.apcano}" == 53) {
+				
+				var spdate = $("input[name=spdate]").val();
+				
+				
+				if(!spdate) { // 회의일을 입력하지 않은경우
+					alert("지출예정일은 필수입력사항입니다!!");
+					return;
+				}
+				
+				var amountVal = $("input[name=amount]").val().trim();
+				
+				if(amountVal == "") {
+					alert("금액을 입력하세요!!");
+					return;
+				}
+			}
+			
+			<%-- === 스마트에디터 유효성 검사 시작 === --%>
 	        //스마트에디터 사용시 무의미하게 생기는 p태그 제거
 	        var contentval = $("textarea#content").val();
 	             
@@ -265,22 +367,28 @@
 	        $("textarea#content").val(contentval);
 	       
 	        // alert(contentval);
-	      	<%-- === 스마트에디터 구현 끝 === --%>
+	      	<%-- === 스마트에디터 유효성 검사 끝 === --%>
+			////////////////////////////////////////////////////////////////
 			
+			var go = confirm("기안을 보내시겠습니까?");
 			
+			if(go == true) {
+				
+				var frm = document.addApprFrm;
+				
+				if(frm.fk_apcano.value == 50){
+					frm.midate.value = frm.sdate.value +" "+ frm.stime.value +" ~ "+ frm.edate.value +" "+ frm.etime.value
+				}
+				else if (frm.fk_apcano.value == 51){
+					frm.taskdate.value = frm.tsdate.value +" "+ frm.tstime.value +" ~ "+ frm.tedate.value +" "+ frm.tetime.value
+				}			
+				
+				frm.method = "POST";
+				frm.action="<%= ctxPath%>/addApprovalEnd.gw"; 
+				frm.submit();
+				
+			} 
 			
-			var frm = document.addApprFrm;
-			
-			if(frm.fk_apcano.value == 50){
-				frm.midate.value = frm.sdate.value +" "+ frm.stime.value +" ~ "+ frm.edate.value +" "+ frm.etime.value
-			}
-			else if (frm.fk_apcano.value == 51){
-				frm.taskdate.value = frm.tsdate.value +" "+ frm.tstime.value +" ~ "+ frm.tedate.value +" "+ frm.tetime.value
-			}			
-			
-			frm.method = "POST";
-			<%-- frm.action="<%= ctxPath%>/addEnd.action"; --%>
-		//	frm.submit();
 		});
 		
 	});
@@ -356,7 +464,7 @@
             	<div class="col-lg-5">
             		<div class="card shadow mb-4">
 						<div class="card-header py-3">
-							<input type="text" id="searchWord" placeholder="사원명 ,부서명" style="width: 100%; padding-left:10px;" autocomplete="off">
+							<input type="text" id="searchWord" placeholder="사원명 ,부서명,사원번호" style="width: 100%; padding-left:10px;" autocomplete="off">
 						</div>
 						<div class="card-body">
 							<div class="list-group-flush">
@@ -460,9 +568,9 @@
 	  		<div class="card">
 		    	<div class="card-header text-center py-1">기안</div>
 		    	<div class="card-body text-center py-1">
-		    		<p class="card-text">우희철</p>
+		    		<p class="card-text">${requestScope.loginMap.name}</p>
 		    	</div>
-		    	<div class="text-center"><small>직책<br>부서명</small></div>
+		    	<div class="text-center"><small>${requestScope.loginMap.positionname}<br>${requestScope.loginMap.departmentname}</small></div>
 	    	</div>
 	  	</div>
 	</div>
@@ -493,6 +601,7 @@
 			<input type="hidden" name="coopEmp" value="" />
 			<input type="hidden" name="reciEmp" value="" />
 			<input type="hidden" name="fk_apcano" value="${requestScope.apcano}" />
+			<input type="hidden" name="fk_employeeid" value="${sessionScope.loginuser.employeeid}" />
 			
 			<table class="table " style="width:100%; margin-bottom:5px;">
 				<tbody class="border-bottom" style="background-color: #f7f7f7;" >
@@ -513,12 +622,12 @@
 						<tr>
 							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">회의일시</th>
 							<td>
-								<input type="date" name="sdate"/>
+								<input type="date" name="sdate" />
 								<input type="time" name="stime"/>
 								<div>~</div>
-								<input type="date" name="edate"/>
+								<input type="date" name="edate" />
 								<input type="time" name="etime"/>
-								<input type="text" name="midate"/>
+								<input type="hidden" name="midate"/>
 							</td>
 						</tr>
 						<tr>
@@ -534,12 +643,12 @@
 						<tr>
 							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">업무기간</th>
 							<td>
-								<input type="date" name="tsdate"/>
+								<input type="date" name="tsdate" />
 								<input type="time" name="tstime"/>
 								<div>~</div>
-								<input type="date" name="tedate"/>
+								<input type="date" name="tedate" />
 								<input type="time" name="tetime"/>
-								<input type="text" name="taskdate"/>
+								<input type="hidden" name="taskdate"/>
 							</td>
 						</tr>
 						<tr>
@@ -549,7 +658,7 @@
 							</td>
 						</tr>
 					</c:if>
-					
+					<%-- 지출결의서 --%>
 					<c:if test="${requestScope.apcano == 53}">
 						<tr>
 							<th class="border-right" style="width: 15%; vertical-align: middle; text-align: center;">지출예정일</th>
