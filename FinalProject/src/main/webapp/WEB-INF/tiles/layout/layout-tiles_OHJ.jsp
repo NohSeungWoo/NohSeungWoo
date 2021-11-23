@@ -11,7 +11,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Final(1조)-5</title>
+<title>Board(1조)</title>
   <!-- Required meta tags -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
@@ -28,8 +28,8 @@
 	body {font-family: Arial, Helvetica, sans-serif, 돋움; }
 
 	#mycontainer   { padding: 0; }
-	#myheader      { display: flex; position: relative; }
-	
+	#myheader      { display: flex; position: relative; background-color: black;}
+														/* bg-color : 헤더가 양옆으로 꽉 차게 보이게 하는 용도 */	
 	#mysideinfo    { min-height:900px; position: relative; padding-top: 40px;
 	                 float:left; width:19%; }
 	                 
