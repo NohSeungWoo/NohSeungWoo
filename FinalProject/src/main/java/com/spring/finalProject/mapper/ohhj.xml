@@ -15,13 +15,23 @@
 	
 	
 	<!-- === &61. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 === -->
+	<!-- 
 	<select id="boardListNoSearch" resultType="com.spring.board.model.BoardVO_OHJ">
 		select boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 		from tbl_board B JOIN tbl_employee E
 		ON B.fk_employeeId = E.employeeId
 		order by regDate desc
 	</select>
+	-->
 	
+	<!-- === 먼저 &61 을 주석처리하고서 &95. 페이징처리를 안한 검색어가 없는 전체 글목록 보여주기(+댓글의 갯수) === -->
+	<select id="boardListNoSearch" resultType="com.spring.board.model.BoardVO_OHJ">
+		select boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+			 , commentCount
+		from tbl_board B JOIN tbl_employee E
+		ON B.fk_employeeId = E.employeeId
+		order by regDate desc
+	</select>
 	
 	<!-- === &65. 글1개 조회하기 === -->
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">

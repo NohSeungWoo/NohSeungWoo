@@ -279,7 +279,7 @@
 		<!-- 댓글쓰기 끝 -->
 		
 	
-		<!-- 댓글내용 보여주기 시작 -->
+		<!-- === &94. 댓글내용 보여주기 시작 === -->
 		<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
 			<strong style="border-bottom: solid 2px #37f;">댓글내용</strong>
 		</div>
