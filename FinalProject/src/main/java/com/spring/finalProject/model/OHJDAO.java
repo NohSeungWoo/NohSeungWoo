@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
 
 //==== #32. DAO 선언 ====
@@ -83,6 +84,20 @@ public class OHJDAO implements InterOHJDAO {
 	public int boardDel(Map<String, String> paraMap) {
 		int n = sqlsession.delete("ohhj.boardDel", paraMap);
 		return n;
+	}
+
+	
+	// === &86. 댓글쓰기(tbl_boardComment 테이블에 insert) === //
+	@Override
+	public int boardCommentWrite(BoardCommentVO_OHJ commentvo) {
+		int n = sqlsession.insert("ohhj.boardCommentWrite", commentvo);
+		return n;
+	}
+	// === &87. tbl_board 테이블에 commentCount 컬럼이 1증가(update) === //
+	@Override
+	public int updateCommentCount(String fk_boardSeq) {
+		int m = sqlsession.update("ohhj.updateCommentCount", fk_boardSeq);
+		return m;
 	}
 	
 	

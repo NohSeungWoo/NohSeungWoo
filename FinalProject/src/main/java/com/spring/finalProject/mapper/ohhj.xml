@@ -70,6 +70,21 @@
 	</delete>
 	
 	
+	<!-- &88. 댓글쓰기(tbl_boardComment 테이블에 insert) -->
+	<insert id="boardCommentWrite" parameterType="com.spring.board.model.BoardCommentVO_OHJ">
+		<!-- 첨부파일이 없는 경우 -->
+		insert into tbl_boardComment(commentseq,fk_boardseq,fk_employeeid,content,regdate)
+		values(tbl_boardComment_commentSeq.nextval, #{fk_boardSeq}, #{fk_employeeId}, #{content}, default)
+		<!-- 첨부파일이 있는 경우 -->
+		
+	</insert>
+	
+	<!-- &89. tbl_board 테이블에 commentCount 컬럼이 1증가(update) -->
+	<update id="updateCommentCount" parameterType="String">
+		update tbl_board set commentcount = commentcount+1
+		where boardseq = #{fk_boardSeq}
+	</update>
+	
 	
 	
 	

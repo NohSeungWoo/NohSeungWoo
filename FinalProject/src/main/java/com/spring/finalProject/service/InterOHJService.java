@@ -26,8 +26,8 @@ public interface InterOHJService {
 	// 1개글 삭제
 	int boardDel(Map<String, String> paraMap);
 
-	// 댓글쓰기
-//	int boardCommentWrite(BoardCommentVO_OHJ commentvo);
+	// 댓글쓰기(transaction 처리)
+	int boardCommentWrite(BoardCommentVO_OHJ commentvo) throws Throwable;
 	
 	
 	

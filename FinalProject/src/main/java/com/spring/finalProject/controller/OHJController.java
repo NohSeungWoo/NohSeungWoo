@@ -343,7 +343,7 @@ public class OHJController {
 	}
 	
 	
-/*	
+
 	// === &84. 댓글쓰기(Ajax 로 처리) === //
 	@ResponseBody
 	@RequestMapping(value="/boardCommentWrite.gw", method = {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
@@ -352,14 +352,19 @@ public class OHJController {
 		
 		int n = 0;
 		
-		n = service.boardCommentWrite(commentvo);
+		try {
+			// 댓글쓰기(insert) 및 원게시물(tbl_board 테이블)의 댓글의 개수 증가(update 1씩 증가)하기
+			n = service.boardCommentWrite(commentvo);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("n", n);
 		
 		return jsonObj.toString();
 	}
-*/	
+
 	
 	
 	

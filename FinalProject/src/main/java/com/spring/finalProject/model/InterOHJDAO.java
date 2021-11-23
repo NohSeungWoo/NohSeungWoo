@@ -23,7 +23,8 @@ public interface InterOHJDAO {
 	// 1개글 삭제하기
 	int boardDel(Map<String, String> paraMap);
 
-//	int boardCommentWrite(BoardCommentVO_OHJ commentvo); // 댓글쓰기(tbl_boardComment 테이블에  insert)
+	int boardCommentWrite(BoardCommentVO_OHJ commentvo); // 댓글쓰기(tbl_boardComment 테이블에  insert)
+	int updateCommentCount(String fk_boardSeq); // tbl_board 테이블에 commentCount 컬럼이 1증가(update)
 	
 	
 	

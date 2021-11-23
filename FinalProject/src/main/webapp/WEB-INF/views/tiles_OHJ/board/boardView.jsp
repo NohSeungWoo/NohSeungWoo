@@ -107,9 +107,10 @@
 				var n = json.n;
 				
 				if(n==0){
-					alert("댓글쓰기가 실패하였습니다.");
+					alert("댓글쓰기 실패하였습니다.");
 				}
 				else{
+					alert("댓글이 등록되었습니다.");
 				//	goReadComment(); // 페이징처리 안한 댓글 읽어오기
 				}
 				
@@ -212,7 +213,7 @@
 	공지사항은 댓글X
 	건의사항은 댓글O 
 	-->
-	<c:if test="${requestScope.boardvo.fk_bCategorySeq eq 3}"> 
+	<c:if test="${requestScope.boardvo.fk_bCategorySeq eq 3}"> <%-- ${not empty sessionScope.loginuser} 를 추가안해도 글1개보기를 로그인한 사람만 볼 수 있도록 함. --%>
 		<!-- 댓글쓰기 시작 -->
 		<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
 			<strong style="border-bottom: solid 2px #37f;">댓글쓰기</strong>
@@ -222,9 +223,10 @@
 			<form name="commentWriteFrm">
 				<input type="text" id="commentContent" style="width: 100%" placeholder="로그인 후 이용하실 수 있습니다."/>
 				<input type="text" style="display: none;"> <!-- form태그 속의 input태그가 한 개일 경우, 엔터치면 값이 전송되는것을 방지함.  ★hidden타입은 안된다. -->
+			
+				<button type="button" class="btn btn-sm mt-1" style="border: solid 1px #dee2e6; color: #37f; float: right;" onclick="goCommentWrite()">등록</button>
+				<button type="reset" class="btn btn-sm mt-1 mr-1" style="border: solid 1px #dee2e6; color: #37f; float: right;">취소</button>
 			</form>
-			<button type="button" class="btn btn-sm mt-1" style="border: solid 1px #dee2e6; color: #37f; float: right;" onclick="goCommentWrite()">등록</button>
-			<button type="reset" class="btn btn-sm mt-1 mr-1" style="border: solid 1px #dee2e6; color: #37f; float: right;">취소</button>
 		</div>
 		<!-- 댓글쓰기 끝 -->
 		
