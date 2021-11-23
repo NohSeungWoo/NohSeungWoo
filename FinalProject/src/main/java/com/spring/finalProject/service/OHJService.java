@@ -5,7 +5,9 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
 import com.spring.finalProject.model.InterOHJDAO;
 
@@ -85,7 +87,24 @@ public class OHJService implements InterOHJService {
 		int n = dao.boardDel(paraMap);
 		return n;
 	}
-	
+
+
+	// === &85. 댓글쓰기 === //
+	// tbl_boardComment 테이블에 insert 된 다음에
+	// tbl_board 테이블에 commentCount 컬럼이 1증가(update) 하도록 요청한다.
+	// 즉, 2개의 DML 처리를 해야하므로 Transaction 처리를 해야 한다.
+/*	@Override
+	@Transactional
+	public int boardCommentWrite(BoardCommentVO_OHJ commentvo) {
+		
+		int n = 0;
+		
+		// 댓글쓰기(tbl_boardComment 테이블에 insert)
+		n = dao.boardCommentWrite(commentvo);
+		
+		return n;
+	}
+*/	
 
 	
 	

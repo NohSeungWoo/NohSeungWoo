@@ -26,7 +26,7 @@
 	<!-- === &65. 글1개 조회하기 === -->
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select previousBoardSeq, previousSubject
-		     , boardSeq, bCategoryName, subject, fk_employeeid, name, positionName, content
+		     , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		     , regDate, readCount
 		     , nextBoardSeq,nextSubject
 		from
@@ -34,7 +34,7 @@
 		    select lag(boardSeq,1) over(order by regDate desc) AS previousBoardSeq
 		         , lag(subject,1) over(order by regDate desc) AS previousSubject
 		              
-		         , boardSeq, bCategoryName, subject, fk_employeeid, name, positionName, content
+		         , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		         , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 		    
 		         , lead(boardSeq,1) over(order by regDate desc) AS nextBoardSeq

@@ -77,6 +77,52 @@
 		location.href = "boardView.gw?boardSeq=${requestScope.boardvo.nextBoardSeq}";
 	}
 	
+	
+	// 댓글쓰기
+	function goCommentWrite(){
+		
+		var commentContentVal = $("input#commentContent").val().trim();
+		if(commentContentVal == ""){
+			alert("댓글 내용을 입력하세요!!");
+			return; // 종료
+		}
+		
+		// 첨부파일이 없는 댓글쓰기
+		goCommentWrite_noAttach();
+		
+	}
+	
+	// 첨부파일이 없는 댓글쓰기
+	function goCommentWrite_noAttach(){
+		
+		$.ajax({
+			url:"<%= ctxPath%>/boardCommentWrite.gw",
+			data:{"fk_boardSeq":"${requestScope.boardvo.boardSeq}",
+				  "fk_employeeId":"${sessionScope.loginuser.employeeid}",
+				  "content":$("input#commentContent").val()},
+			type:"POST",
+			dataType:"JSON",
+			success:function(json){ // {"n":1} 또는 {"n":0}
+				
+				var n = json.n;
+				
+				if(n==0){
+					alert("댓글쓰기가 실패하였습니다.");
+				}
+				else{
+				//	goReadComment(); // 페이징처리 안한 댓글 읽어오기
+				}
+				
+				$("input#commentContent").val("");
+				
+			},
+			error: function(request, status, error){
+            	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		});
+		
+	}
+	
 </script>
 
 <div class="container">
@@ -160,84 +206,76 @@
 	
 	
 	
-	
-<%-- 	
-	
+	<%-- &83. 댓글쓰기 폼 추가 --%>
+	<!--
+	카테고리번호가 ${requestScope.boardvo.fk_bCategorySeq}인데, <br>1이면 공지사항, 2이면 자유게시판, 3이면 건의사항임.
 	공지사항은 댓글X
-	건의사항은 댓글O
-	
-	${requestScope.boardvo.fk_bCategorySeq}
-	
-	
-	<!-- 댓글쓰기 시작 -->
-	<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
-		<strong style="border-bottom: solid 2px #37f;">댓글쓰기</strong>
-	</div>
-	
-	<div class="mt-3">
-		<input type="text" id="commentContent" style="width: 100%" placeholder="로그인 후 이용하실 수 있습니다."/>
+	건의사항은 댓글O 
+	-->
+	<c:if test="${requestScope.boardvo.fk_bCategorySeq eq 3}"> 
+		<!-- 댓글쓰기 시작 -->
+		<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
+			<strong style="border-bottom: solid 2px #37f;">댓글쓰기</strong>
+		</div>
 		
-		<button type="button" class="btn btn-sm mt-1" style="border: solid 1px #dee2e6; color: #37f; float: right;">등록</button>
-	</div>
-	<!-- 댓글쓰기 끝 -->
-	
-	
-	
-	
-	
-	
-	<!-- 댓글내용 보여주기 시작 -->
-	<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
-		<strong style="border-bottom: solid 2px #37f;">댓글내용</strong>
-	</div>
-	
-	<!-- 댓글이 존재하지 않을 경우 -->
-	<div class="table-responsive mt-3">
-		<table class="table table-hover">
-			<tr style="text-align: center; background-color: #F7F7F7;"> <!-- 글자 가운데정렬 -->
-				<th class="brStyle" width="6%">번호</th>
-				<th class="brStyle">댓글내용</th>
-				<th class="brStyle" width="8%">작성자</th>
-				<th width="17%">작성일자</th>
-			</tr>
-			<tr style="border-bottom: solid 1px #dee2e6;">
-				<td colspan="4">
-					<div class="my-5" align="center">
-						<i class="fas fa-info-circle" style="color: #37f;"></i><br>
-						조회 결과, 댓글이 존재하지 않습니다.
-					</div>
-				</td>
-			</tr>
-		</table>
-	</div>
-	
-	<!-- 댓글이 존재하는 경우 -->
-	<div class="table-responsive mt-3">
-		<table class="table table-hover">
-			<tr style="text-align: center; background-color: #F7F7F7;"> <!-- 글자 가운데정렬 -->
-				<th class="brStyle" width="6%">번호</th>
-				<th class="brStyle">댓글내용</th>
-				<th class="brStyle" width="8%">작성자</th>
-				<th width="17%">작성일자</th>
-			</tr>
-			<tr style="border-bottom: solid 1px #dee2e6;">
-				<td class="brStyle" align="center">1</td>
-				<td class="brStyle">네~~~알겠습니다~~~!</td>
-				<td class="brStyle" align="center">서강준</td>
-				<td align="center">2021-11-10 14:00:01</td>
-			</tr>
-		</table>
-	</div>
-	<!-- 댓글내용 보여주기 종료 -->
+		<div class="mt-3">
+			<form name="commentWriteFrm">
+				<input type="text" id="commentContent" style="width: 100%" placeholder="로그인 후 이용하실 수 있습니다."/>
+				<input type="text" style="display: none;"> <!-- form태그 속의 input태그가 한 개일 경우, 엔터치면 값이 전송되는것을 방지함.  ★hidden타입은 안된다. -->
+			</form>
+			<button type="button" class="btn btn-sm mt-1" style="border: solid 1px #dee2e6; color: #37f; float: right;" onclick="goCommentWrite()">등록</button>
+			<button type="reset" class="btn btn-sm mt-1 mr-1" style="border: solid 1px #dee2e6; color: #37f; float: right;">취소</button>
+		</div>
+		<!-- 댓글쓰기 끝 -->
+		
+	<%-- 
+		<!-- 댓글내용 보여주기 시작 -->
+		<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
+			<strong style="border-bottom: solid 2px #37f;">댓글내용</strong>
+		</div>
+		
+		<!-- 댓글이 존재하지 않을 경우 -->
+		<div class="table-responsive mt-3">
+			<table class="table table-hover">
+				<tr style="text-align: center; background-color: #F7F7F7;"> <!-- 글자 가운데정렬 -->
+					<th class="brStyle" width="6%">번호</th>
+					<th class="brStyle">댓글내용</th>
+					<th class="brStyle" width="8%">작성자</th>
+					<th width="17%">작성일자</th>
+				</tr>
+				<tr style="border-bottom: solid 1px #dee2e6;">
+					<td colspan="4">
+						<div class="my-5" align="center">
+							<i class="fas fa-info-circle" style="color: #37f;"></i><br>
+							조회 결과, 댓글이 존재하지 않습니다.
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<!-- 댓글이 존재하는 경우 -->
+		<div class="table-responsive mt-3">
+			<table class="table table-hover">
+				<tr style="text-align: center; background-color: #F7F7F7;"> <!-- 글자 가운데정렬 -->
+					<th class="brStyle" width="6%">번호</th>
+					<th class="brStyle">댓글내용</th>
+					<th class="brStyle" width="8%">작성자</th>
+					<th width="17%">작성일자</th>
+				</tr>
+				<tr style="border-bottom: solid 1px #dee2e6;">
+					<td class="brStyle" align="center">1</td>
+					<td class="brStyle">네~~~알겠습니다~~~!</td>
+					<td class="brStyle" align="center">서강준</td>
+					<td align="center">2021-11-10 14:00:01</td>
+				</tr>
+			</table>
+		</div>
+		<!-- 댓글내용 보여주기 종료 -->
+		
+	--%>		
+	</c:if>
 
---%>
-
-
-	
-	
-	
-	
-	
 	
 <%--  
 <!-- 가비아 그룹웨어나 네이버 같은 댓글을 하고싶을때 디자인처리 -->
@@ -262,11 +300,6 @@
 	</div> 
 	<!-- 댓글쓰기 및 댓글보여주기 끝 -->
 --%>	
-	
-	
-	
-	
-	
 	
 	
 </div>

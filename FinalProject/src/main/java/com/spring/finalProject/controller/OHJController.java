@@ -6,13 +6,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
 import com.spring.finalProject.common.MyUtil_KGH;
 import com.spring.finalProject.model.EmployeeVO_KGH;
@@ -130,7 +133,7 @@ public class OHJController {
 	
 	// === &58. 글목록 보기 페이지 요청(최근 게시물) === //
 	@RequestMapping(value="/recentList.gw")
-	public ModelAndView recentList(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView recentList(ModelAndView mav, HttpServletRequest request) { /* 뿌잉) 그룹웨어이므로 requiredLogin_을 추가해야한다. */
 		
 		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
@@ -160,7 +163,7 @@ public class OHJController {
 	
 	// === &62. 글1개를 보여주는 페이지 요청 === //
 	@RequestMapping(value="/boardView.gw")
-	public ModelAndView boardView(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView boardView(ModelAndView mav, HttpServletRequest request) { /* 뿌잉) 그룹웨어이므로 requiredLogin_을 추가해야한다. */
 		
 		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
@@ -340,10 +343,23 @@ public class OHJController {
 	}
 	
 	
-	
-	
-	
-	
+/*	
+	// === &84. 댓글쓰기(Ajax 로 처리) === //
+	@ResponseBody
+	@RequestMapping(value="/boardCommentWrite.gw", method = {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	public String boardCommentWrite(BoardCommentVO_OHJ commentvo) {
+		// 댓글쓰기에 첨부파일이 없는 경우
+		
+		int n = 0;
+		
+		n = service.boardCommentWrite(commentvo);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString();
+	}
+*/	
 	
 	
 	

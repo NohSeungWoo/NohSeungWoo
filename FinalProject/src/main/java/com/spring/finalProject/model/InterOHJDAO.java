@@ -3,6 +3,7 @@ package com.spring.finalProject.model;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
 
 public interface InterOHJDAO {
@@ -21,6 +22,8 @@ public interface InterOHJDAO {
 
 	// 1개글 삭제하기
 	int boardDel(Map<String, String> paraMap);
+
+//	int boardCommentWrite(BoardCommentVO_OHJ commentvo); // 댓글쓰기(tbl_boardComment 테이블에  insert)
 	
 	
 	
