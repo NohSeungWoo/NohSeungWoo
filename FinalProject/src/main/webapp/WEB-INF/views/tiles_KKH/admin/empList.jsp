@@ -17,6 +17,18 @@
 		getDepartmentName();
 		getPositionName();
 		
+		// === requestScope.paraMap의 초기값 설정 === //
+		var department = "${requestScope.paraMap.department}";
+		
+		var position = "${requestScope.paraMap.position}";
+		
+		// alert("department : " + department + ", position : " + position);
+		if(department == "" && position == "") {
+			sessionStorage.setItem("department", "전체");
+			sessionStorage.setItem("position", "전체");
+		}
+		
+		
 		// == 검색 버튼 클릭했을 때 검색결과 나타내는 이벤트 == //
 		$("#searchEmployee").click(function() {
 			b_searchClick = true;
@@ -98,22 +110,6 @@
 			$("input#searchEmp").val("${requestScope.paraMap.searchEmp}");
 		}
 		
-		///////////////////////////////////////////////////////////
-		// 초기에 들어왔을때 session값 전체로 셋팅해주기
-		console.log("확인용 : " + "${paraMap.department}");
-		console.log("확인용 : " + "${paraMap.position}");
-		
-		var department = sessionStorage.getItem("department");
-		var position = sessionStorage.getItem("position");
-		
-		if(${paraMap.department == ''}) {
-			sessionStorage.setItem("department", "전체");
-		}
-		
-		if(${paraMap.position == ''}) {
-			sessionStorage.setItem("position", "전체");
-		}
-		/////////////////////////////////////////////////////////////
 		
 		// === 직원 상세 수정 페이지 팝업창 이벤트 === //
 		$("td").click(function() {

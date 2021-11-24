@@ -57,4 +57,23 @@ public interface InterKGHService {
 	// 직원수 가져오기 메서드
 	int getEmpCnt();
 
+	// 부서 추가 시 이미 존재하는 부서인지 중복확인 하는 메서드
+	boolean departDuplicate(String newDepart);
+
+	// 해당하는 사원의 번호 존재여부 확인하는 메서드
+	boolean isExistsEmpID(String employeeid);
+
+	// 부서 새로 추가하기 메서드
+	int newDepartAddEnd(Map<String, String> paraMap);
+
+	// 특정 부서 삭제하기 메서드
+	int departDelEnd(String departno);
+
+	// 부서명 수정하기 메서드
+	int departEditEnd(Map<String, String> paraMap);
+	
+	// 체크박스에 체크된 사원에 대한 부서변경(update)
+	int changeDepartment(Map<String, Object> paraMap);
+
+
 }

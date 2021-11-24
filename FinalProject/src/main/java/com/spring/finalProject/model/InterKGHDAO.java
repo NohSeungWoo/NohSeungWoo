@@ -52,6 +52,34 @@ public interface InterKGHDAO {
 
 	// 직원수 가져오기 메서드
 	int getEmpCnt();
+
+	// 부서 추가 시 이미 존재하는 부서인지 중복확인 하는 메서드
+	boolean departDuplicate(String newDepart);
+
+	// 해당하는 사원의 번호 존재여부 확인하는 메서드
+	boolean isExistsEmpID(String employeeid);
+
+	// 부서 새로 추가하기 메서드
+	int newDepartAddEnd(Map<String, String> paraMap);
+
+	// 해당하는 부서의 부서번호 select 하기
+	String getdepartno(Map<String, String> paraMap);
+
+	// 해당하는 사번의 직책 update하기
+	int updateManager(Map<String, String> paraMap);
+
+	// 부서 삭제 및 삭제 부서에 대한 사원정보 변경(update)
+	int delDepartEmpUpdate(String departno);
+
+	// 해당하는 부서에 대한 사원 정보 변경이 성공한 경우 해당 부서 삭제
+	int delDepart(String departno);
+
+	// 부서명 수정하기 메서드
+	int departEditEnd(Map<String, String> paraMap);
+
+	// 체크박스에 체크된 사원에 대한 부서변경(update)
+	int changeDepartment(Map<String, Object> paraMap);
+
 	
 
 }

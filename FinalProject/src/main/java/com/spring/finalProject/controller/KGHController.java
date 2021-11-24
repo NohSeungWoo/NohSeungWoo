@@ -1,7 +1,5 @@
 package com.spring.finalProject.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-
 import java.io.File;
 import java.util.*;
 
@@ -182,8 +180,6 @@ public class KGHController {
 			
 			Map<String, String> paraMap = new HashMap<>();
 			paraMap.put("searchEmp", searchEmp);
-			
-			mav.addObject("paraMap", paraMap);
 		}
 		
 		Map<String,String> paraMap = new HashMap<>();
@@ -247,9 +243,7 @@ public class KGHController {
 		empList = service.getEmpListWithPaging(paraMap);
 		
 		// 아래는 검색대상 컬럼과 검색어를 유지시키기 위한 것임.
-		if(!"".equals(searchEmp) && !"".equals(searchEmp)) {
-			mav.addObject("paraMap", paraMap);
-		}
+		mav.addObject("paraMap", paraMap);
 		
 		// === 페이지바 만들기 === //
 		int blockSize = 10;
@@ -301,7 +295,7 @@ public class KGHController {
 		
 		while(!(loop > blockSize || pageNo > totalPage)) {
 			if(pageNo == currentShowPageNo) {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>" + pageNo + "</li>";
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; background-color: #666666; font-weight:bold; color:white; padding:2px 4px;'>" + pageNo + "</li>";
 			}
 			else {
 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='" + url + "?department=" + department + "&position=" + position + "&searchEmp=" + searchEmp + "&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
@@ -812,15 +806,11 @@ public class KGHController {
 		
 		List<Map<String, String>> empDepartList = null;
 		
-		// === 직원수 가져오기 메서드 === //
-		int empCnt = service.getEmpCnt();
-		mav.addObject("empCnt", empCnt);
-		
 		String department = request.getParameter("department");
 		String searchEmp = request.getParameter("searchEmp");
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
-		if(department == null || "".equals(department) || department.trim().isEmpty()) {
+		if(department == null || "".equals(department) || department.trim().isEmpty() || "전체".equals(department)) {
 			department = "";
 		}
 		
@@ -843,10 +833,11 @@ public class KGHController {
 	    int startRno = 0;			// 시작 행번호
 	    int endRno = 0;				// 끝 행번호
 		
-		// === 총 게시물 건수(totalCount) 가져오기(select) === //
+	    // === 직원수 가져오기 메서드 === //
 		totalCount = service.getTotalCount(paraMap);
 		// System.out.println("~~~ 확인용 totalCount : " + totalCount);
 		// ~~~ 확인용 totalCount : 6
+		mav.addObject("empCnt", totalCount);
 		
 		// 총 게시물 건수(totalCount)가 127개 일 경우
 	    // 총 페이지 수(totalPage)는 13개 되어야 한다.
@@ -878,9 +869,7 @@ public class KGHController {
 	    empDepartList = service.getEmpListWithPaging(paraMap);
 		
 		// 아래는 검색대상 컬럼과 검색어를 유지시키기 위한 것임.
-		if(!"".equals(searchEmp) && !"".equals(searchEmp)) {
-			mav.addObject("paraMap", paraMap);
-		}
+		mav.addObject("paraMap", paraMap);
 		
 		// === 페이지바 만들기 === //
 		int blockSize = 10;
@@ -929,6 +918,163 @@ public class KGHController {
 		return mav;
 	}
 	
+	
+	// === 부서 추가 시 이미 존재하는 부서인지 중복확인 하는 메서드
+	@ResponseBody
+	@RequestMapping(value = "/departDuplicate.gw")
+	public String departDuplicate(HttpServletRequest request) {
+		String newDepart = request.getParameter("newDepart");
+		
+		boolean isExists = service.departDuplicate(newDepart);
+		
+		JSONObject jsonObj = new JSONObject(); // {}
+		jsonObj.put("isExists", isExists);
+		
+		String json = jsonObj.toString();
+		
+		return json;
+	}
+	
+	// === 해당하는 사원의 번호 존재여부 확인하는 메서드 === //
+	@ResponseBody
+	@RequestMapping(value = "isExistsEmpID.gw")
+	public String isExistsEmpID(HttpServletRequest request) {
+		String employeeid = request.getParameter("newDepartempID");
+		
+		boolean isExists = service.isExistsEmpID(employeeid);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("isExists", isExists);
+		
+		String json = jsonObj.toString();
+		
+		return json;
+	}
+	
+	
+	// === 부서 새로 추가하기 메서드 === //
+	@RequestMapping(value = "/newDepartAddEnd.gw")
+	public ModelAndView newDepartAddEnd(HttpServletRequest request, ModelAndView mav, DepartmentVO_KGH departVO) {
+		String newDepartname = request.getParameter("newDepartname");
+		String newDepartempID = request.getParameter("newDepartempID");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("newDepartname", newDepartname);
+		paraMap.put("newDepartempID", newDepartempID);
+		
+		int result = service.newDepartAddEnd(paraMap);
+		
+		if(result == 1) {
+			String msg = "부서 등록이 완료되었습니다.";
+			String loc = request.getContextPath() + "/admin/department.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		else {
+			String msg = "부서 등록이 실패하였습니다.";
+			String loc = request.getContextPath() + "/admin/department.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		
+		mav.setViewName("msg");
+		return mav;
+	}
+	
+	
+	// === 특정 부서 삭제하기 메서드 === //
+	@RequestMapping(value = "/departDelEnd.gw")
+	public ModelAndView departDelEnd(ModelAndView mav, HttpServletRequest request) {
+		String departno = request.getParameter("delDepart");
+		
+		int result = service.departDelEnd(departno);
+		
+		if(result == 1) {
+			String msg = "부서 삭제가 완료되었습니다.";
+			String loc = request.getContextPath() + "/admin/department.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		else {
+			String msg = "부서 삭제가 실패하였습니다.";
+			String loc = request.getContextPath() + "/admin/department.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		
+		mav.setViewName("msg");
+		
+		return mav;
+	}
+	
+	
+	// === 부서명 수정하기 메서드 === //
+	@RequestMapping(value = "/departEditEnd.gw")
+	public ModelAndView departEditEnd(ModelAndView mav, HttpServletRequest request) {
+		String departno = request.getParameter("editDepart");
+		String newDepartName = request.getParameter("eidtDepartName");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("departno", departno);
+		paraMap.put("newDepartName", newDepartName);
+				
+		int n = service.departEditEnd(paraMap);
+		
+		if(n == 1) {
+			String msg = "부서 수정이 완료되었습니다.";
+			String loc = request.getContextPath() + "/admin/department.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		else {
+			String msg = "부서 수정이 실패하였습니다.";
+			String loc = request.getContextPath() + "/admin/department.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		
+		mav.setViewName("msg");
+		
+		return mav;
+	}
+	
+	
+	// === 체크박스에 체크된 사원에 대한 부서변경(update) === //
+	@ResponseBody
+	@RequestMapping(value = "/changeDepartment.gw", method = {RequestMethod.POST})
+	public String changeDepartment(HttpServletRequest request) {
+		String str_checkempID = request.getParameter("str_checkempID");
+		String departno = request.getParameter("changeDepart");
+
+		Map<String, Object> paraMap = new HashMap<>();
+		paraMap.put("departno", departno);
+		
+		if(str_checkempID != null && !"".equals(str_checkempID)) {
+			String[] checkEmpArr = str_checkempID.split(",");
+			paraMap.put("checkEmpArr", checkEmpArr);
+		}
+		
+		JSONObject jsonObj = new JSONObject();
+		
+		int n = service.changeDepartment(paraMap);
+		
+		if(n >= 1) {
+			jsonObj.put("isSuccess", true);
+		}
+		else {
+			jsonObj.put("isSuccess", false);
+		}
+		
+		String json = jsonObj.toString();
+		
+		return json;
+	}
 	
 	////////////////////////////////////////////////////////
 	// === 로그인 또는 로그아웃을 할 때 현재 페이지로 돌아가는 메서드 생성 === //

@@ -33,19 +33,9 @@
 	<div class="list-group-flush">
 		<a href="<%= request.getContextPath()%>/admin/empList.gw" class="list-group-item list-group-item-action ">직원목록</a>
 		<a href="<%= request.getContextPath()%>/admin/empRegister.gw" class="list-group-item list-group-item-action">직원등록</a>
-	  	<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle">결재함</a>
-	  		<ul class="collapse sidesubmenu" id="pageSubmenu">
-	            <li>
-	                <a href="#">결재전</a>
-	            </li>
-	            <li>
-	                <a href="#">반려한</a>
-	            </li>
-	            <li>
-	                <a href="#">완료한</a>
-	            </li>
-	        </ul>
-	  <a href="<%= request.getContextPath()%>/admin/empChart.gw" class="list-group-item list-group-item-action">직원통계</a>
+	  	<a href="<%= request.getContextPath()%>/admin/department.gw" class="list-group-item list-group-item-action">부서목록</a>
+	  	<a href="<%= request.getContextPath()%>/admin/empChart.gw" class="list-group-item list-group-item-action">직원통계</a>
+	  	<a href="<%= request.getContextPath()%>/admin/adminList.gw" class="list-group-item list-group-item-action">관리자목록</a>
 	</div>
 </nav>
    
