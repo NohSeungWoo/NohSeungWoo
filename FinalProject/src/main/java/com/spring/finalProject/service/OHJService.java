@@ -119,6 +119,14 @@ public class OHJService implements InterOHJService {
 		List<BoardCommentVO_OHJ> commentList = dao.getCommentList(fk_boardSeq);
 		return commentList;
 	}
+
+
+	// === &103. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === //
+	@Override
+	public List<BoardVO_OHJ> boardListSearch(Map<String, String> paraMap) {
+		List<BoardVO_OHJ> boardList = dao.boardListSearch(paraMap);
+		return boardList;
+	}
 	
 
 	

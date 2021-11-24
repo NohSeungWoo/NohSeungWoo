@@ -1,6 +1,5 @@
 package com.spring.finalProject.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -163,9 +162,14 @@ public class OHJController {
 		if(toDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
 			toDate = "";   // 2021-11-23 // 'sysdate 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
 		}
-		if(bCategory == null || (!"0".equals(bCategory)&&!"1".equals(bCategory)&&!"2".equals(bCategory)&&!"3".equals(bCategory))) { // 맨처음 목록보기를 통해 들어가는 경우, 유저가 장난친 경우
+		////////////////////////////////////////////////////
+		if(bCategory == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			bCategory = "0";
+		}
+		if( !"0".equals(bCategory)&&!"1".equals(bCategory)&&!"2".equals(bCategory)&&!"3".equals(bCategory) ) { // 유저가 게시판종류를 장난친 경우
 			bCategory = "";
 		}
+		////////////////////////////////////////////////////
 		if(searchType == null || (!"subject".equals(searchType)&&!"name".equals(searchType))) { // 맨처음 목록보기를 통해 들어가는 경우, 유저가 장난친 경우
 			searchType = "";
 		}
@@ -180,8 +184,20 @@ public class OHJController {
 		paraMap.put("searchType", searchType);
 		paraMap.put("searchWord", searchWord);
 		
-	//	boardList = service.boardListSearch(paraMap);
+		boardList = service.boardListSearch(paraMap);
 		
+		// 검색시 검색조건 및 값들을 유지시키기 위한 것임.
+		if(!"".equals(fromDate) && !"".equals(toDate)) {
+			mav.addObject("fromDate", fromDate);
+			mav.addObject("toDate", toDate);
+		}
+//		if(!"0".equals(bCategory) && !"".equals(bCategory)) {
+			mav.addObject("bCategory", bCategory); // 주소창에 게시판종류를 장난친경우를 recentList.jsp에서 처리하기위해, if의 조건없이 넘김.
+//		}
+		if(!"".equals(searchType) && !"".equals(searchWord)) {
+			mav.addObject("searchType", searchType);
+			mav.addObject("searchWord", searchWord);
+		}
 		// === &102. 페이징 처리를 안한, 검색어가 있는, 전체 글목록 보여주기 끝 === //
 		
 		/////////////////////////////////////////////////////////////////

@@ -107,6 +107,14 @@ public class OHJDAO implements InterOHJDAO {
 		List<BoardCommentVO_OHJ> commentList = sqlsession.selectList("ohhj.getCommentList", fk_boardSeq);
 		return commentList;
 	}
+
+
+	// === &104. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === //
+	@Override
+	public List<BoardVO_OHJ> boardListSearch(Map<String, String> paraMap) {
+		List<BoardVO_OHJ> boardList = sqlsession.selectList("ohhj.boardListSearch", paraMap);
+		return boardList;
+	}
 	
 	
 	

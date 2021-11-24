@@ -28,6 +28,9 @@ public interface InterOHJDAO {
 
 	// 원게시물에 딸린 댓글들을 조회해오는 것
 	List<BoardCommentVO_OHJ> getCommentList(String fk_boardSeq);
+
+	// 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기
+	List<BoardVO_OHJ> boardListSearch(Map<String, String> paraMap);
 	
 	
 	

@@ -109,6 +109,43 @@
 	</select>
 	
 	
+	<!-- === &105. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === -->
+	<select id="boardListSearch" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
+		select boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+			 , commentCount
+		from tbl_board B JOIN tbl_employee E
+		ON B.fk_employeeId = E.employeeId
+		where 1=1
+		
+		<if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+		and regDate BETWEEN add_months(sysdate,-3) AND sysdate
+		</if>
+		<if test='fromDate != "" and toDate != ""'>
+		and regDate BETWEEN #{fromDate} AND #{toDate}
+		</if>
+		
+		<!-- bCategory가 0이면(맨처음목록보기/전체선택), 조건없이 전체를 다 보여줌 -->
+		<if test='bCategory == ""'> <!-- 유저가 get방식으로 장난치는 경우 : select결과가 없도록 해야함. -->
+		and fk_bCategorySeq = -99
+		</if>
+		<if test='bCategory != "" and bCategory != "0"'> 
+		and fk_bCategorySeq = #{bCategory}
+		</if>
+		
+		<if test='searchType != "" and searchWord != ""'>
+		and ${searchType} like '%' || #{searchWord} || '%'
+		</if>
+		
+		order by regDate desc
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

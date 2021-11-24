@@ -66,6 +66,18 @@
             $('input#toDate').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
         });
 --%>
+		//검색시 검색조건 및 값 유지시키기
+		if(${not empty requestScope.fromDate}){
+			$("input#fromDate").val("${requestScope.fromDate}");
+			$("input#toDate").val("${requestScope.toDate}");
+		}
+		if(${not empty requestScope.bCategory}){
+			$("select#bCategory").val("${requestScope.bCategory}");
+		}
+		if(${not empty requestScope.searchType}){
+			$("select#searchType").val("${requestScope.searchType}");
+			$("input#searchWord").val("${requestScope.searchWord}");
+		}
 		
 	});// end of $(document).ready(function(){})---------------------------
 	
@@ -178,7 +190,7 @@
 			<div>
 				<div class="mt-3" style="display: inline-block;">
 					<div style="display: inline-block; width: 100px;">게시판 종류</div>
-					<select name="bCategory" style="width: 350px; height: 28.76px;">
+					<select name="bCategory" id="bCategory" style="width: 350px; height: 28.76px;">
 						<option value="0">전체</option>
 						<option value="1">공지사항</option>
 						<option value="2">자유게시판</option>
@@ -205,8 +217,12 @@
 	
 	
 	<!-- 게시물이 존재하는지 존재안하는지에 따라 달라짐. 시작-->
-	<c:if test="${empty requestScope.boardList}"> <!-- 없든지 텅빈거다. -->
+	<c:if test='${empty requestScope.boardList and requestScope.bCategory ne ""}'> <!-- 없든지 텅비었으며, 유저가 카테고리번호를 장난친게 아닌 경우 -->
 		<h4 class="mt-3" style="border-top: solid 1px #d9d9d9; border-bottom: solid 1px #d9d9d9; padding-top: 50px; padding-bottom: 50px;" align="center">최근 게시물이 없습니다.</h4>
+	</c:if>
+	
+	<c:if test='${requestScope.bCategory eq ""}'> <!-- 유저가 카테고리번호를 장난친 경우 -->
+		<h4 class="mt-3" style="border-top: solid 1px #d9d9d9; border-bottom: solid 1px #d9d9d9; padding-top: 50px; padding-bottom: 50px; color: red;" align="center">주소창에 장난치지 마세요!<br>해당하는 게시판 종류는 없습니다!!</h4>
 	</c:if>
 	
 	<c:if test="${not empty requestScope.boardList}">
