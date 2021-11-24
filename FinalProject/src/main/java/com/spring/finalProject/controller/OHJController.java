@@ -1,5 +1,6 @@
 package com.spring.finalProject.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -142,6 +143,46 @@ public class OHJController {
 		
 		// == 페이징 처리를 안한, 검색어가 없는, 전체 글목록 보여주기 == //
 		boardList = service.boardListNoSearch();
+		
+		// === &102. 페이징 처리를 안한, 검색어가 있는, 전체 글목록 보여주기 시작 === //
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
+		String bCategory = request.getParameter("bCategory");
+		String searchType = request.getParameter("searchType");
+		String searchWord = request.getParameter("searchWord");
+	/*	
+		System.out.println("확인용 fromDate : " + fromDate);
+		System.out.println("확인용 toDate : " + toDate);
+		System.out.println("확인용 bCategory : " + bCategory);
+		System.out.println("확인용 searchType : " + searchType);
+		System.out.println("확인용 searchWord : " + searchWord);
+	*/	
+		if(fromDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			fromDate = ""; // 2021-08-23 // '숫자개월수만큼 빼준 날짜인 add_months(sysdate,-3) 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
+		}
+		if(toDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			toDate = "";   // 2021-11-23 // 'sysdate 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
+		}
+		if(bCategory == null || (!"0".equals(bCategory)&&!"1".equals(bCategory)&&!"2".equals(bCategory)&&!"3".equals(bCategory))) { // 맨처음 목록보기를 통해 들어가는 경우, 유저가 장난친 경우
+			bCategory = "";
+		}
+		if(searchType == null || (!"subject".equals(searchType)&&!"name".equals(searchType))) { // 맨처음 목록보기를 통해 들어가는 경우, 유저가 장난친 경우
+			searchType = "";
+		}
+		if(searchWord == null || "".equals(searchWord) || searchWord.trim().isEmpty()) { // 맨처음 목록보기를 통해 들어가는 경우, 검색어자체가 ⓐ없거나 ⓑ있는데 공백인 경우
+			searchWord = "";
+		}
+		
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
+		paraMap.put("bCategory", bCategory);
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+	//	boardList = service.boardListSearch(paraMap);
+		
+		// === &102. 페이징 처리를 안한, 검색어가 있는, 전체 글목록 보여주기 끝 === //
 		
 		/////////////////////////////////////////////////////////////////
 		/* === &69. 글조회수증가는 반드시 목록보기에 와서 해당 글제목을 클릭했을 경우에만 증가되고,
