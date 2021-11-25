@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
 
 //==== #32. DAO 선언 ====
@@ -83,6 +84,52 @@ public class OHJDAO implements InterOHJDAO {
 	public int boardDel(Map<String, String> paraMap) {
 		int n = sqlsession.delete("ohhj.boardDel", paraMap);
 		return n;
+	}
+
+	
+	// === &86. 댓글쓰기(tbl_boardComment 테이블에 insert) === //
+	@Override
+	public int boardCommentWrite(BoardCommentVO_OHJ commentvo) {
+		int n = sqlsession.insert("ohhj.boardCommentWrite", commentvo);
+		return n;
+	}
+	// === &87. tbl_board 테이블에 commentCount 컬럼이 1증가(update) === //
+	@Override
+	public int updateCommentCount(String fk_boardSeq) {
+		int m = sqlsession.update("ohhj.updateCommentCount", fk_boardSeq);
+		return m;
+	}
+
+
+	// === &92. 원게시물에 딸린 댓글들을 조회해오는 것 === //
+	@Override
+	public List<BoardCommentVO_OHJ> getCommentList(String fk_boardSeq) {
+		List<BoardCommentVO_OHJ> commentList = sqlsession.selectList("ohhj.getCommentList", fk_boardSeq);
+		return commentList;
+	}
+
+
+	// === &104. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === //
+	@Override
+	public List<BoardVO_OHJ> boardListSearch(Map<String, String> paraMap) {
+		List<BoardVO_OHJ> boardList = sqlsession.selectList("ohhj.boardListSearch", paraMap);
+		return boardList;
+	}
+
+
+	// === &116. 총 게시물 건수(totalCount) 구하기 - 검색이 있을때와 검색이 없을때로 나뉜다. === //
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		int totalCount = sqlsession.selectOne("ohhj.getTotalCount", paraMap);
+		return totalCount;
+	}
+
+
+	// === &119. 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) === //
+	@Override
+	public List<BoardVO_OHJ> boardListSearchWithPaging(Map<String, String> paraMap) {
+		List<BoardVO_OHJ> boardList = sqlsession.selectList("ohhj.boardListSearchWithPaging", paraMap);
+		return boardList;
 	}
 	
 	

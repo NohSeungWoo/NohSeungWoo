@@ -139,5 +139,89 @@ public class KGHDAO implements InterKGHDAO {
 		return empCnt;
 	}
 
+	// === 부서 추가 시 이미 존재하는 부서인지 중복확인 하는 메서드 === //
+	@Override
+	public boolean departDuplicate(String newDepart) {
+		boolean isExists = false;
+		int n = sqlsession.selectOne("KangGH.departDuplicate", newDepart);
+		
+		if(n >= 1) {
+			isExists = true;
+		}
+		else {
+			isExists = false;
+		}
+		
+		return isExists;
+	}
+
+	// === 해당하는 사원의 번호 존재여부 확인하는 메서드 === //
+	@Override
+	public boolean isExistsEmpID(String employeeid) {
+		boolean isExists = false;
+		
+		int n = sqlsession.selectOne("KangGH.isExistsEmpID", employeeid);
+		
+		if(n >= 1) {
+			isExists = true;
+		}
+		else {
+			isExists = false;
+		}
+		
+		return isExists;
+	}
+
+	// === 부서 새로 추가하기 메서드 === //
+	@Override
+	public int newDepartAddEnd(Map<String, String> paraMap) {
+		int n = sqlsession.insert("KangGH.newDepartAddEnd", paraMap);
+		return n;
+	}
+
+	// === 해당하는 부서의 부서번호 select 하기 === //
+	@Override
+	public String getdepartno(Map<String, String> paraMap) {
+		String departno = sqlsession.selectOne("KangGH.getdepartmentno", paraMap);
+		return departno;
+	}
+
+	// 해당하는 사번의 직책 update하기
+	@Override
+	public int updateManager(Map<String, String> paraMap) {
+		int result = sqlsession.update("KangGH.updateManager", paraMap);
+		return result;
+	}
+
+	// 부서 삭제 및 삭제 부서에 대한 사원정보 변경(update)
+	@Override
+	public int delDepartEmpUpdate(String departno) {
+		int n = sqlsession.update("KangGH.delDepartEmpUpdate", departno);
+		return n;
+	}
+
+	// === 해당하는 부서에 대한 사원 정보 변경이 성공한 경우 해당 부서 삭제(delete) === //
+	@Override
+	public int delDepart(String departno) {
+		int result = sqlsession.delete("KangGH.delDepart", departno);
+		return result;
+	}
+
+	
+	// === 부서명 수정하기 메서드(update) === //
+	@Override
+	public int departEditEnd(Map<String, String> paraMap) {
+		int n = sqlsession.update("KangGH.departEditEnd", paraMap);
+		return n;
+	}
+
+	// === 체크박스에 체크된 사원에 대한 부서변경(update) === //
+	@Override
+	public int changeDepartment(Map<String, Object> paraMap) {
+		int n = sqlsession.update("KangGH.changeDepartment", paraMap);
+		return n;
+	}
+
+
 
 }

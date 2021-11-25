@@ -11,6 +11,12 @@ public class BoardCommentVO_OHJ {
 	private String content; 		// 댓글내용
 	private String regDate; 		// 작성일자
 	
+	// == select용 ==
+	////////////////////////////////////////////
+	private String name; 			 // 글쓴이 -> ohhj.xml에서 join한 결과를 자동으로 set해서 담는 용도임.
+	private String positionName; 	 // 직급명
+	////////////////////////////////////////////
+		
 	public BoardCommentVO_OHJ() {}
 	
 	public BoardCommentVO_OHJ(String commentSeq, String fk_boardSeq, String fk_employeeId, String content,
@@ -63,6 +69,23 @@ public class BoardCommentVO_OHJ {
 		this.regDate = regDate;
 	}
 	
+	////////////////////////////////////////////
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPositionName() {
+		return positionName;
+	}
+
+	public void setPositionName(String positionName) {
+		this.positionName = positionName;
+	}
 	
 	
 }

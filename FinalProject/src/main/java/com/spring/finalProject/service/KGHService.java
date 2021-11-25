@@ -4,6 +4,9 @@ import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.finalProject.model.DepartmentVO_KGH;
 import com.spring.finalProject.model.EmployeeVO_KGH;
@@ -133,6 +136,77 @@ public class KGHService implements InterKGHService {
 		int empCnt = dao.getEmpCnt();
 		return empCnt;
 	}
+
+	@Override
+	public boolean departDuplicate(String newDepart) {
+		// === 부서 추가 시 이미 존재하는 부서인지 중복확인 하는 메서드 === //
+		boolean isExists = dao.departDuplicate(newDepart);
+		return isExists;
+	}
+
+	@Override
+	public boolean isExistsEmpID(String employeeid) {
+		// === 해당하는 사원의 번호 존재여부 확인하는 메서드 === //
+		boolean isExists = dao.isExistsEmpID(employeeid);
+		return isExists;
+	}
+
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public int newDepartAddEnd(Map<String, String> paraMap) {
+		int n = 0, result = 0;
+		
+		// === 부서 새로 추가하기 메서드 === //
+		n = dao.newDepartAddEnd(paraMap);
+		
+		if(n == 1) {
+			// === 해당하는 부서번호 select 하기 === //
+			String departno = dao.getdepartno(paraMap);
+			
+			if(departno != "") {
+				// === 해당하는 사번의 직책 update하기 === //
+				paraMap.put("departno", departno);
+				
+				result = dao.updateManager(paraMap);
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = {Throwable.class})
+	public int departDelEnd(String departno) {
+		int n = 0, result = 0;
+		
+		// === 부서 삭제 및 삭제 부서에 대한 사원정보 변경(update) === //
+		n = dao.delDepartEmpUpdate(departno);
+		
+		if(n >= 0) {
+			// === 해당하는 부서에 대한 사원 정보 변경이 성공한 경우 해당 부서 삭제 === //
+			result = dao.delDepart(departno);
+		}
+		else {
+			result = 0;
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int departEditEnd(Map<String, String> paraMap) {
+		// === 부서명 수정하기 메서드 === //
+		int n = dao.departEditEnd(paraMap);
+		return n;
+	}
+
+	@Override
+	public int changeDepartment(Map<String, Object> paraMap) {
+		// === 체크박스에 체크된 사원에 대한 부서변경(update) === //
+		int n = dao.changeDepartment(paraMap);
+		return n;
+	}
+
 
 
 }

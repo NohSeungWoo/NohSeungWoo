@@ -15,18 +15,28 @@
 	
 	
 	<!-- === &61. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 === -->
+	<!-- 
 	<select id="boardListNoSearch" resultType="com.spring.board.model.BoardVO_OHJ">
 		select boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 		from tbl_board B JOIN tbl_employee E
 		ON B.fk_employeeId = E.employeeId
 		order by regDate desc
 	</select>
+	-->
 	
+	<!-- === 먼저 &61 을 주석처리하고서 &95. 페이징처리를 안한 검색어가 없는 전체 글목록 보여주기(+댓글의 갯수) === -->
+	<select id="boardListNoSearch" resultType="com.spring.board.model.BoardVO_OHJ">
+		select boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+			 , commentCount
+		from tbl_board B JOIN tbl_employee E
+		ON B.fk_employeeId = E.employeeId
+		order by regDate desc
+	</select>
 	
 	<!-- === &65. 글1개 조회하기 === -->
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select previousBoardSeq, previousSubject
-		     , boardSeq, bCategoryName, subject, fk_employeeid, name, positionName, content
+		     , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		     , regDate, readCount
 		     , nextBoardSeq,nextSubject
 		from
@@ -34,7 +44,7 @@
 		    select lag(boardSeq,1) over(order by regDate desc) AS previousBoardSeq
 		         , lag(subject,1) over(order by regDate desc) AS previousSubject
 		              
-		         , boardSeq, bCategoryName, subject, fk_employeeid, name, positionName, content
+		         , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		         , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 		    
 		         , lead(boardSeq,1) over(order by regDate desc) AS nextBoardSeq
@@ -68,6 +78,135 @@
 		delete from tbl_board
 		where boardSeq = #{boardSeq}
 	</delete>
+	
+	
+	<!-- &88. 댓글쓰기(tbl_boardComment 테이블에 insert) -->
+	<insert id="boardCommentWrite" parameterType="com.spring.board.model.BoardCommentVO_OHJ">
+		<!-- 첨부파일이 없는 경우 -->
+		insert into tbl_boardComment(commentseq,fk_boardseq,fk_employeeid,content,regdate)
+		values(tbl_boardComment_commentSeq.nextval, #{fk_boardSeq}, #{fk_employeeId}, #{content}, default)
+		<!-- 첨부파일이 있는 경우 -->
+		
+	</insert>
+	
+	<!-- &89. tbl_board 테이블에 commentCount 컬럼이 1증가(update) -->
+	<update id="updateCommentCount" parameterType="String">
+		update tbl_board set commentcount = commentcount+1
+		where boardseq = #{fk_boardSeq}
+	</update>
+	
+	
+	<!-- === &93. 원게시물에 딸린 댓글들을 조회해오는 것 === -->
+	<!-- 첨부파일이 없는 경우 -->
+	<select id="getCommentList" parameterType="String" resultType="com.spring.board.model.BoardCommentVO_OHJ">
+		select commentSeq, E.name, P.positionName, content, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
+		from tbl_boardComment C JOIN tbl_employee E
+		ON C.fk_employeeId = E.employeeId
+		JOIN tbl_position P
+		ON E.fk_positionNo = P.positionNo
+		where fk_boardSeq = #{fk_boardSeq}
+		order by commentSeq desc
+	</select>
+	
+	
+	<!-- === &105. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === -->
+	<select id="boardListSearch" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
+		select boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+			 , commentCount
+		from tbl_board B JOIN tbl_employee E
+		ON B.fk_employeeId = E.employeeId
+		where 1=1
+		
+		<if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+		and regDate BETWEEN add_months(sysdate,-3) AND sysdate
+		</if>
+		<if test='fromDate != "" and toDate != ""'>
+		and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
+		</if>
+		
+		<!-- bCategory가 0이면(맨처음목록보기/전체선택), 조건없이 전체를 다 보여줌 -->
+		<if test='bCategory == ""'> <!-- 유저가 get방식으로 장난치는 경우 : select결과가 없도록 해야함. -->
+		and fk_bCategorySeq = -99
+		</if>
+		<if test='bCategory != "" and bCategory != "0"'> 
+		and fk_bCategorySeq = #{bCategory}
+		</if>
+		
+		<if test='searchType != "" and searchWord != ""'>
+		and lower( ${searchType} ) like '%' || lower( #{searchWord} ) || '%'
+		</if>
+		
+		order by regDate desc
+	</select>
+	
+	
+	<!-- === &117. 총 게시물 건수(totalCount) 구하기 - 검색이 있을때와 검색이 없을때로 나뉜다. === -->
+	<select id="getTotalCount" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_board
+		where 1=1
+		
+		<if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+		and regDate BETWEEN add_months(sysdate,-3) AND sysdate
+		</if>
+		<if test='fromDate != "" and toDate != ""'>
+		and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
+		</if>
+		
+		<!-- bCategory가 0이면(맨처음목록보기/전체선택), 조건없이 전체를 다 보여줌 -->
+		<if test='bCategory == ""'> <!-- 유저가 get방식으로 장난치는 경우 : select결과가 없도록 해야함. -->
+		and fk_bCategorySeq = -99
+		</if>
+		<if test='bCategory != "" and bCategory != "0"'> 
+		and fk_bCategorySeq = #{bCategory}
+		</if>
+		
+		<if test='searchType != "" and searchWord != ""'>
+		and lower( ${searchType} ) like '%' || lower( #{searchWord} ) || '%'
+		</if>
+		
+	</select>
+	
+	
+	<!-- === &120. 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) + 기존의 regDate정렬에서 boardSeq정렬로 바꿈. === -->
+	<select id="boardListSearchWithPaging" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
+		select boardSeq, subject, name, regDate, readCount, commentCount
+		from
+		(
+		    select row_number() over(order by boardSeq desc) AS rno
+		         , boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		         , commentCount
+		    from tbl_board B JOIN tbl_employee E
+		    ON B.fk_employeeId = E.employeeId
+		    where 1=1
+		    
+		    <if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+			and regDate BETWEEN add_months(sysdate,-3) AND sysdate
+			</if>
+			<if test='fromDate != "" and toDate != ""'>
+			and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
+			</if>
+			
+			<!-- bCategory가 0이면(맨처음목록보기/전체선택), 조건없이 전체를 다 보여줌 -->
+			<if test='bCategory == ""'> <!-- 유저가 get방식으로 장난치는 경우 : select결과가 없도록 해야함. -->
+			and fk_bCategorySeq = -99
+			</if>
+			<if test='bCategory != "" and bCategory != "0"'> 
+			and fk_bCategorySeq = #{bCategory}
+			</if>
+			
+			<if test='searchType != "" and searchWord != ""'>
+			and lower( ${searchType} ) like '%' || lower( #{searchWord} ) || '%'
+			</if>
+		) V
+		where rno between #{startRno} and #{endRno}
+	</select>
+	
+	
+	
+	
+	
+	
 	
 	
 	

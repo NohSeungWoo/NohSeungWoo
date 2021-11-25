@@ -37,7 +37,22 @@
 	<!-- 총 게시물 건수(totalCount) -->
 	<select id="getTotalCount" parameterType="HashMap" resultType="int">
 		select count(*)
-		from tbl_employee
+		from tbl_employee E
+		JOIN tbl_department D
+		ON E.fk_departno = D.departno
+		JOIN tbl_position P
+		ON E.fk_positionno = P.positionno
+		where retire = 0
+		<if test='department != ""'>
+			and D.departmentname = #{department}
+		</if>
+		<if test='position != ""'>
+			and P.positionname = #{position}
+		</if>
+		<if test='searchEmp != ""'>
+			and name like '%'||#{searchEmp}||'%'
+		</if>
+		
 	</select>
 	
 	<!-- === 페이징 처리한 직원 목록 가져오기(검색이 있든지, 검색이 없든지 다 포함된 것) === -->
@@ -101,9 +116,14 @@
 	<!-- === 검색어 결과 조회하기(select) === -->
 	<select id="employeeSearch" parameterType="HashMap" resultType="String">
 		select name
-		from tbl_employee
-		where retire = 0
-		and name like '%'|| #{searchEmployee} ||'%'
+		from
+		(
+		    select rownum AS rno, name
+		    from tbl_employee
+		    where retire = 0
+		    and name like '%'|| #{searchEmployee} ||'%'
+		) V
+		where rno between 1 and 6
 	</select>
 	
 	<!-- === 로그인 처리 메서드(select) === -->
@@ -237,4 +257,67 @@
 		select count(*)
 		from tbl_employee
 	</select>
+	
+	<!-- === 중복된 부서명 존재하는지 확인 메서드(select) === -->
+	<select id="departDuplicate" parameterType="String" resultType="int">
+		select count(*) 
+		from tbl_department
+		where departmentname = #{newDepart}
+	</select>
+	
+	<!-- === 해당하는 사원의 번호 존재여부 확인하는 메서드(select) === -->
+	<select id="isExistsEmpID" parameterType="String" resultType="int">
+		select count(*) 
+		from tbl_employee
+		where employeeid = #{employeeid}
+	</select>
+	
+	<!-- === 새로운 부서 추가하기(insert) === -->
+	<select id="newDepartAddEnd" parameterType="HashMap" resultType="int">
+		insert into tbl_department(departNo, departmentName, managerID)
+		values(departSeq.nextval, #{newDepartname}, #{newDepartempID})
+	</select>
+	
+	<!-- === 새로 추가한 부서번호 가져오기 === -->
+	<select id="getdepartmentno" parameterType="HashMap" resultType="String">
+		select departno
+		from tbl_department
+		where departmentname = #{newDepartname} and managerid = #{newDepartempID}
+	</select>
+	
+	<!-- === 해당하는 사번의 직책 update하기 === -->
+	<update id="updateManager" parameterType="HashMap">
+		update tbl_employee set fk_departno = #{departno}, admin = 1, fk_positionno = 2
+		where employeeid = #{newDepartempID}
+	</update>
+	
+	<!-- === 부서 삭제 및 삭제 부서에 대한 사원정보 변경(update) === -->
+	<update id="delDepartEmpUpdate" parameterType="String">
+		update tbl_employee set fk_departno = 999, fk_positionno = 99, admin = 0
+		where fk_departno = #{departno}
+	</update>
+	
+	<!-- === 해당하는 부서에 대한 사원 정보 변경이 성공한 경우 해당 부서 삭제(delete) === -->
+	<delete id="delDepart">
+		delete tbl_department
+		where departno = #{departno}
+	</delete>
+	
+	<!-- === 부서명 수정하기 메서드(update) === -->
+	<update id="departEditEnd" parameterType="HashMap">
+		update tbl_department set departmentname = #{newDepartName}
+		where departno = #{departno}
+	</update>
+	
+	<!-- === 체크박스에 체크된 사원에 대한 부서변경(update) === -->
+	<update id="changeDepartment" parameterType="HashMap">
+		update tbl_employee set fk_departno = #{departno}
+		where 1 = 1 
+		<if test="checkEmpArr != null">
+			and employeeid in 
+			<foreach collection="checkEmpArr" index="i" open="(" separator="," close=")">
+				'${checkEmpArr[i]}'
+			</foreach>
+		</if>
+	</update>
 </mapper>
