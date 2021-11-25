@@ -417,6 +417,8 @@ public class OHJController {
 		mav.addObject("pageBar", pageBar);
 		// === 페이징 처리를 한, 검색어가 있는, 전체 글목록 보여주기 끝 === //
 		
+		mav.addObject("totalCount", totalCount); // 게시글 총 몇 건인지 보여주는 용도
+		
 		mav.addObject("boardList", boardList);
 		mav.setViewName("board/recentList.tiles_OHJ");
 		//  /WEB-INF/views/tiles_OHJ/board/recentList.jsp 파일을 생성한다.
