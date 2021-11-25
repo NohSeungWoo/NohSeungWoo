@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.board.model.BoardCommentVO_OHJ;
@@ -89,22 +91,59 @@ public class OHJService implements InterOHJService {
 	}
 
 
-	// === &85. 댓글쓰기 === //
+	// === &85. 댓글쓰기(transaction 처리) === //
 	// tbl_boardComment 테이블에 insert 된 다음에
 	// tbl_board 테이블에 commentCount 컬럼이 1증가(update) 하도록 요청한다.
 	// 즉, 2개의 DML 처리를 해야하므로 Transaction 처리를 해야 한다.
-/*	@Override
-	@Transactional
-	public int boardCommentWrite(BoardCommentVO_OHJ commentvo) {
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public int boardCommentWrite(BoardCommentVO_OHJ commentvo) throws Throwable {
 		
-		int n = 0;
+		int n=0, m=0;
 		
 		// 댓글쓰기(tbl_boardComment 테이블에 insert)
 		n = dao.boardCommentWrite(commentvo);
 		
-		return n;
+		if(n==1) {
+			// tbl_board 테이블에 commentCount 컬럼이 1증가(update)
+			m = dao.updateCommentCount(commentvo.getFk_boardSeq());
+		}
+		
+		return m;
 	}
-*/	
+
+
+	// === &91. 원게시물에 딸린 댓글들을 조회해오는 것 === //
+	@Override
+	public List<BoardCommentVO_OHJ> getCommentList(String fk_boardSeq) {
+		List<BoardCommentVO_OHJ> commentList = dao.getCommentList(fk_boardSeq);
+		return commentList;
+	}
+
+
+	// === &103. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === //
+	@Override
+	public List<BoardVO_OHJ> boardListSearch(Map<String, String> paraMap) {
+		List<BoardVO_OHJ> boardList = dao.boardListSearch(paraMap);
+		return boardList;
+	}
+
+
+	// === &115. 총 게시물 건수(totalCount) 구하기 - 검색이 있을때와 검색이 없을때로 나뉜다. === //
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		int totalCount = dao.getTotalCount(paraMap);
+		return totalCount;
+	}
+
+
+	// === &118. 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) === //
+	@Override
+	public List<BoardVO_OHJ> boardListSearchWithPaging(Map<String, String> paraMap) {
+		List<BoardVO_OHJ> boardList = dao.boardListSearchWithPaging(paraMap);
+		return boardList;
+	}
+	
 
 	
 	

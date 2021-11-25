@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -140,8 +141,65 @@ public class OHJController {
 		List<BoardVO_OHJ> boardList = null;
 		
 		// == 페이징 처리를 안한, 검색어가 없는, 전체 글목록 보여주기 == //
-		boardList = service.boardListNoSearch();
+	//	boardList = service.boardListNoSearch();
+/*		
+		// === &102. 페이징 처리를 안한, 검색어가 있는, 전체 글목록 보여주기 시작 === //
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
+		String bCategory = request.getParameter("bCategory");
+		String searchType = request.getParameter("searchType");
+		String searchWord = request.getParameter("searchWord");
 		
+		System.out.println("확인용 fromDate : " + fromDate);
+		System.out.println("확인용 toDate : " + toDate);
+		System.out.println("확인용 bCategory : " + bCategory);
+		System.out.println("확인용 searchType : " + searchType);
+		System.out.println("확인용 searchWord : " + searchWord);
+		
+		if(fromDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			fromDate = ""; // 2021-08-23 // '숫자개월수만큼 빼준 날짜인 add_months(sysdate,-3) 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
+		}
+		if(toDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			toDate = "";   // 2021-11-23 // 'sysdate 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
+		}
+		////////////////////////////////////////////////////
+		if(bCategory == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			bCategory = "0";
+		}
+		if( !"0".equals(bCategory)&&!"1".equals(bCategory)&&!"2".equals(bCategory)&&!"3".equals(bCategory) ) { // 유저가 게시판종류를 장난친 경우
+			bCategory = "";
+		}
+		////////////////////////////////////////////////////
+		if(searchType == null || (!"subject".equals(searchType)&&!"name".equals(searchType))) { // 맨처음 목록보기를 통해 들어가는 경우, 유저가 장난친 경우
+			searchType = "";
+		}
+		if(searchWord == null || "".equals(searchWord) || searchWord.trim().isEmpty()) { // 맨처음 목록보기를 통해 들어가는 경우, 검색어자체가 ⓐ없거나 ⓑ있는데 공백인 경우
+			searchWord = "";
+		}
+		
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
+		paraMap.put("bCategory", bCategory);
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		boardList = service.boardListSearch(paraMap);
+		
+		// 아래는 검색시 검색조건 및 값들을 유지시키기 위한 것임.
+		if(!"".equals(fromDate) && !"".equals(toDate)) {
+			mav.addObject("fromDate", fromDate);
+			mav.addObject("toDate", toDate);
+		}
+//		if(!"0".equals(bCategory) && !"".equals(bCategory)) {
+			mav.addObject("bCategory", bCategory); // 주소창에 게시판종류를 장난친경우를 recentList.jsp에서 처리하기위해, if의 조건없이 넘김.
+//		}
+		if(!"".equals(searchType) && !"".equals(searchWord)) {
+			mav.addObject("searchType", searchType);
+			mav.addObject("searchWord", searchWord);
+		}
+		// === &102. 페이징 처리를 안한, 검색어가 있는, 전체 글목록 보여주기 끝 === //
+*/		
 		/////////////////////////////////////////////////////////////////
 		/* === &69. 글조회수증가는 반드시 목록보기에 와서 해당 글제목을 클릭했을 경우에만 증가되고,
 			웹브라우저에서 새로고침(F5)을 했을 경우에는 증가가 되지 않도록 해야 한다.
@@ -153,6 +211,211 @@ public class OHJController {
 			이 값은 웹브라우저에서 주소창에 "/recentList.gw" 이라고 입력해야만 얻어올 수 있다.
 		*/
 		/////////////////////////////////////////////////////////////////
+		
+		
+		// === &114. 페이징 처리를 한, 검색어가 있는, 전체 글목록 보여주기 시작 === //
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
+		String bCategory = request.getParameter("bCategory");
+		String searchType = request.getParameter("searchType");
+		String searchWord = request.getParameter("searchWord");
+		
+		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
+	/*	
+		System.out.println("확인용 fromDate : " + fromDate);
+		System.out.println("확인용 toDate : " + toDate);
+		System.out.println("확인용 bCategory : " + bCategory);
+		System.out.println("확인용 searchType : " + searchType);
+		System.out.println("확인용 searchWord : " + searchWord);
+	*/	
+		if(fromDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			fromDate = ""; // 2021-08-23 // '숫자개월수만큼 빼준 날짜인 add_months(sysdate,-3) 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
+		}
+		if(toDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			toDate = "";   // 2021-11-23 // 'sysdate 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
+		}
+		////////////////////////////////////////////////////
+		if(bCategory == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			bCategory = "0";
+		}
+		if( !"0".equals(bCategory)&&!"1".equals(bCategory)&&!"2".equals(bCategory)&&!"3".equals(bCategory) ) { // 유저가 게시판종류를 장난친 경우
+			bCategory = "";
+		}
+		////////////////////////////////////////////////////
+		if(searchType == null || (!"subject".equals(searchType)&&!"name".equals(searchType))) { // 맨처음 목록보기를 통해 들어가는 경우, 유저가 장난친 경우
+			searchType = "";
+		}
+		if(searchWord == null || "".equals(searchWord) || searchWord.trim().isEmpty()) { // 맨처음 목록보기를 통해 들어가는 경우, 검색어자체가 ⓐ없거나 ⓑ있는데 공백인 경우
+			searchWord = "";
+		}
+		
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
+		paraMap.put("bCategory", bCategory);
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		
+		// 먼저 총 게시물 건수(totalCount)를 구해와야 한다.
+		// ★총 게시물 건수(totalCount)는 검색조건이 있을 때와 없을 때로 나뉘어진다.
+		int totalCount = 0; 		// 총 게시물 건수
+		int sizePerPage = 5; 		// 한 페이지당 보여줄 게시물 건수
+		int currentShowPageNo = 0; 	// 현재 보여주는 페이지 번호로서, 초기치로는 1페이지로 설정함.
+		int totalPage = 0; 			// 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바에 쓰임)
+		
+		int startRno = 0; 			// 시작 행번호
+		int endRno = 0; 			// 끝 행번호
+		
+		// 총 게시물 건수(totalCount)
+		totalCount = service.getTotalCount(paraMap);
+	//	System.out.println("~~~~ 확인용 totalCount : " + totalCount);
+		
+		// 만약에 총 게시물 건수(totalCount)가 27개 이라면
+		// 27/5 = 5.xx 이므로
+		// 총 페이지수(totalPage)는 6개가 되어야 한다.
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+		// (double)27/5 ==> 5.4 ==> Math.ceil(5.4) ==> 6.0 ==> (int)6.0 ==> 6
+		
+		if(str_currentShowPageNo == null) {
+			// 게시판에 보여지는 초기화면
+			currentShowPageNo = 1;
+		}
+		else {
+			try {
+				currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+				if(currentShowPageNo < 1 || currentShowPageNo > totalPage) { // get방식이라 유저가 장난친 경우("-321", "2136351")
+					currentShowPageNo = 1;
+				}
+			} catch(NumberFormatException e) { // get방식이라 유저가 장난친 경우("하하호호")
+				currentShowPageNo = 1;
+			}
+		}
+		
+		// **** 가져올 게시글의 범위를 구한다.(공식임!!!) **** 
+	    /*
+	           currentShowPageNo      startRno     endRno
+	          --------------------------------------------
+	               1 page        ===>     1           5
+	               2 page        ===>     6          10
+	               3 page        ===>    11          15
+	               4 page        ===>    16          20
+	               ......                ...         ...
+	    */
+		
+		startRno = ( (currentShowPageNo-1) * sizePerPage ) + 1;
+		endRno = startRno + sizePerPage - 1 ;
+		
+		paraMap.put("startRno", String.valueOf(startRno)); // 사칙연산으로 계산했으니 int인 것을 Map<String,String>에 맞게 string타입으로 바꿔줌.
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		boardList = service.boardListSearchWithPaging(paraMap);
+		// 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것)
+		
+		
+		// 아래는 검색시 검색조건 및 값들을 유지시키기 위한 것임.
+		if(!"".equals(fromDate) && !"".equals(toDate)) {
+			mav.addObject("fromDate", fromDate);
+			mav.addObject("toDate", toDate);
+		}
+//		if(!"0".equals(bCategory) && !"".equals(bCategory)) {
+			mav.addObject("bCategory", bCategory); // 주소창에 게시판종류를 장난친경우를 recentList.jsp에서 처리하기위해, if의 조건없이 넘김.
+//		}
+		if(!"".equals(searchType) && !"".equals(searchWord)) {
+			mav.addObject("searchType", searchType);
+			mav.addObject("searchWord", searchWord);
+		}
+		
+		
+		// === &121. 페이지바 만들기 === //
+		int blockSize = 10;
+		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수 이다.
+	    /*
+	                       1  2  3  4  5  6  7  8  9 10 [다음][마지막]  -- 1개블럭
+	         [맨처음][이전]  11 12 13 14 15 16 17 18 19 20 [다음][마지막]  -- 1개블럭
+	         [맨처음][이전]  21 22 23
+	    */
+		
+		int loop = 1;
+		/*
+        	loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize) ] 까지만 증가하는 용도이다.
+		*/
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+	    // *** !! 공식이다. !! *** //
+		
+		/*
+	       1  2  3  4  5  6  7  8  9  10  -- 첫번째 블럭의 페이지번호 시작값(pageNo)은 1 이다.
+	       11 12 13 14 15 16 17 18 19 20  -- 두번째 블럭의 페이지번호 시작값(pageNo)은 11 이다.
+	       21 22 23 24 25 26 27 28 29 30  -- 세번째 블럭의 페이지번호 시작값(pageNo)은 21 이다.
+	       
+	       currentShowPageNo         pageNo
+	      ----------------------------------
+	            1                      1 = ((1 - 1)/10) * 10 + 1
+	            2                      1 = ((2 - 1)/10) * 10 + 1
+	            3                      1 = ((3 - 1)/10) * 10 + 1
+	            4                      1
+	            5                      1
+	            6                      1
+	            7                      1 
+	            8                      1
+	            9                      1
+	            10                     1 = ((10 - 1)/10) * 10 + 1
+	           
+	            11                    11 = ((11 - 1)/10) * 10 + 1
+	            12                    11 = ((12 - 1)/10) * 10 + 1
+	            13                    11 = ((13 - 1)/10) * 10 + 1
+	            14                    11
+	            15                    11
+	            16                    11
+	            17                    11
+	            18                    11 
+	            19                    11 
+	            20                    11 = ((20 - 1)/10) * 10 + 1
+	            
+	            21                    21 = ((21 - 1)/10) * 10 + 1
+	            22                    21 = ((22 - 1)/10) * 10 + 1
+	            23                    21 = ((23 - 1)/10) * 10 + 1
+	            ..                    ..
+	            29                    21
+	            30                    21 = ((30 - 1)/10) * 10 + 1
+	    */
+		
+		String pageBar = "<ul class='pagination justify-content-center' style='margin-top: 50px;'>";
+		String url = "recentList.gw";
+		
+		// === [맨처음][이전] 만들기 ===
+		if(pageNo != 1) {
+			pageBar += "<li class='page-item'><a class='page-link' href='"+url+"?fromDate="+fromDate+"&toDate="+toDate+"&bCategory="+bCategory+"&searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'>[맨처음]</a></li>"; // span태그의 text-dark를 처리안하니 기본으로 파란글씨가 나온다.
+			pageBar += "<li class='page-item'><a class='page-link' href='"+url+"?fromDate="+fromDate+"&toDate="+toDate+"&bCategory="+bCategory+"&searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+		}
+		
+		while( !(loop > blockSize || pageNo > totalPage) ){ // !(while문의 탈출조건)
+			
+			if(pageNo == currentShowPageNo) {
+				pageBar += "<li class='page-item active'><a class='page-link'>"+pageNo+"<a></li>";
+			}
+			else {
+				pageBar += "<li class='page-item'><a class='page-link' href='"+url+"?fromDate="+fromDate+"&toDate="+toDate+"&bCategory="+bCategory+"&searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><span class='text-dark'>"+pageNo+"</span></a></li>";
+			}
+			
+			loop++;
+			pageNo++;
+			
+		}// end of while-----------------------------
+		
+		
+		// === [다음][마지막] 만들기 ===
+		if(pageNo <= totalPage) {
+			pageBar += "<li class='page-item'><a class='page-link' href='"+url+"?fromDate="+fromDate+"&toDate="+toDate+"&bCategory="+bCategory+"&searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
+			pageBar += "<li class='page-item'><a class='page-link' href='"+url+"?fromDate="+fromDate+"&toDate="+toDate+"&bCategory="+bCategory+"&searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+		}
+		
+		
+		pageBar += "</ul>";
+		
+		mav.addObject("pageBar", pageBar);
+		// === 페이징 처리를 한, 검색어가 있는, 전체 글목록 보여주기 끝 === //
 		
 		mav.addObject("boardList", boardList);
 		mav.setViewName("board/recentList.tiles_OHJ");
@@ -343,23 +606,81 @@ public class OHJController {
 	}
 	
 	
-/*	
+
 	// === &84. 댓글쓰기(Ajax 로 처리) === //
 	@ResponseBody
 	@RequestMapping(value="/boardCommentWrite.gw", method = {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
 	public String boardCommentWrite(BoardCommentVO_OHJ commentvo) {
 		// 댓글쓰기에 첨부파일이 없는 경우
 		
+		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 작성하기 **** // 
+		String content = commentvo.getContent();
+		content = content.replaceAll("<", "&lt;");
+		content = content.replaceAll(">", "&gt;");
+	//	content = content.replaceAll("\r\n", "<br>"); // 입력한 엔터는 <br>처리하기 -> 댓글쓰기의 내용은 input태그라서 엔터가 안된다.
+		commentvo.setContent(content);
+		
 		int n = 0;
 		
-		n = service.boardCommentWrite(commentvo);
+		try {
+			// 댓글쓰기(insert) 및 원게시물(tbl_board 테이블)의 댓글의 개수 증가(update 1씩 증가)하기
+			n = service.boardCommentWrite(commentvo);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("n", n);
 		
 		return jsonObj.toString();
 	}
-*/	
+
+	
+	// === &90. 원게시물에 딸린 댓글들을 조회해오기(Ajax로 처리) === //
+	@ResponseBody
+	@RequestMapping(value="/readComment.gw", method = {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+	public String readComment(HttpServletRequest request) {
+		
+		String fk_boardSeq = request.getParameter("fk_boardSeq");
+		
+		List<BoardCommentVO_OHJ> commentList = service.getCommentList(fk_boardSeq);
+		
+		JSONArray jsonArr = new JSONArray(); // []
+		
+		if(commentList != null) { // 해당하는 댓글이 존재하지 않을 수도 있음. 댓글이 존재할경우 실행함.
+			for(BoardCommentVO_OHJ bcmtvo: commentList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("content", bcmtvo.getContent());
+				jsonObj.put("positionName", bcmtvo.getPositionName());
+				jsonObj.put("name", bcmtvo.getName());
+				jsonObj.put("regDate", bcmtvo.getRegDate());
+				
+				jsonArr.put(jsonObj);
+			}
+		}
+		
+		return jsonArr.toString();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

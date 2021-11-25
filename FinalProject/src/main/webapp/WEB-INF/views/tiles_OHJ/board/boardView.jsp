@@ -30,6 +30,8 @@
 	
 	$(document).ready(function(){
 		
+		goReadComment(); // 페이징처리 안한 댓글 읽어오기
+		
 		// 이전글제목에 효과주기
 		$(".previous").hover(
 			function(){ // mouserover
@@ -54,7 +56,8 @@
 		
 	});// end of $(document).ready(function(){})----------------------------
 	
-	// Functional Declaration
+	
+	// === Functional Declaration === //
 	
 	// 정말로 삭제할것인지 아닌지 물어봄. (=== &77. 나는 강사님과 달리 암호확인페이지 없으니 &77 진행안함. ===)
 	function delConfirm(){
@@ -66,7 +69,7 @@
 			location.href = "<%= ctxPath%>/boardDel.gw?boardSeq=${requestScope.boardvo.boardSeq}";
 		}
 		// 확인을 누르면 삭제하고, 취소를 누르면 그냥 냅둠.
-	}
+	}// end of function delConfirm(){}---------------------------------------------
 	
 	// 이전글로 이동
 	function goPrevious(){
@@ -90,7 +93,7 @@
 		// 첨부파일이 없는 댓글쓰기
 		goCommentWrite_noAttach();
 		
-	}
+	}// end of function goCommentWrite(){}-------------------------------------
 	
 	// 첨부파일이 없는 댓글쓰기
 	function goCommentWrite_noAttach(){
@@ -107,10 +110,11 @@
 				var n = json.n;
 				
 				if(n==0){
-					alert("댓글쓰기가 실패하였습니다.");
+					alert("댓글쓰기 실패하였습니다.");
 				}
 				else{
-				//	goReadComment(); // 페이징처리 안한 댓글 읽어오기
+					alert("댓글이 등록되었습니다.");
+					goReadComment(); // 페이징처리 안한 댓글 읽어오기
 				}
 				
 				$("input#commentContent").val("");
@@ -121,7 +125,51 @@
             }
 		});
 		
-	}
+	}// end of function goCommentWrite_noAttach(){}-----------------------------
+	
+	// 페이징처리 안한 댓글 읽어오기
+	function goReadComment(){
+		
+		$.ajax({
+			url:"<%= ctxPath%>/readComment.gw",
+			data:{"fk_boardSeq":"${requestScope.boardvo.boardSeq}"},
+			dataType:"JSON",
+			success:function(json){
+				var html = "";
+				
+				if(json.length > 0){
+					$.each(json,function(index, item){
+						html += "<tr style='border-bottom: solid 1px #dee2e6;'>";
+							/* 댓글이 존재하는 경우 */
+							html += "<td class='brStyle' align='center'>"+(index+1)+"</td>";
+							html += "<td class='brStyle'>"+item.content+"</td>";
+							html += "<td class='brStyle' align='center'>"+item.positionName+"&nbsp;"+item.name+"</td>";
+							html += "<td align='center'>"+item.regDate+"</td>";
+						html += "</tr>";
+					});
+				}
+				
+				else{ // 댓글이 없는 []인 경우
+					html += "<tr style='border-bottom: solid 1px #dee2e6;'>";
+						/* 댓글이 존재하지 않을 경우 */
+						html += "<td colspan='4'>";
+						html += "	<div class='my-5' align='center'>";
+						html += "		<i class='fas fa-info-circle' style='color: #37f;''></i><br>";
+						html += "		조회 결과, 댓글이 존재하지 않습니다.";
+						html += "	</div>";
+						html += "</td>";
+					html += "</tr>";
+				}
+				
+				$("tbody#commentDisplay").html(html);
+				
+			},
+			error: function(request, status, error){
+            	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		});
+		
+	}// end of function goReadComment(){}-------------------------------------
 	
 </script>
 
@@ -208,11 +256,12 @@
 	
 	<%-- &83. 댓글쓰기 폼 추가 --%>
 	<!--
-	카테고리번호가 ${requestScope.boardvo.fk_bCategorySeq}인데, <br>1이면 공지사항, 2이면 자유게시판, 3이면 건의사항임.
-	공지사항은 댓글X
-	건의사항은 댓글O 
+		카테고리번호가 ${requestScope.boardvo.fk_bCategorySeq}인데, <br>1이면 공지사항, 2이면 자유게시판, 3이면 건의사항임.
+		공지사항은 댓글X
+		건의사항은 댓글O 
 	-->
-	<c:if test="${requestScope.boardvo.fk_bCategorySeq eq 3}"> 
+	<c:if test="${requestScope.boardvo.fk_bCategorySeq eq 3}"> <%-- ${not empty sessionScope.loginuser} 를 추가안해도 글1개보기를 로그인한 사람만 볼 수 있도록 함. --%>
+		
 		<!-- 댓글쓰기 시작 -->
 		<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
 			<strong style="border-bottom: solid 2px #37f;">댓글쓰기</strong>
@@ -222,58 +271,35 @@
 			<form name="commentWriteFrm">
 				<input type="text" id="commentContent" style="width: 100%" placeholder="로그인 후 이용하실 수 있습니다."/>
 				<input type="text" style="display: none;"> <!-- form태그 속의 input태그가 한 개일 경우, 엔터치면 값이 전송되는것을 방지함.  ★hidden타입은 안된다. -->
+			
+				<button type="button" class="btn btn-sm mt-1" style="border: solid 1px #dee2e6; color: #37f; float: right;" onclick="goCommentWrite()">등록</button>
+				<button type="reset" class="btn btn-sm mt-1 mr-1" style="border: solid 1px #dee2e6; color: #37f; float: right;">취소</button>
 			</form>
-			<button type="button" class="btn btn-sm mt-1" style="border: solid 1px #dee2e6; color: #37f; float: right;" onclick="goCommentWrite()">등록</button>
-			<button type="reset" class="btn btn-sm mt-1 mr-1" style="border: solid 1px #dee2e6; color: #37f; float: right;">취소</button>
 		</div>
 		<!-- 댓글쓰기 끝 -->
 		
-	<%-- 
-		<!-- 댓글내용 보여주기 시작 -->
+	
+		<!-- === &94. 댓글내용 보여주기 시작 === -->
 		<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
 			<strong style="border-bottom: solid 2px #37f;">댓글내용</strong>
 		</div>
 		
-		<!-- 댓글이 존재하지 않을 경우 -->
 		<div class="table-responsive mt-3">
 			<table class="table table-hover">
-				<tr style="text-align: center; background-color: #F7F7F7;"> <!-- 글자 가운데정렬 -->
-					<th class="brStyle" width="6%">번호</th>
-					<th class="brStyle">댓글내용</th>
-					<th class="brStyle" width="8%">작성자</th>
-					<th width="17%">작성일자</th>
-				</tr>
-				<tr style="border-bottom: solid 1px #dee2e6;">
-					<td colspan="4">
-						<div class="my-5" align="center">
-							<i class="fas fa-info-circle" style="color: #37f;"></i><br>
-							조회 결과, 댓글이 존재하지 않습니다.
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
-		
-		<!-- 댓글이 존재하는 경우 -->
-		<div class="table-responsive mt-3">
-			<table class="table table-hover">
-				<tr style="text-align: center; background-color: #F7F7F7;"> <!-- 글자 가운데정렬 -->
-					<th class="brStyle" width="6%">번호</th>
-					<th class="brStyle">댓글내용</th>
-					<th class="brStyle" width="8%">작성자</th>
-					<th width="17%">작성일자</th>
-				</tr>
-				<tr style="border-bottom: solid 1px #dee2e6;">
-					<td class="brStyle" align="center">1</td>
-					<td class="brStyle">네~~~알겠습니다~~~!</td>
-					<td class="brStyle" align="center">서강준</td>
-					<td align="center">2021-11-10 14:00:01</td>
-				</tr>
+				<thead>
+					<tr style="text-align: center; background-color: #F7F7F7;"> <!-- 글자 가운데정렬 -->
+						<th class="brStyle" width="6%">번호</th>
+						<th class="brStyle">댓글내용</th>
+						<th class="brStyle" width="13%">작성자</th>
+						<th width="17%">작성일자</th>
+					</tr>
+				</thead>
+				<tbody id="commentDisplay">
+				</tbody>
 			</table>
 		</div>
 		<!-- 댓글내용 보여주기 종료 -->
-		
-	--%>		
+			
 	</c:if>
 
 	
