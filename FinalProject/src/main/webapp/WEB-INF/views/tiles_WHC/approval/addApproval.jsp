@@ -680,7 +680,7 @@
 				<textarea style="width: 100%; height:612px;" name="content" id="content" ></textarea>
 			</div>
 			<div class="" style="text-align: center;">
-				<button type="button" class="btn btn-secondary">취소</button>
+				<button type="button" class="btn btn-secondary" onclick="javascript:history.back()">취소</button>
 		        <button type="button" id="btnWrite" class="btn btn-primary">상신하기</button>
 	        </div>
 		</form>

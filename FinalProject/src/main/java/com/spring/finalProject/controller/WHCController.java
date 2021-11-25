@@ -103,10 +103,10 @@ public class WHCController {
 		List<Map<String, String>> approvaldoList = service.receiveDocapproval(paraMap);
 		
 		paraMap.put("emptype", "c");
-		int cototalCount = service.getCooDocTotalCount(paraMap); // 수신한 문서 갯수 알아오기
+		int cototalCount = service.getCooDocTotalCount(paraMap); // 협조 문서 갯수 알아오기
 		
 		paraMap.put("emptype", "r");
-		int retotalCount = service.getCooDocTotalCount(paraMap); // 수신한 문서 갯수 알아오기
+		int retotalCount = service.getCooDocTotalCount(paraMap); // 수신 문서 갯수 알아오기
 		
 		mav.addObject("approvalList", approvalList);
 		mav.addObject("totalSentCount", totalSentCount);
