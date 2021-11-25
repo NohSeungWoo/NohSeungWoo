@@ -121,7 +121,7 @@
 		and regDate BETWEEN add_months(sysdate,-3) AND sysdate
 		</if>
 		<if test='fromDate != "" and toDate != ""'>
-		and regDate BETWEEN #{fromDate} AND #{toDate}
+		and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
 		</if>
 		
 		<!-- bCategory가 0이면(맨처음목록보기/전체선택), 조건없이 전체를 다 보여줌 -->
@@ -133,7 +133,7 @@
 		</if>
 		
 		<if test='searchType != "" and searchWord != ""'>
-		and ${searchType} like '%' || #{searchWord} || '%'
+		and lower( ${searchType} ) like '%' || lower( #{searchWord} ) || '%'
 		</if>
 		
 		order by regDate desc
