@@ -127,6 +127,22 @@ public class OHJService implements InterOHJService {
 		List<BoardVO_OHJ> boardList = dao.boardListSearch(paraMap);
 		return boardList;
 	}
+
+
+	// === &115. 총 게시물 건수(totalCount) 구하기 - 검색이 있을때와 검색이 없을때로 나뉜다. === //
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		int totalCount = dao.getTotalCount(paraMap);
+		return totalCount;
+	}
+
+
+	// === &118. 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) === //
+	@Override
+	public List<BoardVO_OHJ> boardListSearchWithPaging(Map<String, String> paraMap) {
+		List<BoardVO_OHJ> boardList = dao.boardListSearchWithPaging(paraMap);
+		return boardList;
+	}
 	
 
 	

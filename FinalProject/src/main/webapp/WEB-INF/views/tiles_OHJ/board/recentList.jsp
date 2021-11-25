@@ -286,12 +286,9 @@
 		<!-- 최근게시물 테이블 끝 -->
 
 
-
-		<!-- 페이지바 시작 -->
+		<!-- === &122. 페이지바 시작 -->
 		<nav style="clear: both;"> <!-- 페이지바는 페이지네비게이션(pagination) 이용 -->
-			<ul class="pagination justify-content-center" style="margin-top: 50px;"><%-- ${requestScope.pageBar} --%>
-				<li class='page-item'><a class='page-link' href='#'><span class='text-dark'>1</span></a></li>
-			</ul>
+			${requestScope.pageBar}
 		</nav>
 		<!-- 페이지바 끝 -->
 		

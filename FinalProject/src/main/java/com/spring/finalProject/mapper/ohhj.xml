@@ -140,6 +140,73 @@
 	</select>
 	
 	
+	<!-- === &117. 총 게시물 건수(totalCount) 구하기 - 검색이 있을때와 검색이 없을때로 나뉜다. === -->
+	<select id="getTotalCount" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_board
+		where 1=1
+		
+		<if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+		and regDate BETWEEN add_months(sysdate,-3) AND sysdate
+		</if>
+		<if test='fromDate != "" and toDate != ""'>
+		and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
+		</if>
+		
+		<!-- bCategory가 0이면(맨처음목록보기/전체선택), 조건없이 전체를 다 보여줌 -->
+		<if test='bCategory == ""'> <!-- 유저가 get방식으로 장난치는 경우 : select결과가 없도록 해야함. -->
+		and fk_bCategorySeq = -99
+		</if>
+		<if test='bCategory != "" and bCategory != "0"'> 
+		and fk_bCategorySeq = #{bCategory}
+		</if>
+		
+		<if test='searchType != "" and searchWord != ""'>
+		and lower( ${searchType} ) like '%' || lower( #{searchWord} ) || '%'
+		</if>
+		
+	</select>
+	
+	
+	<!-- === &120. 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) + 기존의 regDate정렬에서 boardSeq정렬로 바꿈. === -->
+	<select id="boardListSearchWithPaging" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
+		select boardSeq, subject, name, regDate, readCount, commentCount
+		from
+		(
+		    select row_number() over(order by boardSeq desc) AS rno
+		         , boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		         , commentCount
+		    from tbl_board B JOIN tbl_employee E
+		    ON B.fk_employeeId = E.employeeId
+		    where 1=1
+		    
+		    <if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+			and regDate BETWEEN add_months(sysdate,-3) AND sysdate
+			</if>
+			<if test='fromDate != "" and toDate != ""'>
+			and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
+			</if>
+			
+			<!-- bCategory가 0이면(맨처음목록보기/전체선택), 조건없이 전체를 다 보여줌 -->
+			<if test='bCategory == ""'> <!-- 유저가 get방식으로 장난치는 경우 : select결과가 없도록 해야함. -->
+			and fk_bCategorySeq = -99
+			</if>
+			<if test='bCategory != "" and bCategory != "0"'> 
+			and fk_bCategorySeq = #{bCategory}
+			</if>
+			
+			<if test='searchType != "" and searchWord != ""'>
+			and lower( ${searchType} ) like '%' || lower( #{searchWord} ) || '%'
+			</if>
+		) V
+		where rno between #{startRno} and #{endRno}
+	</select>
+	
+	
+	
+	
+	
+	
 	
 	
 	
