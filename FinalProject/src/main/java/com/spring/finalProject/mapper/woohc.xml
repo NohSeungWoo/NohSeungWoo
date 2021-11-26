@@ -241,12 +241,12 @@
 	
 	<!-- 페이징처리를 한 협조목록 받아오기 -->
 	<select id="cooDocapproval" resultMap="approvalMap" parameterType="HashMap">
-		select apno, fk_employeeid, fk_apcano, subject, appremp, coopemp, reciemp, apdate, apstatus ,apcaname, fileName, name, departmentname, positionname
+		select apno, fk_employeeid, fk_apcano, subject, appremp, coopemp, reciemp, apdate, eddate, apstatus ,apcaname, fileName, name, departmentname, positionname
 		from 
 		(
 		    select row_number() over(order by apno desc) AS rno,
             		apno, a.fk_employeeid, fk_apcano, subject, appremp, coopemp, 
-            		reciemp,to_char(apdate,'yyyy-mm-dd hh24:mi') as apdate, a.apstatus ,apcaname, fileName, name, departmentname, positionname
+            		reciemp,to_char(apdate,'yyyy-mm-dd hh24:mi') as apdate, to_char(eddate,'yyyy-mm-dd hh24:mi') as eddate, a.apstatus ,apcaname, fileName, name, departmentname, positionname
 		    from tbl_approval A
 		    join tbl_apcategory C
 		    on a.fk_apcano = c.apcano

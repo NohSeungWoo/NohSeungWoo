@@ -177,14 +177,14 @@
 								<td class="">
 									<a href="<%= ctxPath%>/docdetail.gw?apno=${apList.apno}">${apList.subject}</a>
 								</td>
-								<td class="" align="center">${apList.eddate}</td>
 								<td class="" align="center">${apList.apdate}</td>
+								<td class="" align="center">${apList.eddate}</td>
 							</tr>
 							</c:forEach>
 						</c:if>
 						<c:if test="${empty requestScope.approvalList}">
 						<tr style="height: 150px;">
-							<td colspan="4" align="center" >
+							<td colspan="5" align="center" >
 								<div class="my-5"><i class="fas fa-info-circle" style="color:#d9e4fe;"></i><br>조회 결과가 존재하지 않습니다.</div>
 							</td>
 						</tr>

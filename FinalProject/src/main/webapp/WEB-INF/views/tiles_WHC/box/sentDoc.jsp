@@ -184,8 +184,8 @@
 								<td class="">
 									<a href="<%= ctxPath%>/docdetail.gw?apno=${apList.apno}">${apList.subject}</a>
 								</td>
-								<td class="" align="center">${apList.eddate}</td>
 								<td class="" align="center">${apList.apdate}</td>
+								<td class="" align="center">${apList.eddate}</td>
 							</tr>
 							</c:forEach>
 						</c:if>
@@ -220,8 +220,8 @@
 								<td class="">
 									<a href="<%= ctxPath%>/docdetail.gw?apno=${apList.apno}">${apList.subject}</a>
 								</td>
-								<td class="" align="center">${apList.eddate}</td>
 								<td class="" align="center">${apList.apdate}</td>
+								<td class="" align="center">${apList.eddate}</td>
 							</tr>
 							</c:forEach>
 						</c:if>
