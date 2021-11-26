@@ -41,6 +41,15 @@ public interface InterKGHDAO {
 	// 특정 회원에 대한 정보 가져오기(select)
 	Map<String, String> empListEdit(String employeeID);
 
+	// 먼저 기존에 있던 부서의 팀장 사원번호 가져오기(select)
+	String getManagerId(Map<String, String> paraMap);
+
+	// 기존의 팀장에 대한 사원 테이블 update
+	int updateEmployee(String managerId);
+
+	// 새로운 팀장에 대한 부서 테이블 update
+	int updateDepartManager(Map<String, String> paraMap);
+	
 	// 직원 정보 수정하기(update)
 	int empEdit(EmployeeVO_KGH emp);
 
@@ -79,6 +88,29 @@ public interface InterKGHDAO {
 
 	// 체크박스에 체크된 사원에 대한 부서변경(update)
 	int changeDepartment(Map<String, Object> paraMap);
+
+	// 관리자 List 가져오기(select)
+	List<Map<String, String>> getAdminList(Map<String, String> paraMap);
+
+	// 관리자수 가져오기 메서드(select)
+	int getTotalAdminCount();
+
+	// 관리자 메뉴 검색어 결과 조회하기(select)
+	List<EmployeeVO_KGH> adminListSearch(Map<String, String> paraMap);
+
+	// 관리자 추가 메서드(update)
+	int adminAddEnd(String employeeid);
+
+	// 관리자 권한 삭제 메서드(update)
+	int adminDelEnd(String employeeid);
+
+	// 삭제하고자 하는 직원의 정보가 팀장일 경우 부서 테이블 managerid null처리 (update) 
+	void delManagerId(Map<String, String> paraMap);
+
+	// 삭제하고자 하는 직원의 정보 update(admin, retire, retiredate)
+	int empDelEnd(Map<String, String> paraMap);
+
+	
 
 	
 

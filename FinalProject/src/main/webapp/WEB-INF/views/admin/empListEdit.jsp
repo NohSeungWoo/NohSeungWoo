@@ -81,11 +81,27 @@
 				return;
 			}
 			
-			var frm = document.editFrm;
+			var frm = document.empDetailFrm;
 			frm.method = "POST";
 			frm.action = "<%= request.getContextPath()%>/empEditEnd.gw";
 			frm.submit();
 			
+		});
+		
+		
+		$("span#delBtn").click(function() {
+			var delOK = confirm("해당 사원을 지우시겠습니까?");
+			
+			if(delOK) {
+				var frm = document.empDetailFrm;
+				frm.method = "POST";
+				frm.action = "<%= request.getContextPath()%>/empDelEnd.gw";
+				frm.submit();
+			}
+			else {
+				alert("삭제를 취소하였습니다.");
+				return;
+			}
 		});
 		
 	});
@@ -160,7 +176,7 @@
 			</div>
 		</div>
 		<br>
-		<form name="editFrm"> 
+		<form name="empDetailFrm"> 
 		    <div class="form-inline">
 		    	<input type="hidden" id="employeeid" name="employeeid" value="${map.employeeid}"/>
 		    	<div class="col-6 col-lg-8 offset-3 offset-lg-2 text-center mt-3">
@@ -168,7 +184,7 @@
 		    	</div>
 		    	<div class="w-100 my-4"></div>
 		    	
-		    	<div class="col-3 col-lg-2 pull-right">
+		    	<div class="col-3 col-lg-2 offset-lg-2 pull-right">
 			       <label class="float-right">이메일</label>
 		    	</div>
 			    <div class="col-8 col-lg-4">
@@ -221,10 +237,10 @@
 		 
 		    <br>
 		    <div class="row justify-content-center mt-2">
-			    <div class="col-7 col-lg-8 offset-1 offset-lg-4">
-			       <span id="editBtn" class="btn btn-info mr-4" style="float:left; width: 120px; justify-content: center;">수정</span>
-			     
-			       <span id="closeBtn" class="btn btn-dark" style="float:left; width: 120px; justify-content: center;">취소</span>
+			    <div class="col-9 col-lg-8 offset-3 offset-lg-4">
+			       <span id="editBtn" class="btn btn-info mr-3" style="float:left; width: 80px; justify-content: center;">수정</span>
+			       <span id="delBtn" class="btn btn-danger mr-3" style="float:left; width: 80px; justify-content: center;">삭제</span>
+			       <span id="closeBtn" class="btn btn-dark" style="float:left; width: 80px; justify-content: center;">취소</span>
 			    
 			    </div>
 		    </div>

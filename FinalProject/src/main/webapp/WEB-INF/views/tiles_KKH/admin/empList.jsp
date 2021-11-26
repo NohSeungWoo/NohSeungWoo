@@ -336,16 +336,16 @@
 		  <table class="table col-12" style="width: 95%;">
 		    <thead class="thead-light">
 		      <tr>
-		        <th style="width: 10%;">이름</th>
+		        <th style="width: 11%;">이름</th>
 		        <th style="width: 15%;">사번</th>
-		        <th style="width: 10%;">
+		        <th style="width: 12%;">
 					<span class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
 					      부서
 					</span>
 					<div class="dropdown-menu" id="departmentName">
 					</div>
 				</th>
-		        <th style="width: 10%;">
+		        <th style="width: 12%;">
 		        	<span class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">
 					      직급
 					</span>

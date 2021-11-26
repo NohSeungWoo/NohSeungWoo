@@ -110,6 +110,28 @@ public class KGHService implements InterKGHService {
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = {Throwable.class})
+	public int updateDepart(Map<String, String> paraMap) {
+		// === 직급 변경에 대한 부서 매니저 변경 및 부서장 직급 변경에 대한 트랜잭션 처리 === //
+		int n = 0, result = 0;
+		
+		// === 먼저 기존에 있던 부서의 팀장 사원번호 가져오기(select) === //
+		String managerId = dao.getManagerId(paraMap);
+		
+		if(managerId != null) {
+			// === 기존의 팀장에 대한 사원 테이블 update === //
+			n = dao.updateEmployee(managerId);
+		}
+		
+		if(n == 1) {
+			// === 새로운 팀장에 대한 부서 테이블 update === //
+			result = dao.updateDepartManager(paraMap);
+		}
+		
+		return result;
+	}
+	
+	@Override
 	public int empEdit(EmployeeVO_KGH emp) {
 		// === 직원 정보 수정하기(update) === //
 		int n = dao.empEdit(emp);
@@ -206,6 +228,56 @@ public class KGHService implements InterKGHService {
 		int n = dao.changeDepartment(paraMap);
 		return n;
 	}
+
+	@Override
+	public List<Map<String, String>> getAdminList(Map<String, String> paraMap) {
+		// === 관리자 List 가져오기(select) === //
+		List<Map<String, String>> adminList = dao.getAdminList(paraMap);
+		return adminList;
+	}
+
+	@Override
+	public int getTotalAdminCount() {
+		// === 관리자수 가져오기 메서드(select) === //
+		int n = dao.getTotalAdminCount();
+		return n;
+	}
+
+	@Override
+	public List<EmployeeVO_KGH> adminListSearch(Map<String, String> paraMap) {
+		// === 관리자 메뉴 검색어 결과 조회하기(select) === //
+		List<EmployeeVO_KGH> searchList = dao.adminListSearch(paraMap);
+		return searchList;
+	}
+
+	@Override
+	public int adminAddEnd(String employeeid) {
+		// === 관리자 추가 메서드(update) === //
+		int n = dao.adminAddEnd(employeeid);
+		return n;
+	}
+
+	@Override
+	public int adminDelEnd(String employeeid) {
+		// === 관리자 권한 삭제 메서드(update) === //
+		int n = dao.adminDelEnd(employeeid);
+		return n;
+	}
+
+	@Override
+	public void delManagerId(Map<String, String> paraMap) {
+		// === 삭제하고자 하는 직원의 정보가 팀장일 경우 부서 테이블 managerid null처리 (update) === //
+		dao.delManagerId(paraMap);
+	}
+
+	@Override
+	public int empDelEnd(Map<String, String> paraMap) {
+		// === 삭제하고자 하는 직원의 정보 update(admin, retire, retiredate) === //
+		int n = dao.empDelEnd(paraMap);
+		return n;
+	}
+
+	
 
 
 

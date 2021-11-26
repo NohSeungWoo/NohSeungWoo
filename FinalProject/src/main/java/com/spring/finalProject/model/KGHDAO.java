@@ -110,6 +110,27 @@ public class KGHDAO implements InterKGHDAO {
 		return map;
 	}
 
+	// === 먼저 기존에 있던 부서의 팀장 사원번호 가져오기(select) === //
+	@Override
+	public String getManagerId(Map<String, String> paraMap) {
+		String managerId = sqlsession.selectOne("KangGH.getManagerId", paraMap);
+		return managerId;
+	}
+
+	// === 기존의 팀장에 대한 사원 테이블 update === //
+	@Override
+	public int updateEmployee(String managerId) {
+		int m = sqlsession.update("KangGH.updateEmployee", managerId);
+		return m;
+	}
+
+	// === 새로운 팀장에 대한 부서 테이블 update === //
+	@Override
+	public int updateDepartManager(Map<String, String> paraMap) {
+		int result = sqlsession.update("KangGH.updateDepartManager", paraMap);
+		return result;
+	}
+	
 	// === 직원 정보 수정하기(update) === //
 	@Override
 	public int empEdit(EmployeeVO_KGH emp) {
@@ -221,6 +242,56 @@ public class KGHDAO implements InterKGHDAO {
 		int n = sqlsession.update("KangGH.changeDepartment", paraMap);
 		return n;
 	}
+
+	// === 관리자 List 가져오기(select) === //
+	@Override
+	public List<Map<String, String>> getAdminList(Map<String, String> paraMap) {
+		List<Map<String, String>> adminList = sqlsession.selectList("KangGH.getAdminList", paraMap);
+		return adminList;
+	}
+
+	// === 관리자수 가져오기 메서드(select) === //
+	@Override
+	public int getTotalAdminCount() {
+		int n = sqlsession.selectOne("KangGH.getTotalAdminCount");
+		return n;
+	}
+
+	// === 관리자 메뉴 검색어 결과 조회하기(select) === //
+	@Override
+	public List<EmployeeVO_KGH> adminListSearch(Map<String, String> paraMap) {
+		List<EmployeeVO_KGH> searchList = sqlsession.selectList("KangGH.adminListSearch", paraMap);
+		return searchList;
+	}
+
+	// === 관리자 추가 메서드(update) === //
+	@Override
+	public int adminAddEnd(String employeeid) {
+		int n = sqlsession.update("KangGH.adminAddEnd", employeeid);
+		return n;
+	}
+
+	// === 관리자 권한 삭제 메서드(update) === //
+	@Override
+	public int adminDelEnd(String employeeid) {
+		int n = sqlsession.update("KangGH.adminDelEnd", employeeid);
+		return n;
+	}
+
+	// === 삭제하고자 하는 직원의 정보가 팀장일 경우 부서 테이블 managerid null처리 (update) === //
+	@Override
+	public void delManagerId(Map<String, String> paraMap) {
+		sqlsession.update("KangGH.delManagerId", paraMap);
+	}
+
+	// === 삭제하고자 하는 직원의 정보 update(admin, retire, retiredate) === //
+	@Override
+	public int empDelEnd(Map<String, String> paraMap) {
+		int n = sqlsession.update("KangGH.empDelEnd", paraMap);
+		return n;
+	}
+
+	
 
 
 
