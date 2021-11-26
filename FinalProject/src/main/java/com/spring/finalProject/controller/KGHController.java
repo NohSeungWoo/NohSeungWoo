@@ -1,9 +1,9 @@
 package com.spring.finalProject.controller;
 
-import java.io.File;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.map.HashedMap;
@@ -34,6 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.finalProject.common.FileManager;
 import com.spring.finalProject.common.MyUtil_KGH;
+import com.spring.finalProject.common.Sha256;
 import com.spring.finalProject.model.DepartmentVO_KGH;
 import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.model.PositionVO_KGH;
@@ -64,7 +65,7 @@ public class KGHController {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		
-		Map<String, String> paraMap = new HashedMap<>();
+		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("email", email);
 		paraMap.put("password", password);
 		
@@ -144,6 +145,127 @@ public class KGHController {
 	   mav.setViewName("msg");
 	   
 	   return mav;
+	}
+	
+	
+	// === 마이페이지 이동 메서드 === //
+	@RequestMapping(value = "mypage.gw")
+	public ModelAndView requiredLogin_mypage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO_KGH empVO = (EmployeeVO_KGH)session.getAttribute("loginuser");
+		String employeeID = empVO.getEmployeeid();
+		
+		// === 특정 회원에 대한 정보 가져오기(select) === //
+		Map<String, String> map = service.empListEdit(employeeID);
+		mav.addObject("map", map);
+		mav.setViewName("main/mypage.tiles1");
+		
+		return mav;
+	}
+	
+	
+	// === 기존 비밀번호와 같은지 체크 메서드(select) === //
+	@ResponseBody
+	@RequestMapping(value = "/passwordCheck.gw", method = {RequestMethod.POST})
+	public String passwordCheck(HttpServletRequest request) {
+		String employeeid = request.getParameter("employeeid");
+		String password = request.getParameter("password");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("employeeid", employeeid);
+		paraMap.put("password", password);
+		
+		boolean isExists = service.passwordCheck(paraMap);
+		
+		JSONObject jsonObj = new JSONObject(); // {}
+		jsonObj.put("isExists", isExists);
+		
+		String json = jsonObj.toString();
+		
+		return json;
+	}
+	
+	
+	// === 마이페이지 수정 완료 메서드(update) === //
+	@RequestMapping(value = "/mypageEnd.gw", method = {RequestMethod.POST})
+	public ModelAndView mypageEnd(ModelAndView mav, MultipartHttpServletRequest mrequest, EmployeeVO_KGH empvo) {
+		
+		String employeeid = mrequest.getParameter(empvo.getEmployeeid());
+		String password = mrequest.getParameter(empvo.getPassword());
+		
+		MultipartFile attach = empvo.getAttach();
+		
+		empvo.setPassword(Sha256.encrypt(password));
+		
+		// === 해당하는 사원의 파일이 존재하는 경우 해당하는 파일명 가져오기(select) === //
+		String fileName = service.getprofileName(employeeid);
+		
+		if(fileName != null && !"".equals(fileName)) {
+			String path = "C:\\git\\FinalProject\\FinalProject\\src\\main\\webapp\\resources\\empIMG";
+          
+			try {
+				FileManager.doFileDelete(fileName, path);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		// === 정보 수정에 해당하는 프로필 사진 있을 경우 새로 저장하기 === //
+		if(!attach.isEmpty()) {
+			String path = "C:\\git\\FinalProject\\FinalProject\\src\\main\\webapp\\resources\\empIMG";
+			
+			String profilename = "";
+			
+			byte[] bytes = null;
+			
+			long fileSize = 0;
+			
+			try {
+				bytes = attach.getBytes();
+				
+				// 새로운 프로필 사진 업로드하기
+				profilename = FileManager.doFileUpload(bytes, attach.getOriginalFilename(), path);
+				
+				empvo.setProfilename(profilename);
+				empvo.setOrgProfilename(attach.getOriginalFilename());
+				
+				fileSize = attach.getSize();
+				empvo.setFileSize(String.valueOf(fileSize));
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		int n = 0;
+		
+		if(fileName != null) {
+			// === 해당하는 사원의 정보 update해주기 === //
+			n = service.mypageEnd(empvo);
+		}
+		else {
+			// === 파일이 없는 사원의 정보 update 해주기 === //
+			n = service.mypageEndNoFile(empvo);
+		}
+		
+		if(n == 1) {
+			String msg = "정보 수정이 완료되었습니다.";
+			String loc = mrequest.getContextPath() + "/index.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		else {
+			String msg = "정보 수정이 실패하였습니다.";
+			String loc = mrequest.getContextPath() + "/index.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		
+		mav.setViewName("msg");
+		return mav;
 	}
 	
 	
@@ -428,23 +550,15 @@ public class KGHController {
 	@RequestMapping(value = "/empRegisterEnd.gw", method = {RequestMethod.POST})
 	public ModelAndView empRegisterEnd(ModelAndView mav, EmployeeVO_KGH emp, MultipartHttpServletRequest mrequest) {
 		
-		// String departmentno = mrequest.getParameter("selectDepart");
-		// String positionno = mrequest.getParameter("selectPosition");
-		
-		System.out.println(emp.getFk_departNo());
-		System.out.println(emp.getFk_positionNo());
-		
-		//emp.setFk_departNo(departmentno);
-		//emp.setFk_positionNo(positionno);
-		
 		MultipartFile attach = emp.getAttach();
 		
 		if(!attach.isEmpty()) {
-			HttpSession session = mrequest.getSession();
+			// String root = mrequest.getContextPath();
 			
-			String root = session.getServletContext().getRealPath("/");
+			// System.out.println(root);
+			// C:\git\FinalProject\FinalProject\src\main\webapp\resources\images
 			
-			String path = root + "resources" + File.separator + "files";
+			String path = "C:\\git\\FinalProject\\FinalProject\\src\\main\\webapp\\resources\\empIMG";
 			
 			String profilename = "";
 			
@@ -471,13 +585,13 @@ public class KGHController {
 		}
 		
 		// 새로 생성될 사원번호 조회하기
-		// String employeeId = service.selectEmpId(departmentno);
-		// emp.setEmployeeid(employeeId);
+		String employeeId = service.selectEmpId(emp.getFk_departNo());
+		emp.setEmployeeid(employeeId);
 
 		if(attach.isEmpty()) {
 			// 프로필 사진이 없는 경우
 			// 직원 정보 insert 하기
-			// service.empRegister(emp);
+			service.empRegister(emp);
 		}
 		else {
 			// 프로필 사진이 있는 경우
@@ -485,11 +599,22 @@ public class KGHController {
 			int n = service.empRegisterWithProfile(emp);
 			
 			if(n == 1) {
-				System.out.println("성공!");
+				String msg = "직원 등록이 완료되었습니다.";
+				String loc = mrequest.getContextPath() + "/index.gw";
+				
+				mav.addObject("message", msg);
+				mav.addObject("loc", loc);
+			}
+			else {
+				String msg = "직원 등록에 실패하였습니다.";
+				String loc = mrequest.getContextPath() + "/index.gw";
+				
+				mav.addObject("message", msg);
+				mav.addObject("loc", loc);
 			}
 		}
 		
-		mav.setViewName("redirect:/index.gw");
+		mav.setViewName("msg");
 		
 		return mav;
 	}

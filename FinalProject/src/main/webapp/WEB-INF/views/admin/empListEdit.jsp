@@ -180,7 +180,12 @@
 		    <div class="form-inline">
 		    	<input type="hidden" id="employeeid" name="employeeid" value="${map.employeeid}"/>
 		    	<div class="col-6 col-lg-8 offset-3 offset-lg-2 text-center mt-3">
-			    	<img src="<%= request.getContextPath()%>/resources/images/기본프로필_kh.jpg" class="rounded-circle" style="width: 190px; height: 200px;"><br>
+		    		<c:if test="${not empty requestScope.map.profilename}">
+		    			<img src="<%= request.getContextPath()%>/resources/images/${map.profilename}" class="rounded-circle" style="width: 190px; height: 200px;"><br>
+		    		</c:if>
+		    		<c:if test="${empty requestScope.map.profilename}">
+				    	<img src="<%= request.getContextPath()%>/resources/images/기본프로필_kh.jpg" class="rounded-circle" style="width: 190px; height: 200px;"><br>
+		    		</c:if>
 		    	</div>
 		    	<div class="w-100 my-4"></div>
 		    	

@@ -59,7 +59,7 @@ public class KGHDAO implements InterKGHDAO {
 
 	// === 로그인 처리 메서드(select) === //
 	@Override
-	public EmployeeVO_KGH getLogin(Map<String, String> paraMap) {
+	public EmployeeVO_KGH getLogin(Map<String, String> paraMap) { 
 		EmployeeVO_KGH empvo = sqlsession.selectOne("KangGH.getLogin", paraMap);
 		return empvo;
 	}
@@ -103,6 +103,44 @@ public class KGHDAO implements InterKGHDAO {
 		return n;
 	}
 
+	// === 기존 비밀번호와 같은지 체크 메서드(select) === //
+	@Override
+	public boolean passwordCheck(Map<String, String> paraMap) {
+		String password = sqlsession.selectOne("KangGH.passwordCheck", paraMap);
+
+		boolean isExists = false;
+		
+		if(password != null) {
+			isExists = true;
+		}
+		else {
+			isExists = false;
+		}
+		
+		return isExists;
+	}
+	
+	// === 해당하는 사원의 파일이 존재하는 경우 해당하는 파일명 가져오기(select) === //
+	@Override
+	public String getprofileName(String employeeid) {
+		String profileName = sqlsession.selectOne("KangGH.getprofileName", employeeid);
+		return profileName;
+	}
+	
+	// === 해당하는 사원의 정보 update해주기 === //
+	@Override
+	public int mypageEnd(EmployeeVO_KGH empvo) {
+		int n = sqlsession.update("KangGH.mypageEnd", empvo);
+		return n;
+	}
+
+	// === 파일이 없는 사원의 정보 update 해주기 === //
+	@Override
+	public int mypageEndNoFile(EmployeeVO_KGH empvo) {
+		int n = sqlsession.update("KangGH.mypageEndNoFile", empvo);
+		return n;
+	}
+	
 	// === 특정 회원에 대한 정보 가져오기(select) === //
 	@Override
 	public Map<String, String> empListEdit(String employeeID) {
@@ -290,6 +328,8 @@ public class KGHDAO implements InterKGHDAO {
 		int n = sqlsession.update("KangGH.empDelEnd", paraMap);
 		return n;
 	}
+
+	
 
 	
 

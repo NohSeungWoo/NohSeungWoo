@@ -166,8 +166,6 @@
 			
 		});
 		
-		
-		
 	});// end of $(document).ready(function() {})
 	
 	
@@ -330,7 +328,7 @@
 		       <label class="float-right">프로필사진</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <input type="file" class="mt-1" id="orgProfilename" name="orgProfilename" style="width: 100%;">
+		       <input type="file" class="mt-1" id="attach" name="attach" style="width: 100%;">
 		    </div>
 		    
 	    </div>
