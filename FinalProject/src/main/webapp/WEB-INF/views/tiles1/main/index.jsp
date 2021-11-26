@@ -2,6 +2,9 @@
     pageEncoding="UTF-8"%>
     
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
+
+<% String ctxPath = request.getContextPath(); %>
+
 <script type="text/javascript">
 	$(document).ready(function(){
 		
@@ -20,73 +23,42 @@
 		var strNow = now.getFullYear() +""+ month +  date;
 		
 		var hour = "";
-	/*	
-		if (2 <= now.getHours() && now.getHours() < 5) {
-			hour = "02";
-		} 
-		else if (5 <= now.getHours() && now.getHours() < 8) {
-			hour = "05";
-		} 
-		else if (8 <= now.getHours() && now.getHours() < 11) {
-			hour = "08";
-		} 
-		else if (11 <= now.getHours() && now.getHours() < 14) {
-			hour = "11";
-		} 
-		else if (14 <= now.getHours() && now.getHours() < 17) {
-			hour = "14";
-		} 
-		else if (17 <= now.getHours() && now.getHours() < 20) {
-			hour = "17";
-		} 
-		else if (20 <= now.getHours() && now.getHours() < 23) {
-			hour = "20";
-		} 
-		else if (23 <= now.getHours() || now.getHours() < 2) {
-			hour = "23";
-		} 
-	*/	
-		/*
-		if(now.getHours() < 10) {
-		     hour = "0"+now.getHours();
-		} 
-		else {
-		    hour = now.getHours();
-		}
-		*/
+		
+	//	console.log(now.getHours());
+	//	console.log(now.getMinutes());
+		
 		if (23 <= now.getHours() || now.getHours() < 2) { // 밤 23 시부터 새벽 2시인 경우
-			if(23 == now.getHours() && now.getMinutes < 30) {
+			if(23 == now.getHours() && now.getMinutes() < 30) {
 				hour = "20";
 			}
 			else{
 				hour = "23";
 			}
 		} 
-		else{
+		else{ // 밤 23 시부터 새벽 2시를 제외한 경우
 			
-			if( (parseInt(now.getHours()/3) * 3 - 1) == now.getHours() && now.getMinutes < 30) {
+			if ( now.getHours()%3 == 2){ // 3으로 나눠서 나머지가 2인경우  02시 05시 08시 11시 14시 17시 20시(기상정보업데이트시간)
 				
-				if(parseInt(now.getHours()/3) * 3 - 4 < 10) {
-					hour = "0"+ (parseInt(now.getHours()/3) * 3 - 4);
-				}
-				else {
-					hour = parseInt(now.getHours()/3) * 3 - 4;
-				}
-				
-			}
-			else {
-				if(parseInt(now.getHours()/3) * 3 - 1 < 10) {
-					hour = "0"+(parseInt(now.getHours()/3) * 3 - 1);
-				}
-				else {
+				if( (parseInt(now.getHours()/3) * 3 + 2) == now.getHours() && now.getMinutes() < 30) { // 업데이트 시간 기준 30분 이전이라면
+					
 					hour = parseInt(now.getHours()/3) * 3 - 1;
+					
+				}
+				else {
+					hour = parseInt(now.getHours()/3) * 3 + 2;
 				}
 			}
-			
+			else { // 3으로 나눠서 나머지가 0,1 인경우
+				hour = parseInt(now.getHours()/3) * 3 - 1;
+			}
+		}
+		
+		if(hour < 10) {
+			hour = "0"+hour;
 		}
 		
 		hour += "00"; 
-		console.log(hour);
+	//	console.log(hour);
 		
 		$.ajax({
 		   	url:"<%= request.getContextPath()%>/getWeather.gw",
@@ -147,7 +119,7 @@
 							html2 += "눈";
 						}
 						else {
-							html = "<img src='<%= request.getContextPath()%>/resources/images/weather/p1.png'/>"
+							html = "<img src='<%= ctxPath%>/resources/images/weather/p1.png'/>"
 							html2 += "비";
 						}
 					}
@@ -167,18 +139,17 @@
 		
 	});
 </script>
-<% String ctxPath = request.getContextPath(); %>     
 	<div class="container-fluid container-xl">
 		<div class="px-3 py-3 mb-4 border rounded-lg " style="font-size:x-large; background-color: white;">
 			<c:if test="${sessionScope.loginuser == null}">
-				<a href="<%= request.getContextPath()%>/login.gw"><b>로그인이 필요합니다!</b></a>
+				<a href="<%= ctxPath%>/login.gw"><b>로그인이 필요합니다!</b></a>
 			</c:if>
 			<c:if test="${sessionScope.loginuser != null }">
 				<c:if test="${sessionScope.loginuser.profilename == null }">
 					<span><img src="<%= ctxPath%>/resources/images/기본프로필_kh.jpg" style="border-radius: 50%; width:50px;"></span>
 				</c:if>
 				<c:if test="${sessionScope.loginuser.profilename != null }">
-					<span><img src="<%= ctxPath%>/resources/images/기본프로필_kh.jpg" style="border-radius: 50%; width:50px;"></span>
+					<span><img src="<%= ctxPath%>/resources/images/empIMG/${sessionScope.loginuser.profilename}" style="border-radius: 50%; width:50px;"></span>
 				</c:if>
 				<b>${sessionScope.loginuser.name}님 안녕하세요!</b>
 			</c:if>
