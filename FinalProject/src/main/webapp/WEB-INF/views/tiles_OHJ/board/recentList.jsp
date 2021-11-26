@@ -87,8 +87,29 @@
 	// 해당 글 상세보기
 	function goView(boardSeq){
 		
+		<%-- 
 		location.href = "<%= ctxPath%>/boardView.gw?boardSeq="+boardSeq;
+		 --%>
+		 
+		// === &124. 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
+		//           사용자가 목록보기 버튼을 클릭했을 때 돌아갈 페이지를 알려주기 위해
+		//           현재 페이지 주소를 뷰단으로 넘겨준다.
+		var frm = document.goViewFrm;
+		/////////////////////////////////////////////////////
+		frm.boardSeq.value = boardSeq;
 		
+		frm.gobackURL.value = "${requestScope.gobackURL}"; // 자바스크립트이기때문에 문자열인 ""이다.
+		
+		frm.fromDate.value = "${requestScope.fromDate}"; 
+		frm.toDate.value = "${requestScope.toDate}";
+		frm.bCategory.value = "${requestScope.bCategory}";
+		frm.searchType.value = "${requestScope.searchType}";
+		frm.searchWord.value = "${requestScope.searchWord}";
+		/////////////////////////////////////////////////////
+		frm.method = "GET";
+		frm.action = "<%= ctxPath%>/boardView.gw";
+		frm.submit();
+			
 	}// end of function goView(boardSeq){}-------------------------------
 	
 	// 검색조건에 맞는 글 검색하기
@@ -230,12 +251,13 @@
 		<!-- 게시물 건수 시작 -->
 		<div class="d-flex mt-3">
 			<span style="color: #999; margin-right: auto;">총 <strong style="color: #000;">${requestScope.totalCount}</strong>건</span> <%-- 페이지바 처리하기 전에 총 게시물 건수로 사용했던거 : ${fn:length(requestScope.boardList)} --%>
-			
+			<!-- 
 			<select id="sizePerPage">
 				<option>3</option>
 				<option>5</option>
 				<option>10</option>
 			</select>
+			 -->
 		</div>
 		<!-- 게시물 건수 종료 -->
 		
@@ -298,6 +320,23 @@
 	
 	
 	
+	
+	<%-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		   페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
+		   사용자가 목록보기 버튼을 클릭했을 때 돌아갈 페이지를 알려주기 위해
+		   현재 페이지 주소를 뷰단으로 넘겨준다. --%>
+	<form name="goViewFrm">
+		<!-- 글 1개보기(기존) -->
+		<input type="hidden" name="boardSeq" />
+		<!-- 검색목록으로 가기 -->
+		<input type="hidden" name="gobackURL" />
+		<!-- 이전글, 다음글의 글 가져올때의 검색조건 -->
+		<input type="hidden" name="fromDate" />
+		<input type="hidden" name="toDate" />
+		<input type="hidden" name="bCategory" />
+		<input type="hidden" name="searchType" />
+		<input type="hidden" name="searchWord" />
+	</form>
 	
 	
 	
