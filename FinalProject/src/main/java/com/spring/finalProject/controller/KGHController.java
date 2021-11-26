@@ -523,15 +523,36 @@ public class KGHController {
 		emp.setFk_departNo(departno);
 		emp.setFk_positionNo(positionno);;
 		
-		// === 직원 정보 수정하기(update) === //
-		int n = service.empEdit(emp);
+		int result = 1;
 		
-		if(n == 1) {
-			String msg = "수정이 완료되었습니다.";
-			String loc = request.getContextPath() + "/admin/empList.gw";
+		// 정보 수정하려는 직급이 팀장일 경우 tbl_department의 managerid도 update 한다
+		if(Integer.parseInt(positionno) == 2) {
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("departno", departno);
+			paraMap.put("positionno", positionno);
+			paraMap.put("employeeid", emp.getEmployeeid());
 			
-			mav.addObject("message", msg);
-			mav.addObject("loc", loc);
+			result = service.updateDepart(paraMap);
+		}
+		
+		if(result == 1) {
+			// === 직원 정보 수정하기(update) === //
+			int n = service.empEdit(emp);
+			
+			if(n == 1) {
+				String msg = "수정이 완료되었습니다.";
+				String loc = request.getContextPath() + "/admin/empList.gw";
+				
+				mav.addObject("message", msg);
+				mav.addObject("loc", loc);
+			}
+			else {
+				String msg = "수정이 실패되었습니다.";
+				String loc = request.getContextPath() + "/admin/empList.gw";
+				
+				mav.addObject("message", msg);
+				mav.addObject("loc", loc);
+			}
 		}
 		else {
 			String msg = "수정이 실패되었습니다.";
@@ -543,6 +564,44 @@ public class KGHController {
 		
 		mav.setViewName("msg");
 		
+		return mav;
+	}
+	
+	
+	// === 직원정보 삭제하기 === //
+	@RequestMapping(value = "/empDelEnd.gw", method = {RequestMethod.POST})
+	public ModelAndView empDelEnd(ModelAndView mav, HttpServletRequest request, EmployeeVO_KGH emp) {
+		String positionno = request.getParameter("selectPosition");
+		String employeeid = emp.getEmployeeid();
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("employeeid", employeeid);
+		paraMap.put("positionno", positionno);
+		
+		// === 삭제하고자 하는 직원의 정보가 팀장일 경우 부서 테이블 managerid null처리 (update) === //
+		if(Integer.parseInt(positionno) == 2) {
+			service.delManagerId(paraMap);
+		}
+		
+		// === 삭제하고자 하는 직원의 정보 update(admin, retire, retiredate) === //
+		int n = service.empDelEnd(paraMap);
+		
+		if(n == 1) {
+			String msg = "직원 삭제가 성공하였습니다.";
+			String loc = request.getContextPath() + "/admin/empList.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		else {
+			String msg = "직원 삭제가 실패되었습니다.";
+			String loc = request.getContextPath() + "/admin/empList.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		
+		mav.setViewName("msg");
 		return mav;
 	}
 	
@@ -1074,6 +1133,201 @@ public class KGHController {
 		String json = jsonObj.toString();
 		
 		return json;
+	}
+	
+	
+	// === 관리자 목록 페이지로 이동 === //
+	@RequestMapping(value = "admin/adminList.gw")
+	public ModelAndView adminList(ModelAndView mav, HttpServletRequest request) {
+		
+		List<Map<String, String>> adminList = null;
+		
+		Map<String,String> paraMap = new HashMap<>();
+		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
+		
+		// 먼저 총 게시물 건수(totalCount)를 구해와야 한다.
+	    // 총 게시물 건수(totalCount)는 검색조건이 있을 때와 없을 때로 나뉘어진다.
+	    int totalCount = 0;			// 총 게시물 건수
+	    int sizePerPage = 5;		// 한 페이지당 보여줄 게시물 건수
+		int currentShowPageNo = 0;	// 현재 보여주는 페이지 번호로서, 초기값은 1 페이지로 설정해야 한다.
+	    int totalPage = 0;			// 총 페이지 수(웹브라우저 상에서 보여줄 총 페이지 개수, 페이지바)
+	    
+	    int startRno = 0;			// 시작 행번호
+	    int endRno = 0;				// 끝 행번호
+		
+	    // === 관리자수 가져오기 메서드(select) === //
+		totalCount = service.getTotalAdminCount();
+		
+		mav.addObject("adminCnt", totalCount);
+		
+		// 총 게시물 건수(totalCount)가 127개 일 경우
+	    // 총 페이지 수(totalPage)는 13개 되어야 한다.
+	    totalPage = (int)Math.ceil((double)totalCount/sizePerPage);	// (double)127 / 10 => 12.7 => Math.ceil(12.7) => 13.0 => (int)13.0
+	    
+	    if(str_currentShowPageNo == null) {
+	    	// 게시판에 보여지는 초기화면
+	    	currentShowPageNo = 1; 
+	    }
+	    else {
+	    	try {
+	    		currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+			
+	    		if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+	    			currentShowPageNo = 1;
+	    		}
+	    	} catch (NumberFormatException e) {
+				currentShowPageNo = 1;
+			}
+	    }
+		
+	    startRno = ( (currentShowPageNo - 1) * sizePerPage ) + 1;
+	    endRno = startRno + sizePerPage - 1;
+
+	    paraMap.put("startRno", String.valueOf(startRno));
+	    paraMap.put("endRno", String.valueOf(endRno));
+		
+	    // === 관리자 List 가져오기(select) === //
+	 	adminList =	service.getAdminList(paraMap);
+	    
+	    // === 페이지바 만들기 === //
+ 		int blockSize = 10;
+ 		// blockSize는 1개 블럭(토막)당 보여지는 페이지 번호의 개수이다.
+ 	    
+ 		int loop = 1;
+ 		// loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize) ] 까지만 증가하는 용도이다.
+ 		
+ 		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+ 		
+ 		String pageBar = "<ul style='list-style: none;'>";
+ 		String url = "/finalProject/admin/adminList.gw";
+ 		
+ 		// === [맨처음][이전] 만들기 === //
+ 		if(pageNo != 1) {
+ 			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "currentShowPageNo=1'>[맨처음]</a></li>";
+ 			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "currentShowPageNo=" + (pageNo-1) + "'>[이전]</a></li>";
+ 		}
+ 		
+ 		while(!(loop > blockSize || pageNo > totalPage)) {
+ 			if(pageNo == currentShowPageNo) {
+ 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; background-color: #666666; font-weight:bold; color:white; padding:2px 4px;'>" + pageNo + "</li>";
+ 			}
+ 			else {
+ 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='" + url + "?&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
+ 			}
+ 			
+ 			loop++;
+ 			pageNo++;
+ 		}
+ 		
+ 		// === [다음][마지막] 만들기 ===
+ 		if(pageNo <= totalPage) {
+ 			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + pageNo + "'>[다음]</a></li>";
+ 			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "?&currentShowPageNo=" + totalPage + "'>[마지막]</a></li>";
+ 		}
+ 		
+ 		pageBar += "</ul>";
+ 		
+ 		mav.addObject("pageBar", pageBar);
+	    
+		mav.addObject("adminList", adminList);
+		mav.setViewName("admin/adminList.tiles_KKH");
+		
+		return mav;
+	}
+	
+	
+	// === 관리자 추가 시 직원 검색할 경우 자동완성 할 직원 목록 select 메서드 === //
+	@ResponseBody
+	@RequestMapping(value = "/adminListSearch.gw", method = {RequestMethod.GET}, produces = "text/plain;charset=UTF-8")
+	public String adminListSearch(HttpServletRequest request) {
+		String searchEmployee = request.getParameter("searchEmployee");
+		
+		Map<String, String> paraMap = new HashedMap<>();
+		paraMap.put("searchEmployee", searchEmployee);
+		
+		// === 관리자 메뉴 검색어 결과 조회하기(select) === //
+		List<EmployeeVO_KGH> searchList = service.adminListSearch(paraMap);
+		
+		JSONArray jsonArr = new JSONArray(); // []
+		
+		if(searchList != null) {
+			for(EmployeeVO_KGH employeeVO : searchList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("employeeid", employeeVO.getEmployeeid());
+				jsonObj.put("name", employeeVO.getName());
+				
+				jsonArr.put(jsonObj);
+			}
+		}
+		return jsonArr.toString();
+	}
+	
+	
+	// === 관리자 추가 메서드(update) === //
+	@RequestMapping(value = "/adminAddEnd.gw")
+	public ModelAndView adminAddEnd(ModelAndView mav, HttpServletRequest request) {
+		String employeeid = request.getParameter("adminEmpId");
+		
+		int n = service.adminAddEnd(employeeid);
+		
+		if(n == 1) {
+			String msg = "관리자 추가가 완료되었습니다.";
+			String loc = request.getContextPath() + "/admin/adminList.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		else {
+			String msg = "관리자 추가가 실패하였습니다.";
+			String loc = request.getContextPath() + "/admin/adminList.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		
+		mav.setViewName("msg");
+		
+		return mav;
+	}
+	
+	
+	// === 관리자 권한 삭제 메서드(update) === //
+	@RequestMapping(value = "/adminDelEnd.gw")
+	public ModelAndView adminDelEnd(ModelAndView mav, HttpServletRequest request) {
+		String employeeid = request.getParameter("adminEmpId");
+		
+		int n = service.adminDelEnd(employeeid);
+		
+		if(n == 1) {
+			String msg = "관리자 권한 삭제가 완료되었습니다.";
+			String loc = request.getContextPath() + "/admin/adminList.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		else {
+			String msg = "관리자 권한 삭제가 실패하였습니다.";
+			String loc = request.getContextPath() + "/admin/adminList.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		
+		mav.setViewName("msg");
+		
+		return mav;
+	}
+	
+	
+	
+	
+	// === 직원 조직도 페이지 이동 === //
+	@RequestMapping(value = "organization-chart.gw")
+	public ModelAndView organization_chart(ModelAndView mav) {
+		
+		mav.setViewName("organization/organization_chart.tiles_KKH");
+		
+		return mav;
 	}
 	
 	////////////////////////////////////////////////////////

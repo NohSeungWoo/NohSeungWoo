@@ -191,6 +191,25 @@
 		where employeeid = #{employeeID}
 	</select>
 	
+	<!-- === 기존에 있던 부서의 팀장 사원번호 가져오기(select) === -->
+	<select id="getManagerId" parameterType="HashMap" resultType="String">
+		select managerID
+		from tbl_department
+		where departNo = #{departno}
+	</select>
+	
+	<!-- === 기존의 팀장에 대한 사원 테이블 update === -->
+	<update id="updateEmployee" parameterType="String">
+		update tbl_employee set admin = 0, fk_positionNo = 99
+		where employeeid = #{managerId}
+	</update>
+	
+	<!-- === 새로운 팀장에 대한 부서 테이블 update === -->
+	<update id="updateDepartManager" parameterType="HashMap">
+		update tbl_department set managerid = #{employeeid}
+		where departno = #{departno}
+	</update>
+	
 	<!-- 직원 정보 수정하기(update) -->
 	<update id="empEdit">
 		update tbl_employee set name = #{name},
@@ -319,5 +338,82 @@
 				'${checkEmpArr[i]}'
 			</foreach>
 		</if>
+	</update>
+	
+	<!-- === 관리자수 가져오기 메서드(select) === -->
+	<select id="getTotalAdminCount" resultType="int">
+		select count(*)
+		from tbl_employee
+		where admin = 1 and retire = 0
+	</select>
+	
+	<!-- === 관리자 List 가져오기(select) === -->
+	<resultMap type="HashMap" id="adminListMap">
+		<result property="employeeid"		column="employeeid" 		javaType="String" />
+		<result property="fk_departno"		column="fk_departno" 		javaType="String" />
+		<result property="departmentname"	column="departmentname" 	javaType="String" />
+		<result property="fk_positionno"	column="fk_positionno" 		javaType="String" />
+		<result property="positionname"		column="positionname" 		javaType="String" />
+		<result property="name"		 		column="name" 				javaType="String" />
+		<result property="mobile"		 	column="mobile" 			javaType="String" />
+		<result property="email"		 	column="email" 				javaType="String" />
+	</resultMap>
+	<select id="getAdminList" parameterType="HashMap" resultMap="adminListMap">
+		select employeeid, fk_departno, departmentname, 
+		       fk_positionno, positionname, name, mobile, email
+		from 
+		(
+		    select rownum AS rno, employeeid, fk_departno, departmentname, fk_positionno, 
+		           name, mobile, email, retire, admin
+		    from tbl_employee E
+		    JOIN tbl_department D
+		    ON E.fk_departno = D.departno
+		    where admin = 1
+		) V
+		JOIN tbl_position P
+		ON V.fk_positionno = P.positionno
+		where V.retire = 0
+		and rno between #{startRno} and #{endRno}
+		order by fk_positionNo, fk_departno, employeeID asc
+	</select>
+	
+	<!-- === 관리자 메뉴 검색어 결과 조회하기(select) === -->
+	<select id="adminListSearch" parameterType="HashMap" resultType="com.spring.finalProject.model.EmployeeVO_KGH">
+		select employeeid, name
+		from
+		(
+		    select rownum AS rno, employeeid, name
+		    from tbl_employee
+		    where retire = 0
+		    and admin = 0
+		    and name like '%'|| #{searchEmployee} ||'%'
+		) V
+		where rno between 1 and 4
+	</select>
+	
+	<!-- === 관리자 추가 메서드(update) === -->
+	<update id="adminAddEnd" parameterType="String">
+		update tbl_employee set admin = 1
+		where employeeid = #{employeeid}
+	</update>
+	
+	<!-- === 관리자 권한 삭제 메서드(update) === -->
+	<update id="adminDelEnd" parameterType="String">
+		update tbl_employee set admin = 0
+		where employeeid = #{employeeid}
+	</update>
+	
+	<!-- === 삭제하고자 하는 직원의 정보가 팀장일 경우 부서 테이블 managerid null처리 (update) === -->
+	<update id="delManagerId" parameterType="HashMap">
+		update tbl_department set managerid = NULL
+		where departno = #{positionno}
+	</update>
+	
+	<!-- === 삭제하고자 하는 직원의 정보 update(admin, retire, retiredate) === -->
+	<update id="empDelEnd" parameterType="HashMap">
+		update tbl_employee set retiredate = sysdate,
+		                        retire = 1,
+		                        admin = 0
+		where employeeid = #{employeeid}
 	</update>
 </mapper>
