@@ -229,7 +229,7 @@
 		
 		<!-- 게시물 건수 시작 -->
 		<div class="d-flex mt-3">
-			<span style="color: #999; margin-right: auto;">총 <strong style="color: #000;">${fn:length(requestScope.boardList)}</strong>건</span>
+			<span style="color: #999; margin-right: auto;">총 <strong style="color: #000;">${requestScope.totalCount}</strong>건</span> <%-- 페이지바 처리하기 전에 총 게시물 건수로 사용했던거 : ${fn:length(requestScope.boardList)} --%>
 			
 			<select id="sizePerPage">
 				<option>3</option>
