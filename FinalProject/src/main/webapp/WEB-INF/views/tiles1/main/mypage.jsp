@@ -161,7 +161,10 @@
 				            return; // 종료
 						}
 						else {
-							alert("비번이 같습니다");
+							var frm = document.myPageFrm;
+							frm.method = "POST";
+							frm.action = "<%= ctxPath%>/mypageEnd.gw";
+							frm.submit();
 						}
 					},
 					error: function(request, status, error){
@@ -170,7 +173,7 @@
 				});
 			}
 			else {
-				var frm = document.empDetailFrm;
+				var frm = document.myPageFrm;
 				frm.method = "POST";
 				frm.action = "<%= ctxPath%>/mypageEnd.gw";
 				frm.submit();
@@ -194,9 +197,9 @@
 		</div>
 	</div>
 	<br>
-	<form name="empDetailFrm" enctype="multipart/form-data"> 
+	<form name="myPageFrm" enctype="multipart/form-data"> 
 	    <div class="form-inline">
-	    	<input type="hidden" id="employeeid" name="employeeid" value="${map.employeeid}"/>
+	    	<input type="hidden" id="employeeid" name="employeeid" value="${sessionScope.loginuser.employeeid}"/>
 	    	<div class="col-6 col-lg-8 offset-3 offset-lg-2 text-center mt-3">
 	    		<c:if test="${not empty requestScope.map.profilename}">
 	    			<img src="<%= request.getContextPath()%>/resources/images/${map.profilename}" class="rounded-circle" style="width: 190px; height: 200px;"><br>
@@ -211,7 +214,7 @@
 		       <label class="float-right">사원번호</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-				<input type="text" class="form-control mt-1" id="employeeid" name="employeeid" value="${map.employeeid}" disabled style="width: 100%;" />
+				<input type="text" class="form-control mt-1" id="employeeid" name="employeeid" value="${sessionScope.loginuser.employeeid}" disabled style="width: 100%;" />
 		    </div>
 		    <div class="w-100 my-4"></div>
 	    	
@@ -219,7 +222,7 @@
 		       <label class="float-right">이메일</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <input type="text" class="form-control mt-1" id="email" name="email" value="${map.email}" disabled style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="email" name="email" value="${sessionScope.loginuser.email}" disabled style="width: 100%;">
 		    </div>
 		    <div class="w-100 my-4"></div>
 		    
@@ -235,7 +238,7 @@
 		       <label class="float-right">이름</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <input type="text" class="form-control mt-1" id="name" name="name" value="${map.name}" style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="name" name="name" value="${sessionScope.loginuser.name}" style="width: 100%;">
 		    </div>
 		    <div class="w-100 mb-5"></div>
 		    
@@ -243,7 +246,7 @@
 		       <label class="float-right">연락처</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <input type="text" class="form-control mt-1" id="mobile" name="mobile" value="${map.mobile}" style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="mobile" name="mobile" value="${sessionScope.loginuser.mobile}" style="width: 100%;">
 		    </div>
 		    <div class="w-100 mb-5"></div>
 		    
@@ -251,7 +254,7 @@
 		       <label class="float-right">입사일자</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <input type="text" class="form-control mt-1" id="hiredate" name="hiredate" value="${map.hiredate}" disabled style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="hiredate" name="hiredate" value="${sessionScope.loginuser.hiredate}" disabled style="width: 100%;">
 		    </div>
 		    <div class="w-100 mb-5"></div>
 		    
@@ -259,23 +262,23 @@
 		       <label class="float-right">우편번호</label>
 	    	</div>
 		    <div class="col-9 col-lg-4">
-		       <input type="text" class="form-control mt-1" id="postcode" placeholder="우편번호" name="postcode" style="width: 40%;">
+		       <input type="text" class="form-control mt-1" id="postcode" value="${sessionScope.loginuser.postcode}"  name="postcode" style="width: 40%;">
 		       <span id="searchAddress" class="btn btn-secondary btn-sm mt-1 ml-3" style="border-radius: 10px; display: inline;">주소찾기</span>
 		    </div>
 		    <div class="w-100 my-1"></div>
 		    
 		    <div class="col-9 col-lg-4 offset-3 offset-lg-4">
-		       <input type="text" class="form-control mt-1" id="address" placeholder="주소" name="address" style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="address" value="${sessionScope.loginuser.address}" placeholder="주소" name="address" style="width: 100%;">
 		    </div>
 		    <div class="w-100 my-1"></div>
 		    
 		    <div class="col-9 col-lg-4 offset-3 offset-lg-4">
-		       <input type="text" class="form-control mt-1" id="detailAddress" placeholder="상세주소" name="detailAddress" style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="detailAddress" value="${sessionScope.loginuser.detailAddress}" placeholder="상세주소" name="detailAddress" style="width: 100%;">
 		    </div>
 		    <div class="w-100 my-1"></div>
 		    
 		    <div class="col-9 col-lg-4 offset-3 offset-lg-4">
-		       <input type="text" class="form-control mt-1" id="extraAddress" placeholder="주소옵션" name="extraAddress" style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="extraAddress" value="${sessionScope.loginuser.extraAddress}" placeholder="주소옵션" name="extraAddress" style="width: 100%;">
 		    </div>
 		    <div class="w-100 my-4"></div>
 		    
@@ -283,7 +286,7 @@
 		       <label class="float-right">프로필사진</label>
 	    	</div>
 		    <div class="col-8 col-lg-4 filebox">
-		    	<input class="upload-name form-control" value="첨부파일"  disabled placeholder="첨부파일">
+		    	<input class="upload-name form-control" value="${sessionScope.loginuser.profilename}"  disabled placeholder="첨부파일">
 			    <label for="file">파일찾기</label> 
 			    <input type="file" id="file">
 			    

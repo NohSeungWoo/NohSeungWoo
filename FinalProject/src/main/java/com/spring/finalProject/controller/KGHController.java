@@ -67,7 +67,7 @@ public class KGHController {
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("email", email);
-		paraMap.put("password", password);
+		paraMap.put("password", Sha256.encrypt(password));
 		
 		// === 로그인 처리 메서드 === //
 		EmployeeVO_KGH loginuser = service.getLogin(paraMap);
@@ -152,13 +152,6 @@ public class KGHController {
 	@RequestMapping(value = "mypage.gw")
 	public ModelAndView requiredLogin_mypage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
-		HttpSession session = request.getSession();
-		EmployeeVO_KGH empVO = (EmployeeVO_KGH)session.getAttribute("loginuser");
-		String employeeID = empVO.getEmployeeid();
-		
-		// === 특정 회원에 대한 정보 가져오기(select) === //
-		Map<String, String> map = service.empListEdit(employeeID);
-		mav.addObject("map", map);
 		mav.setViewName("main/mypage.tiles1");
 		
 		return mav;
@@ -174,7 +167,7 @@ public class KGHController {
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("employeeid", employeeid);
-		paraMap.put("password", password);
+		paraMap.put("password", Sha256.encrypt(password));
 		
 		boolean isExists = service.passwordCheck(paraMap);
 		
@@ -191,10 +184,8 @@ public class KGHController {
 	@RequestMapping(value = "/mypageEnd.gw", method = {RequestMethod.POST})
 	public ModelAndView mypageEnd(ModelAndView mav, MultipartHttpServletRequest mrequest, EmployeeVO_KGH empvo) {
 		
-		String employeeid = mrequest.getParameter(empvo.getEmployeeid());
-		String password = mrequest.getParameter(empvo.getPassword());
-		
-		MultipartFile attach = empvo.getAttach();
+		String employeeid = empvo.getEmployeeid();
+		String password = empvo.getPassword();
 		
 		empvo.setPassword(Sha256.encrypt(password));
 		
@@ -211,8 +202,12 @@ public class KGHController {
 			}
 		}
 		
-		// === 정보 수정에 해당하는 프로필 사진 있을 경우 새로 저장하기 === //
+		MultipartFile attach = empvo.getAttach();
+		
+		int n = 0;
+		
 		if(!attach.isEmpty()) {
+			// === 정보 수정에 해당하는 프로필 사진 있을 경우 새로 저장하기 === //
 			String path = "C:\\git\\FinalProject\\FinalProject\\src\\main\\webapp\\resources\\empIMG";
 			
 			String profilename = "";
@@ -238,15 +233,13 @@ public class KGHController {
 			}
 		}
 		
-		int n = 0;
-		
-		if(fileName != null) {
-			// === 해당하는 사원의 정보 update해주기 === //
-			n = service.mypageEnd(empvo);
-		}
-		else {
+		if(attach.isEmpty()) {
 			// === 파일이 없는 사원의 정보 update 해주기 === //
 			n = service.mypageEndNoFile(empvo);
+		}
+		else {
+			// === 해당하는 사원의 정보 update해주기 === //
+			n = service.mypageEnd(empvo);
 		}
 		
 		if(n == 1) {
@@ -588,30 +581,33 @@ public class KGHController {
 		String employeeId = service.selectEmpId(emp.getFk_departNo());
 		emp.setEmployeeid(employeeId);
 
+		int n = 0;
+		
 		if(attach.isEmpty()) {
 			// 프로필 사진이 없는 경우
 			// 직원 정보 insert 하기
-			service.empRegister(emp);
+			n =  service.empRegister(emp);
 		}
 		else {
 			// 프로필 사진이 있는 경우
 			// 프로필사진과 함께직원 정보 insert 하기
-			int n = service.empRegisterWithProfile(emp);
+			n = service.empRegisterWithProfile(emp);
 			
-			if(n == 1) {
-				String msg = "직원 등록이 완료되었습니다.";
-				String loc = mrequest.getContextPath() + "/index.gw";
-				
-				mav.addObject("message", msg);
-				mav.addObject("loc", loc);
-			}
-			else {
-				String msg = "직원 등록에 실패하였습니다.";
-				String loc = mrequest.getContextPath() + "/index.gw";
-				
-				mav.addObject("message", msg);
-				mav.addObject("loc", loc);
-			}
+		}
+		
+		if(n == 1) {
+			String msg = "직원 등록이 완료되었습니다.";
+			String loc = mrequest.getContextPath() + "/index.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
+		}
+		else {
+			String msg = "직원 등록에 실패하였습니다.";
+			String loc = mrequest.getContextPath() + "/index.gw";
+			
+			mav.addObject("message", msg);
+			mav.addObject("loc", loc);
 		}
 		
 		mav.setViewName("msg");

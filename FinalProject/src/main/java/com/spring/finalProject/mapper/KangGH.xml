@@ -129,7 +129,7 @@
 	<!-- === 로그인 처리 메서드(select) === -->
 	<select id="getLogin" parameterType="HashMap" resultType="com.spring.finalProject.model.EmployeeVO_KGH">
 		select employeeid, fk_departNo, fk_positionNo, name, password, mobile, email,
-			   hiredate, retiredate, retire, profilename, orgProfilename, fileSize, 
+			   to_char(hiredate, 'yyyy-mm-dd') AS hiredate, retiredate, retire, profilename, orgProfilename, fileSize, 
 			   salary, dayoff, admin, postcode, address, detailAddress, extraAddress
 		from tbl_employee
 		where retire = 0
