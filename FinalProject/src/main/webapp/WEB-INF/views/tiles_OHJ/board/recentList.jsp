@@ -284,7 +284,12 @@
 								<%-- === 댓글쓰기가 없는 게시판 === 	
 									<span class="subject" onclick="goView('${boardvo.boardSeq}');">${boardvo.subject}</span>
 								--%>
-					
+								
+								
+								<c:if test="${boardvo.fk_bCategorySeq == 1}">
+									<span style="color: #3377ff; font-weight: bold;">[공지]</span>&nbsp;
+								</c:if>
+								
 								<%-- === 댓글쓰기가 있는 게시판 시작 === --%>
 								<c:if test="${boardvo.commentCount > 0}">
 									<span class="subject" onclick="goView('${boardvo.boardSeq}');">${boardvo.subject} [<span style="color: red;">${boardvo.commentCount}</span>]</span>
