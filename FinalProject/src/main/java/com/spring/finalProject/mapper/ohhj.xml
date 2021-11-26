@@ -34,6 +34,7 @@
 	</select>
 	
 	<!-- === &65. 글1개 조회하기 === -->
+	<!--
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select previousBoardSeq, previousSubject
 		     , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
@@ -55,6 +56,54 @@
 		    ON B.fk_employeeId = E.employeeId
 		    JOIN tbl_position P
 		    ON E.fk_positionNo = P.positionNo
+		) V
+		where boardSeq = #{boardSeq}
+	</select>
+	-->
+	
+	<!-- === 먼저 &65 를 주석처리 하고서, &126-2(강사님은 없음). : 글1개 조회하기(이전글,다음글에 검색조건 적용) === -->
+	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
+		select previousBoardSeq, previousSubject
+		     , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
+		     , regDate, readCount
+		     , nextBoardSeq,nextSubject
+		from
+		(
+		    select lag(boardSeq,1) over(order by boardSeq desc) AS previousBoardSeq
+		         , lag(subject,1) over(order by boardSeq desc) AS previousSubject
+		              
+		         , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
+		         , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		    
+		         , lead(boardSeq,1) over(order by boardSeq desc) AS nextBoardSeq
+		         , lead(subject,1) over(order by boardSeq desc) AS nextSubject
+		    from tbl_board B JOIN tbl_boardCategory C
+		    ON B.fk_bCategorySeq = C.bCategorySeq
+		    JOIN tbl_employee E
+		    ON B.fk_employeeId = E.employeeId
+		    JOIN tbl_position P
+		    ON E.fk_positionNo = P.positionNo
+		    
+		    where 1=1
+		
+			<if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+			and regDate BETWEEN add_months(sysdate,-3) AND sysdate
+			</if>
+			<if test='fromDate != "" and toDate != ""'>
+			and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
+			</if>
+			
+			<!-- bCategory가 0이면(맨처음목록보기/전체선택), 조건없이 전체를 다 보여줌 -->
+			<if test='bCategory == ""'> <!-- 유저가 get방식으로 장난치는 경우 : select결과가 없도록 해야함. -->
+			and fk_bCategorySeq = -99
+			</if>
+			<if test='bCategory != "" and bCategory != "0"'> 
+			and fk_bCategorySeq = #{bCategory}
+			</if>
+			
+			<if test='searchType != "" and searchWord != ""'>
+			and lower( ${searchType} ) like '%' || lower( #{searchWord} ) || '%'
+			</if>
 		) V
 		where boardSeq = #{boardSeq}
 	</select>
