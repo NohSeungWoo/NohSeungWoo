@@ -40,10 +40,9 @@
 			if ( now.getHours()%3 == 2){
 				// 3으로 나눠서 나머지가 2인경우  02시 05시 08시 11시 14시 17시 20시(기상정보업데이트시간) 
 				
-				if( (parseInt(now.getHours()/3) * 3 + 2) == now.getHours() && now.getMinutes() < 30) { // 업데이트 시간 기준 30분 이전이라면
-					
+				if( (parseInt(now.getHours()/3) * 3 + 2) == now.getHours() && now.getMinutes() < 30) { 
+					// 업데이트 시간 기준 30분 이전이라면
 					hour = parseInt(now.getHours()/3) * 3 - 1;
-					
 				}
 				else {
 					hour = parseInt(now.getHours()/3) * 3 + 2;
