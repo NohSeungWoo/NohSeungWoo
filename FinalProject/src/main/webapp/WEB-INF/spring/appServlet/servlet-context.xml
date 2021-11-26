@@ -134,13 +134,13 @@
     -->
    
    <!-- === #44. 양방향 암호화 알고리즘인 AES256 를 사용하여 복호화 하기 위한 클래스(파라미터가 있는 생성자) 의존객체 bean 생성하기 === --> 
-   <!-- <beans:bean id="aes" class="com.spring.finalProject.common.AES256">
-      <beans:constructor-arg> 파라미터가 있는 생성자 생성
-         <beans:value>abcd0070#cclass$</beans:value> abcd0070#cclass$ 은 각자 com.spring.finalProject.common.SecretMyKey 에 사용되던 암호화/복호화 키 이다.   
+   <beans:bean id="aes" class="com.spring.finalProject.common.AES256">
+      <beans:constructor-arg> <!-- 파라미터가 있는 생성자 생성 -->
+         <beans:value>abcd0070#cclass$</beans:value> <!-- abcd0070#cclass$ 은 각자 com.spring.finalProject.common.SecretMyKey 에 사용되던 암호화/복호화 키 이다. -->   
       </beans:constructor-arg>
-   </beans:bean> -->
+   </beans:bean>
 
- 
+
 	<!-- ==== #18. bean으로 등록될 @Component 클래스가 위치하는 패키지명 지정하기 ====  --> 
 	<!-- 
 	<context:component-scan base-package="com.spring.finalProject" />

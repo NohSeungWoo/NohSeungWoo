@@ -1,9 +1,15 @@
 package com.spring.finalProject.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.approval.model.*;
 import com.spring.finalProject.common.FileManager;
 import com.spring.finalProject.common.MyUtil_KGH;
@@ -56,6 +63,62 @@ public class WHCController {
 	public String index(HttpServletRequest request) {
 		
 		return "main/index.tiles1";
+		//	/WEB-INF/views/tiles1/main/index.jsp 파일을 생성한다.
+	}
+	
+	// 날씨 받아오기
+	@ResponseBody
+	@RequestMapping(value = "/getWeather.gw")
+	public String getWeather(HttpServletRequest request) throws Exception {
+		
+		String base_date  = request.getParameter("strNow");
+		String base_time = request.getParameter("hour");
+		
+		// 1. URL을 만들기 위한 StringBuilder.
+        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"); /*URL*/
+        // 2. 오픈 API의요청 규격에 맞는 파라미터 생성, 발급받은 인증키.
+        urlBuilder.append("?" + URLEncoder.encode("ServiceKey","UTF-8") + "=qASl3d5b34Bl88c8dulmYnS38qXLGAbrehv/O4eBXoWnJ27o3o4Knqoq5uHMefd62Tp57kGPgSiidAumZDs1/g=="); /*Service Key*/
+        urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("10", "UTF-8")); /*한 페이지 결과 수*/
+        urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*XML 또는 JSON*/
+        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(base_date, "UTF-8")); /*날짜*/
+        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode(base_time, "UTF-8")); /*시간*/
+        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode("59", "UTF-8")); /*X*/
+        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode("126", "UTF-8")); /*Y*/
+        // 3. URL 객체 생성.
+        URL url = new URL(urlBuilder.toString());
+        // 4. 요청하고자 하는 URL과 통신하기 위한 Connection 객체 생성.
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        // 5. 통신을 위한 메소드 SET.
+        conn.setRequestMethod("GET");
+        // 6. 통신을 위한 Content-type SET. 
+        conn.setRequestProperty("Content-type", "application/json");
+        // 7. 통신 응답 코드 확인.
+     //   System.out.println("Response code: " + conn.getResponseCode());
+        // 8. 전달받은 데이터를 BufferedReader 객체로 저장.
+        BufferedReader rd;
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        // 9. 저장된 데이터를 라인별로 읽어 StringBuilder 객체로 저장.
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        HashMap<String,Object> resultMap = new HashMap<>();
+        
+        ObjectMapper mapper = new ObjectMapper();
+        resultMap = mapper.readValue(sb.toString(), HashMap.class);
+        
+        // 10. 객체 해제.
+        rd.close();
+        conn.disconnect();
+        // 11. 전달받은 데이터 확인.
+   //     System.out.println(sb.toString());
+        
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.put("result", resultMap);
+        
+		return jsonObj.toString();
 		//	/WEB-INF/views/tiles1/main/index.jsp 파일을 생성한다.
 	}
 	

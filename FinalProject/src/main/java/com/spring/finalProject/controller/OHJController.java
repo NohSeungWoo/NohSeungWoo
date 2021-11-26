@@ -230,6 +230,8 @@ public class OHJController {
 	*/	
 		if(fromDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
 			fromDate = ""; // 2021-08-23 // '숫자개월수만큼 빼준 날짜인 add_months(sysdate,-3) 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
+			
+			
 		}
 		if(toDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
 			toDate = "";   // 2021-11-23 // 'sysdate 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
@@ -415,6 +417,21 @@ public class OHJController {
 		pageBar += "</ul>";
 		
 		mav.addObject("pageBar", pageBar);
+		
+		
+		/* === &123. 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후, 
+				사용자가 목록보기 버튼을 클릭했을때 돌아갈 페이지를 알려주기 위해
+				현재 페이지 주소를 뷰단으로 넘겨준다. === */
+		String gobackURL = MyUtil_KGH.getCurrentURL(request);	
+	//	System.out.println("~~~~ 확인용 recentList.gw의 gobackURL : " + gobackURL);
+		/*
+			~~~~ 확인용 recentList.gw의 gobackURL : /recentList.gw																							// 처음 목록보기로 들어간 경우
+			~~~~ 확인용 recentList.gw의 gobackURL : /recentList.gw?fromDate=2021-08-26&toDate=2021-11-26&bCategory=0&searchType=subject&searchWord=			// 바로 검색버튼 누른 경우
+			~~~~ 확인용 recentList.gw의 gobackURL : /recentList.gw?fromDate=2021-08-18&toDate=2021-11-24&bCategory=1&searchType=name&searchWord=%EC%9C%A0	// 모든 조건 검색한 누른 경우
+		*/
+		
+		mav.addObject("gobackURL", gobackURL);
+		
 		// === 페이징 처리를 한, 검색어가 있는, 전체 글목록 보여주기 끝 === //
 		
 		mav.addObject("totalCount", totalCount); // 게시글 총 몇 건인지 보여주는 용도
@@ -437,6 +454,69 @@ public class OHJController {
 		
 		Map<String,String> paraMap = new HashMap<>();
 		paraMap.put("boardSeq", boardSeq);
+		
+		
+		// 글목록에서 검색되어진 글내용일 경우
+		// 이전글제목, 다음글제목은 검색되어진 결과물내의 이전글, 다음글이 나오도록 하기 위한 것이다. 
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
+		String bCategory = request.getParameter("bCategory");
+		String searchType = request.getParameter("searchType");
+		String searchWord = request.getParameter("searchWord");
+		
+		// get방식으로 장난치게 되면 아래의 boardvo의 결과가 조회되지 않으므로, 해당하는 글이 없다고 알려준다. 따라서 getParameter한 값을 형식에 맞게 처리는 안해줘도된다. 그냥 null인지 아닌지만 판별한다. 글이 보여지지 않으므로 gobackURL이 이상하게 갈 것에 대한 걱정은 안해도 된다.
+		if(fromDate == null) {
+			fromDate = "";
+		}
+		if(toDate == null) {
+			toDate = "";
+		}
+		if(bCategory == null) {
+			bCategory = "";
+		}
+		if(searchType == null) {
+			searchType = "";
+		}
+		if(searchWord == null) {
+			searchWord = "";
+		}
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
+		paraMap.put("bCategory", bCategory);
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		mav.addObject("fromDate", fromDate);
+		mav.addObject("toDate", toDate);
+		mav.addObject("bCategory", bCategory);
+		mav.addObject("searchType", searchType);
+		mav.addObject("searchWord", searchWord);
+		
+		/////////////////////////////////////////////////////////
+		// === &125. 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
+		//           사용자가 목록보기 버튼을 클릭했을 때 돌아갈 페이지를 알려주기 위해
+		//           현재 페이지 주소를 뷰단으로 넘겨준다.
+		String gobackURL = request.getParameter("gobackURL");
+	//	System.out.println("~~~~ 확인용 boardView.gw의 gobackURL => " + gobackURL);
+		/*
+			~~~~ 확인용 boardView.gw의 gobackURL => /recentList.gw
+			~~~~ 확인용 boardView.gw의 gobackURL => /recentList.gw?fromDate=2021-08-26&toDate=2021-11-26&bCategory=3&searchType=name&searchWord=%EC%9C%A0
+			~~~~ 확인용 boardView.gw의 gobackURL => /recentList.gw?fromDate=2021-08-26&toDate=2021-11-26&bCategory=3&searchType=name&searchWord=%EC%9C%A0&currentShowPageNo=10
+			
+			// &126-4의 확인용
+			~~~~ 확인용 boardView.gw의 gobackURL => /recentList.gw?fromDate=2021-08-26 toDate=2021-11-24 bCategory=0 searchType=subject searchWord=글 currentShowPageNo=2
+		*/
+		
+		// &126-4(강사님은 없음). : 2021-11-05 블로그 참조해서 gobackURL 페이지 주소 올바르게 하기
+		if(gobackURL != null && gobackURL.contains(" ")) { // gobackURL에 공백(" ")이 포함되었더라면
+			gobackURL = gobackURL.replaceAll(" ", "&");
+			// 이전글제목, 다음글제목을 클릭했을때 돌아갈 페이지 주소를 올바르게 만들어주기 위해서 한 것임.
+		//	System.out.println("~~~~ 확인용 gobackURL => " + gobackURL);
+			// ~~~~ 확인용 gobackURL => /recentList.gw?fromDate=2021-08-26&toDate=2021-11-24&bCategory=0&searchType=subject&searchWord=글&currentShowPageNo=2
+		}
+		
+		mav.addObject("gobackURL", gobackURL);
+		/////////////////////////////////////////////////////////		
 		
 		BoardVO_OHJ boardvo = null;
 		

@@ -71,13 +71,33 @@
 		// 확인을 누르면 삭제하고, 취소를 누르면 그냥 냅둠.
 	}// end of function delConfirm(){}---------------------------------------------
 	
+		
+	
 	// 이전글로 이동
 	function goPrevious(){
-		location.href = "boardView.gw?boardSeq=${requestScope.boardvo.previousBoardSeq}";
+		
+		// &126-3(강사님은 없음). : 이전글, 다음글 gobackURL에 적용
+		// 강사님
+		<%-- <c:set var="v_gobackURL" value='${ fn:replace(requestScope.gobackURL, "&", " ") }' /> --%>
+		
+		var v_gobackURL = "${requestScope.gobackURL}";
+	//	console.log("확인용 v_gobackURL(replace 전) => " + v_gobackURL);
+		// 확인용 v_gobackURL(replace 전) => /recentList.gw?fromDate=2021-08-26&toDate=2021-11-24&bCategory=0&searchType=subject&searchWord=
+			
+		// ★자바스크립트에서는 replaceAll 이 없으므로 replace를 replaceAll처럼 사용한다.
+		v_gobackURL = v_gobackURL.replace(/&/gi, " "); // global i(대소문자 ignore하고 모든거를 말함) // &를 " "으로 바꿔줌.
+	//	console.log("확인용 v_gobackURL(replace 후) => " + v_gobackURL);
+		// 확인용 v_gobackURL(replace 후) => /recentList.gw?fromDate=2021-08-26 toDate=2021-11-24 bCategory=0 searchType=subject searchWord=
+		
+		location.href = "boardView.gw?boardSeq=${requestScope.boardvo.previousBoardSeq}&fromDate=${requestScope.fromDate}&toDate=${requestScope.toDate}&bCategory=${requestScope.bCategory}&searchType=${requestScope.searchType}&searchWord=${requestScope.searchWord}&gobackURL="+v_gobackURL;
 	}
 	// 다음글로 이동
 	function goNext(){
-		location.href = "boardView.gw?boardSeq=${requestScope.boardvo.nextBoardSeq}";
+		
+		var v_gobackURL = "${requestScope.gobackURL}";
+		v_gobackURL = v_gobackURL.replace(/&/gi, " ");
+		
+		location.href = "boardView.gw?boardSeq=${requestScope.boardvo.nextBoardSeq}&fromDate=${requestScope.fromDate}&toDate=${requestScope.toDate}&bCategory=${requestScope.bCategory}&searchType=${requestScope.searchType}&searchWord=${requestScope.searchWord}&gobackURL="+v_gobackURL;
 	}
 	
 	
@@ -197,10 +217,15 @@
 			</span>
 			
 			<span>
-				<button type="button" class="btn" style="border: solid 1px #dee2e6;">전체목록</button>
-				<button type="button" class="btn btn-secondary">검색된목록</button>
+				<button type="button" class="btn" style="border: solid 1px #dee2e6;" onclick="javascript:location.href='<%= ctxPath%>/recentList.gw'" >전체목록</button>
+				
+				<%-- === &126. 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
+				                                 사용자가 목록보기 버튼을 클릭했을 때 돌아갈 페이지를 알려주기 위해
+				  	                        현재 페이지 주소를 뷰단으로 넘겨준다. --%>
+				<button type="button" class="btn btn-secondary" onclick="javascript:location.href='<%= ctxPath%>${requestScope.gobackURL}'">검색된목록</button>
 			</span>
 		</div>
+		
 		
 		<!-- 원글정보 테이블 -->
 		<table class="table">
@@ -230,6 +255,16 @@
 	<!-- 글1개에 대한 정보 보여주기 종료 -->
 	
 	
+	<!-- &126-1(강사님은 없음). : 이전글, 다음글 보기에 검색조건 추가한 목록을 보도록 하기 위함. -->
+	<%-- 
+	<span>확인용 fromDate : ${requestScope.fromDate}</span><br>
+	<span>확인용 toDate : ${requestScope.toDate}</span><br>
+	<span>확인용 bCategory : ${requestScope.bCategory}</span><br>
+	<span>확인용 searchType : ${requestScope.searchType}</span><br>
+	<span>확인용 searchWord : ${requestScope.searchWord}</span>
+	
+	<span>확인용 gobackURL : ${requestScope.gobackURL}</span>
+	--%>
 	<!-- 이전글, 다음글 보기 -->
 	<table class="mt-3">
 		<c:if test="${not empty requestScope.boardvo.previousBoardSeq}">
