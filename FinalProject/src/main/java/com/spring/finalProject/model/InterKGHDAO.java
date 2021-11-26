@@ -38,6 +38,18 @@ public interface InterKGHDAO {
 	// 첨부파일과 함께 직원 정보 등록하기(insert)
 	int empRegisterWithProfile(EmployeeVO_KGH emp);
 
+	// 기존 비밀번호와 같은지 체크 메서드(select)
+	boolean passwordCheck(Map<String, String> paraMap);
+	
+	// 해당하는 사원의 파일이 존재하는 경우 해당하는 파일명 가져오기(select)
+	String getprofileName(String employeeid);
+	
+	// 해당하는 사원의 정보 update해주기
+	int mypageEnd(EmployeeVO_KGH empvo);
+		
+	// 파일이 없는 사원의 정보 update 해주기
+	int mypageEndNoFile(EmployeeVO_KGH empvo);
+	
 	// 특정 회원에 대한 정보 가져오기(select)
 	Map<String, String> empListEdit(String employeeID);
 
@@ -109,6 +121,14 @@ public interface InterKGHDAO {
 
 	// 삭제하고자 하는 직원의 정보 update(admin, retire, retiredate)
 	int empDelEnd(Map<String, String> paraMap);
+
+	
+
+	
+
+	
+
+	
 
 	
 

@@ -103,6 +103,34 @@ public class KGHService implements InterKGHService {
 	}
 
 	@Override
+	public boolean passwordCheck(Map<String, String> paraMap) {
+		// === 기존 비밀번호와 같은지 체크 메서드(select) === //
+		boolean isExists = dao.passwordCheck(paraMap);
+		return isExists;
+	}
+	
+	@Override
+	public String getprofileName(String employeeid) {
+		// === 해당하는 사원의 파일이 존재하는 경우 해당하는 파일명 가져오기(select) === //
+		String profileName = dao.getprofileName(employeeid);
+		return profileName;
+	}
+	
+	@Override
+	public int mypageEnd(EmployeeVO_KGH empvo) {
+		// === 해당하는 사원의 정보 update해주기 === //
+		int n = dao.mypageEnd(empvo);
+		return n;
+	}
+	
+	@Override
+	public int mypageEndNoFile(EmployeeVO_KGH empvo) {
+		// === 파일이 없는 사원의 정보 update 해주기 === //
+		int n = dao.mypageEndNoFile(empvo);
+		return n;
+	}
+	
+	@Override
 	public Map<String, String> empListEdit(String employeeID) {
 		// === 특정 회원에 대한 정보 가져오기(select) === //
 		Map<String, String> map = dao.empListEdit(employeeID);
@@ -276,8 +304,6 @@ public class KGHService implements InterKGHService {
 		int n = dao.empDelEnd(paraMap);
 		return n;
 	}
-
-	
 
 
 

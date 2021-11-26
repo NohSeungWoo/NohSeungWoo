@@ -129,11 +129,11 @@
 	<!-- === 로그인 처리 메서드(select) === -->
 	<select id="getLogin" parameterType="HashMap" resultType="com.spring.finalProject.model.EmployeeVO_KGH">
 		select employeeid, fk_departNo, fk_positionNo, name, password, mobile, email,
-			   hiredate, retiredate, retire, profilename, orgProfilename, fileSize, 
+			   to_char(hiredate, 'yyyy-mm-dd') AS hiredate, retiredate, retire, profilename, orgProfilename, fileSize, 
 			   salary, dayoff, admin, postcode, address, detailAddress, extraAddress
 		from tbl_employee
 		where retire = 0
-		and email = #{email} 
+		and email = #{email}
 		and password = #{password}
 	</select>
 	
@@ -162,6 +162,50 @@
 		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{employeeid}, #{mobile}, #{email}, sysdate, default, 0, #{profilename}, #{orgProfilename}, #{fileSize}, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
 	</select>
 	
+	<!-- === 기존 비밀번호와 같은지 체크 메서드(select) === -->
+	<select id="passwordCheck" parameterType="HashMap" resultType="String">
+		select password 
+		from tbl_employee
+		where employeeid = #{employeeid} and password = #{password}
+	</select>
+	
+	<!-- === 해당하는 사원의 파일이 존재하는 경우 해당하는 파일명 가져오기(select) === -->
+	<select id="getprofileName" parameterType="String" resultType="String">
+		select profileName
+		from tbl_employee
+		where employeeid = #{employeeid}
+	</select>
+	
+	<!-- === 해당하는 사원의 정보 update해주기 === -->
+	<update id="mypageEnd" parameterType="com.spring.finalProject.model.EmployeeVO_KGH">
+		update tbl_employee set name = #{name},
+								password = #{password},
+								mobile = #{mobile}, 
+								profilename = #{profilename},
+								orgProfilename = #{orgProfilename},
+								fileSize = #{fileSize}, 
+								address = #{address}, 
+								detailAddress = #{detailAddress}, 
+								extraAddress = #{extraAddress}, 
+								postcode = #{postcode}
+		where employeeid = #{employeeid}
+	</update>
+	
+	<!-- === 파일이 없는 사원의 정보 update 해주기 === -->
+	<update id="mypageEndNoFile" parameterType="com.spring.finalProject.model.EmployeeVO_KGH">
+		update tbl_employee set name = #{name},
+								password = #{password},
+								mobile = #{mobile}, 
+								profilename = null,
+								orgProfilename = null,
+								fileSize = null, 
+								address = #{address}, 
+								detailAddress = #{detailAddress}, 
+								extraAddress = #{extraAddress}, 
+								postcode = #{postcode}
+		where employeeid = #{employeeid}
+	</update>
+	
 	<!-- === 특정 회원에 대한 정보 가져오기(select) === -->
 	<resultMap type="HashMap" id="empListEditMap">
 		<result property="employeeid"		column="employeeid" 		javaType="String" />
@@ -174,14 +218,15 @@
 		<result property="positionname"		column="positionname" 		javaType="String" />
 		<result property="hiredate"			column="hiredate" 			javaType="String" />
 		<result property="salary"			column="salary" 			javaType="String" />
+		<result property="profilename"		column="profilename" 		javaType="String" />
 	</resultMap>
 	<select id="empListEdit" parameterType="String" resultMap="empListEditMap">
 		select employeeid, email, name, mobile, departno, departmentname, 
-		       positionno, positionname, hiredate, salary
+		       positionno, positionname, hiredate, salary, profilename
 		from 
 		(
 		    select employeeid, email, name, mobile, D.departno, d.departmentname, P.positionno, P.positionname, 
-		           to_char(hiredate, 'yyyy-mm-dd') AS hiredate, salary
+		           to_char(hiredate, 'yyyy-mm-dd') AS hiredate, salary, profilename
 		    from tbl_employee E
 		    JOIN tbl_department D
 		    ON E.fk_departno = D.departno
@@ -216,7 +261,13 @@
 		                        mobile = #{mobile},
 		                        fk_departno = #{fk_departNo},
 		                        fk_positionno = #{fk_positionNo},
-		                        salary = #{salary}
+		                        salary = #{salary},
+		<if test="fk_positionNo == 2">
+								admin = 1
+		</if>
+		<if test="fk_positionNo != 2">
+								admin = 0
+		</if>
 		where employeeid = #{employeeid}
 	</update>
 	
@@ -416,4 +467,5 @@
 		                        admin = 0
 		where employeeid = #{employeeid}
 	</update>
+	
 </mapper>
