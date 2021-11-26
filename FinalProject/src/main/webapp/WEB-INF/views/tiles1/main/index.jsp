@@ -158,37 +158,37 @@
 		<div class="row mt-4">
 			<div class="col-md-8">
 				<div class="card-columns border rounded-lg px-3 pt-4 pb-3" style="background-color: white;">
-				  	<div class="card bg-primary py-2">
+				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
 				      		<a class="stretched-link" style="color:white" href="<%= ctxPath %>/timemanager.gw"><i style="" class="fas fa-stopwatch fa-2x"></i><br>근태관리</a>
 				    	</div>
 				  	</div>
-				  	<div class="card bg-primary py-2">
+				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
 				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/approval.gw"><i style="" class="far fa-file-alt fa-2x"></i><br>전자결재</a>
 				    	</div>
 				  	</div>
-				  	<div class="card bg-primary py-2">
+				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
 				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/recentList.gw"><i style="" class="fas fa-chalkboard fa-2x"></i><br>게시판</a>
 				    	</div>
 				  	</div>
-				  	<div class="card bg-primary py-2">
+				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
 				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>"><i style="" class="fas fa-user-friends fa-2x"></i><br>조직도</a>
 				    	</div>
 				  	</div>
-			  		<div class="card bg-primary py-2">
+			  		<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
 				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/chat.gw"><i style="" class="far fa-envelope fa-2x"></i><br>웹채팅</a>
 				    	</div>
 				  	</div>
-				  	<div class="card bg-primary py-2">
+				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
 				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>"><i style="" class="far fa-calendar-alt fa-2x"></i><br>일정</a>
 				    	</div>
 				  	</div>
-				  	<div class="card bg-primary py-2">
+				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
 				      		<a class="stretched-link" style="color:white;" href="<%=ctxPath%>/survey.gw"><i style="" class="fas fa-book-reader fa-2x"></i><br>설문조사</a>
 				    	</div>
