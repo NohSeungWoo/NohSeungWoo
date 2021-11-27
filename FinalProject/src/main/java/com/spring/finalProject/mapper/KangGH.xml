@@ -153,13 +153,13 @@
 	<!-- === 직원 정보 등록하기(insert) === -->
 	<select id="empRegister" parameterType="com.spring.finalProject.model.EmployeeVO_KGH" resultType="int">
 		insert into tbl_employee(employeeId, fk_departNo, fk_positionNo, name, password ,mobile, email, hiredate, retiredate, retire, salary, dayoff, admin, address, detailAddress, extraAddress, postcode)
-		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{employeeid}, #{mobile}, #{email}, sysdate, default, 0, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
+		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{password}, #{mobile}, #{email}, sysdate, default, 0, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
 	</select>
 	
 	<!-- === 첨부파일과 함께 직원정보 등록하기(insert) === -->
 	<select id="empRegisterWithProfile" parameterType="com.spring.finalProject.model.EmployeeVO_KGH" resultType="int">
 		insert into tbl_employee(employeeId, fk_departNo, fk_positionNo, name, password ,mobile, email, hiredate, retiredate, retire, profilename, orgProfilename, fileSize, salary, dayoff, admin, address, detailAddress, extraAddress, postcode)
-		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{employeeid}, #{mobile}, #{email}, sysdate, default, 0, #{profilename}, #{orgProfilename}, #{fileSize}, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
+		values(#{employeeid}, #{fk_departNo}, #{fk_positionNo}, #{name}, #{password}, #{mobile}, #{email}, sysdate, default, 0, #{profilename}, #{orgProfilename}, #{fileSize}, #{salary}, 0, 0, #{address}, #{detailAddress}, #{extraAddress}, #{postcode})
 	</select>
 	
 	<!-- === 기존 비밀번호와 같은지 체크 메서드(select) === -->

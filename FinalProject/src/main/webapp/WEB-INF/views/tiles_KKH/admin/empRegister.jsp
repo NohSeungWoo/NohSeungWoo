@@ -242,7 +242,7 @@
 	    	<div class="w-100 my-3"></div>
 	    	
 	    	<div class="col-3 col-lg-1 offset-lg-3">
-		       <label class="float-left">이메일<span class="ml-1" style="color: red;">*</span></label>
+		       <label class="float-right">이메일<span class="ml-1" style="color: red;">*</span></label>
 	    	</div>
 		    <div class="col-7 col-lg-4">
 		       <input type="text" class="form-control mt-1" id="email" placeholder="로그인 시 ID로 사용되는 이메일" name="email" style="width: 100%;">
@@ -257,7 +257,7 @@
 		    <div class="w-100 my-3"></div>
 		    
 		    <div class="col-3 col-lg-1 offset-lg-3">
-		       <label class="float-left">이름<span class="ml-1" style="color: red;">*</span></label>
+		       <label class="float-right">이름<span class="ml-1" style="color: red;">*</span></label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
 		       <input type="text" class="form-control mt-1" id="name" placeholder="이름" name="name" style="width: 100%;">
@@ -265,7 +265,7 @@
 		    <div class="w-100 mb-4"></div>
 		    
 		    <div class="col-3 col-lg-1 offset-lg-3">
-		       <label class="float-left">연락처<span class="ml-1" style="color: red;">*</span></label>
+		       <label class="float-right">연락처<span class="ml-1" style="color: red;">*</span></label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
 		       <input type="text" class="form-control mt-1" id="mobile" placeholder="01012345678" name="mobile" style="width: 100%;">

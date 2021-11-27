@@ -264,7 +264,7 @@ public class KGHController {
 	
 	// === 직원 목록 보기 메서드 === //
 	@RequestMapping(value = "admin/empList.gw")
-	public ModelAndView empList(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView requiredAdmin_empList(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
 		List<Map<String, String>> empList = null;
 		
@@ -439,7 +439,7 @@ public class KGHController {
 	
 	// === 직원등록 페이지 이동 === //
 	@RequestMapping(value = "admin/empRegister.gw")
-	public ModelAndView empRegister(ModelAndView mav) {
+	public ModelAndView requiredAdmin_empRegister(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		mav.setViewName("admin/empRegister.tiles_KKH");
 		
 		return mav;
@@ -581,6 +581,9 @@ public class KGHController {
 		String employeeId = service.selectEmpId(emp.getFk_departNo());
 		emp.setEmployeeid(employeeId);
 
+		// 새로 생성된 사원번호에 암호화처리하여 비밀번호 값에 넣어주기
+		emp.setPassword(Sha256.encrypt(employeeId));
+		
 		int n = 0;
 		
 		if(attach.isEmpty()) {
@@ -618,7 +621,7 @@ public class KGHController {
 	
 	// === 멤버 상세 정보 및 수정 페이지 이동 === //
 	@RequestMapping(value = "admin/empListEdit.gw")
-	public ModelAndView empListEdit(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView requiredAdmin_empListEdit(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
 		String employeeID = request.getParameter("empId");
 		
@@ -635,7 +638,7 @@ public class KGHController {
 	
 	
 	// === 멤버 정보 수정 완료 === //
-	@RequestMapping(value = "/empEditEnd.gw")
+	@RequestMapping(value = "/empEditEnd.gw", method = {RequestMethod.POST})
 	public ModelAndView empEditEnd(ModelAndView mav, HttpServletRequest request, EmployeeVO_KGH emp) {
 		
 		String departno = request.getParameter("selectDepart");
@@ -729,7 +732,7 @@ public class KGHController {
 	
 	// === 직원 통계 차트 보여주는 페이지 === //
 	@RequestMapping(value = "/admin/empChart.gw")
-	public ModelAndView empChart(ModelAndView mav) {
+	public ModelAndView requiredAdmin_empChart(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
 		// === 부서목록 가져오기(select) === //
 		List<DepartmentVO_KGH> departList = service.getDepartmentName();
@@ -982,7 +985,7 @@ public class KGHController {
 	
 	// 부서 관리 페이지 이동
 	@RequestMapping(value = "admin/department.gw")
-	public ModelAndView department(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView requiredAdmin_department(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
 		List<Map<String, String>> empDepartList = null;
 		
@@ -1133,7 +1136,7 @@ public class KGHController {
 	
 	
 	// === 부서 새로 추가하기 메서드 === //
-	@RequestMapping(value = "/newDepartAddEnd.gw")
+	@RequestMapping(value = "/newDepartAddEnd.gw", method = {RequestMethod.POST})
 	public ModelAndView newDepartAddEnd(HttpServletRequest request, ModelAndView mav, DepartmentVO_KGH departVO) {
 		String newDepartname = request.getParameter("newDepartname");
 		String newDepartempID = request.getParameter("newDepartempID");
@@ -1165,7 +1168,7 @@ public class KGHController {
 	
 	
 	// === 특정 부서 삭제하기 메서드 === //
-	@RequestMapping(value = "/departDelEnd.gw")
+	@RequestMapping(value = "/departDelEnd.gw", method = {RequestMethod.POST})
 	public ModelAndView departDelEnd(ModelAndView mav, HttpServletRequest request) {
 		String departno = request.getParameter("delDepart");
 		
@@ -1193,7 +1196,7 @@ public class KGHController {
 	
 	
 	// === 부서명 수정하기 메서드 === //
-	@RequestMapping(value = "/departEditEnd.gw")
+	@RequestMapping(value = "/departEditEnd.gw", method = {RequestMethod.POST})
 	public ModelAndView departEditEnd(ModelAndView mav, HttpServletRequest request) {
 		String departno = request.getParameter("editDepart");
 		String newDepartName = request.getParameter("eidtDepartName");
@@ -1259,7 +1262,7 @@ public class KGHController {
 	
 	// === 관리자 목록 페이지로 이동 === //
 	@RequestMapping(value = "admin/adminList.gw")
-	public ModelAndView adminList(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView requiredAdmin_adminList(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
 		List<Map<String, String>> adminList = null;
 		
@@ -1385,7 +1388,7 @@ public class KGHController {
 	
 	
 	// === 관리자 추가 메서드(update) === //
-	@RequestMapping(value = "/adminAddEnd.gw")
+	@RequestMapping(value = "/adminAddEnd.gw", method = {RequestMethod.POST})
 	public ModelAndView adminAddEnd(ModelAndView mav, HttpServletRequest request) {
 		String employeeid = request.getParameter("adminEmpId");
 		
@@ -1413,7 +1416,7 @@ public class KGHController {
 	
 	
 	// === 관리자 권한 삭제 메서드(update) === //
-	@RequestMapping(value = "/adminDelEnd.gw")
+	@RequestMapping(value = "/adminDelEnd.gw", method = {RequestMethod.POST})
 	public ModelAndView adminDelEnd(ModelAndView mav, HttpServletRequest request) {
 		String employeeid = request.getParameter("adminEmpId");
 		
@@ -1439,12 +1442,9 @@ public class KGHController {
 		return mav;
 	}
 	
-	
-	
-	
 	// === 직원 조직도 페이지 이동 === //
 	@RequestMapping(value = "organization-chart.gw")
-	public ModelAndView organization_chart(ModelAndView mav) {
+	public ModelAndView requiredLogin_organization_chart(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
 		mav.setViewName("organization/organization_chart.tiles_KKH");
 		

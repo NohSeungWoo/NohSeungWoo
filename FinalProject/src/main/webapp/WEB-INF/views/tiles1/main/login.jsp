@@ -1,9 +1,27 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<style type="text/css">
+
+	.findMyInfo:hover {
+		cursor: pointer;
+		text-decoration: underline;
+	}
+
+</style>
+
 <script type="text/javascript">
 
 	$(document).ready(function() {
+		
+		// === 로컬 스토리지에 저장된 이메일 값이 있으면 값 불러오기 === //
+		var saveEmail = localStorage.getItem("saveEmail");
+		
+		if(saveEmail != null) {
+			$("input#email").val(saveEmail);
+			$("input#saveEmailCheckbox").prop("checked", true);
+		}
+		
 		$(".error").hide();
 		
 		// 로그인 버튼 클릭 이벤트
@@ -37,11 +55,22 @@
 			return;	// 종료
 		}
 		
-		var frm = document.loginFrm;
+		// === 이메일 저장 유무 체크 확인 === //
+		if( $("input:checkbox[id=saveEmailCheckbox]").prop("checked") ) {
+			var saveEmail = $("input#email").val();
+			// alert(saveEmail);
+			
+			localStorage.setItem("saveEmail", saveEmail);
+		}
+		else {
+			localStorage.removeItem("saveEmail", saveEmail);
+		}
 		
+		
+		var frm = document.loginFrm;
 		frm.action = "<%= request.getContextPath()%>/loginEnd.gw";
 		frm.method = "POST";
-		frm.submit();
+		//frm.submit();
 		
 	}
 	
@@ -74,8 +103,16 @@
 	        <div class="col-2 col-lg-3"></div>
 	    </div>
 	    <div class="row justify-content-center">
-		    <div class="col-8 col-lg-6">
-		       <button id="loginBtn" class="btn btn-primary btn-lg" style="display:flex; margin: auto; width: 295px; justify-content: center;">로그인</button>
+		    <div class="col-8 col-lg-6 offset-lg-3">
+		       <input id="saveEmailCheckbox" type="checkbox" />
+		       <label id="saveEmail" for="saveEmailCheckbox" class="mr-4" style="font-size: 10pt;">이메일 저장</label>
+		       <span class="findMyInfo" style="font-size: 10pt;">이메일</span><span>.</span>
+		       <span class="findMyInfo" style="font-size: 10pt;">비밀번호 찾기</span>
+		    </div>
+	    </div>
+	    <div class="row justify-content-center mt-1">
+		    <div class="col-11 col-lg-5">
+		       <button id="loginBtn" class="btn btn-primary btn-lg" style="display:flex; margin: auto; width: 70%; justify-content: center;">로그인</button>
 		    </div>
 	    </div>
     </form>
