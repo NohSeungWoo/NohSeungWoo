@@ -18,7 +18,7 @@
 	
 	$(document).ready(function(){
 		
-		setSearchDate(); // 글등록일 검색 부분에 디폴트 값 넣어주기
+		// setSearchDate(); // 글등록일 검색 부분에 디폴트 값 넣어주기
 		
 		// 글목록 중에 글제목에 마우스올리면 효과주기
 		$("span.subject").bind("mouseover",function(event){
@@ -284,7 +284,12 @@
 								<%-- === 댓글쓰기가 없는 게시판 === 	
 									<span class="subject" onclick="goView('${boardvo.boardSeq}');">${boardvo.subject}</span>
 								--%>
-					
+								
+								
+								<c:if test="${boardvo.fk_bCategorySeq == 1}">
+									<span style="color: #3377ff; font-weight: bold;">[공지]</span>&nbsp;
+								</c:if>
+								
 								<%-- === 댓글쓰기가 있는 게시판 시작 === --%>
 								<c:if test="${boardvo.commentCount > 0}">
 									<span class="subject" onclick="goView('${boardvo.boardSeq}');">${boardvo.subject} [<span style="color: red;">${boardvo.commentCount}</span>]</span>
