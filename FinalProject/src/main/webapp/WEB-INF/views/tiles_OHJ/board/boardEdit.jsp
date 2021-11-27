@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" 	uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <% String ctxPath = request.getContextPath(); %>
 
@@ -124,12 +125,24 @@
 		<!-- 글수정/취소 버튼 -->
 		<div align="center" style="margin-bottom: 20px; margin-top: 20px;">
 			<button type="button" class="btn btn-primary btn-lg mr-3" id="btnEdit">글 수정하기</button>
-			<button type="button" class="btn btn-secondary btn-lg" onclick="javascript:location.href='<%= ctxPath%>/boardView.gw?boardSeq=${requestScope.boardvo.boardSeq}'">취소</button>
+			<button type="button" class="btn btn-secondary btn-lg" onclick="javascript:location.href='<%= ctxPath%>/boardView.gw?boardSeq=${requestScope.boardvo.boardSeq}&fromDate=${requestScope.fromDate}&toDate=${requestScope.toDate}&bCategory=${requestScope.bCategory}&searchType=${requestScope.searchType}&searchWord=${requestScope.searchWord}&gobackURL=${requestScope.gobackURL}'">취소</button> <!-- 로그인실패 후 성공했을때 history.back()하면 로그인창이 뜨므로, 글1개 보기 페이지로 이동하도록 바꿔줘야함! -> 글1개보기 자체에 로그인AOP가 걸려있으면 그냥 history.back()해도 된다. -->
 		</div>
 		
-		<!-- boardVO에 자동으로 set해서, board테이블에 update하기 위한 용도 -->
+		<!-- boardVO에 자동으로 set해서, board테이블에 update하기 위한 용도 시작 -->
 		<%-- <input type="hidden" name="fk_employeeId" value="${sessionScope.loginuser.employeeid}" /> --%>
 		<input type="hidden" name="boardSeq" value="${requestScope.boardvo.boardSeq}"/> <!-- 수정해야할 글번호를 where절에 넘겨줌 -->
+		<!-- boardVO에 자동으로 set해서, board테이블에 update하기 위한 용도 끝 -->
+		
+		<!-- 글수정 성공하면 글1개 보여주는 페이지로 가기 위한 용도 시작 -->
+		<input type="hidden" name="fromDate" 	value="${requestScope.fromDate}" />
+		<input type="hidden" name="toDate" 		value="${requestScope.toDate}" />
+		<input type="hidden" name="bCategory" 	value="${requestScope.bCategory}" />
+		<input type="hidden" name="searchType" 	value="${requestScope.searchType}" />
+		<input type="hidden" name="searchWord" 	value="${requestScope.searchWord}" />
+		
+		<%-- <input type="text" name="gobackURL" value='${fn:replace(requestScope.gobackURL, "&", " ")}' /> --%>
+		<input type="hidden" name="gobackURL" 	value="${requestScope.gobackURL}" />
+		<!-- 글수정 성공하면 글1개 보여주는 페이지로 가기 위한 용도 끝 -->
 		
 	</form>
 	

@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <% String ctxPath = request.getContextPath(); %>
 
@@ -59,6 +60,18 @@
 	
 	// === Functional Declaration === //
 	
+	// 글수정시에 검색조건과 gobackURL도 넘겨주기
+	function goEdit(){
+		
+		var frm = document.gobackViewFrm;
+		
+		frm.method = "GET";
+		frm.action = "<%= ctxPath%>/boardEdit.gw";
+		frm.submit();
+		
+	}// end of function goEdit(){}----------------------------------------
+	
+	
 	// 정말로 삭제할것인지 아닌지 물어봄. (=== &77. 나는 강사님과 달리 암호확인페이지 없으니 &77 진행안함. ===)
 	function delConfirm(){
 
@@ -66,7 +79,11 @@
 	//	console.log("확인용 bool => " + bool);
 		
 		if(bool){
-			location.href = "<%= ctxPath%>/boardDel.gw?boardSeq=${requestScope.boardvo.boardSeq}";
+			var frm = document.gobackViewFrm;
+			
+			frm.method = "GET";
+			frm.action = "<%= ctxPath%>/boardDel.gw";
+			frm.submit();
 		}
 		// 확인을 누르면 삭제하고, 취소를 누르면 그냥 냅둠.
 	}// end of function delConfirm(){}---------------------------------------------
@@ -211,7 +228,7 @@
 			<!-- 링크 (답글, 수정, 삭제, 게시글종류 이동) -->
 			<span class="mr-auto d-flex"> <!-- 바깥에 d-flex를 주고, 내부에 오른쪽margin을 auto로 주면 [*     **] 이런식으로 배치된다. -->
 				<a href="#" class="linkStyle mr-2 my-auto">답글</a> <!-- 세로중 가운데에 정렬하기 위해서 바깥에 d-flex를 주고 내부에 y축으로 auto를 줌. -->
-				<a href="<%= ctxPath%>/boardEdit.gw?boardSeq=${requestScope.boardvo.boardSeq}" class="linkStyle mr-2 my-auto">수정</a>
+				<a onclick="goEdit();" class="linkStyle mr-2 my-auto">수정</a>
 				<a id="aStyle" onclick="delConfirm()" class="linkStyle mr-2 my-auto">삭제</a>
 				<a href="#" class="linkStyle my-auto">이동</a>
 			</span>
@@ -222,7 +239,8 @@
 				<%-- === &126. 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
 				                                 사용자가 목록보기 버튼을 클릭했을 때 돌아갈 페이지를 알려주기 위해
 				  	                        현재 페이지 주소를 뷰단으로 넘겨준다. --%>
-				<button type="button" class="btn btn-secondary" onclick="javascript:location.href='<%= ctxPath%>${requestScope.gobackURL}'">검색된목록</button>
+				<c:set var="v_gobackURL" value='${ fn:replace(requestScope.gobackURL, " ", "&") }' />
+				<button type="button" class="btn btn-secondary" onclick="javascript:location.href='<%= ctxPath%>${v_gobackURL}'">검색된목록</button>
 			</span>
 		</div>
 		
@@ -255,16 +273,30 @@
 	<!-- 글1개에 대한 정보 보여주기 종료 -->
 	
 	
+	
+	<form name="gobackViewFrm"> <!-- 글수정,삭제시 넘겨줄값(성공 또는 취소할때 글1개보는페이지로 들어가기위함) -->
+		<input type="hidden" name="boardSeq" value="${requestScope.boardvo.boardSeq}" />
+	
+		<input type="hidden" name="fromDate" value="${requestScope.fromDate}" />
+		<input type="hidden" name="toDate" value="${requestScope.toDate}" />
+		<input type="hidden" name="bCategory" value="${requestScope.bCategory}" />
+		<input type="hidden" name="searchType" value="${requestScope.searchType}" />
+		<input type="hidden" name="searchWord" value="${requestScope.searchWord}" />
+		
+		<input type="hidden" name="gobackURL" value='${fn:replace(requestScope.gobackURL, "&", " ")}' />
+	</form>
+	
+	
 	<!-- &126-1(강사님은 없음). : 이전글, 다음글 보기에 검색조건 추가한 목록을 보도록 하기 위함. -->
-	<%-- 
+<%-- 
 	<span>확인용 fromDate : ${requestScope.fromDate}</span><br>
 	<span>확인용 toDate : ${requestScope.toDate}</span><br>
 	<span>확인용 bCategory : ${requestScope.bCategory}</span><br>
 	<span>확인용 searchType : ${requestScope.searchType}</span><br>
-	<span>확인용 searchWord : ${requestScope.searchWord}</span>
+	<span>확인용 searchWord : ${requestScope.searchWord}</span><br>
 	
-	<span>확인용 gobackURL : ${requestScope.gobackURL}</span>
-	--%>
+	<span>확인용 gobackURL  : ${requestScope.gobackURL}</span>
+--%>
 	<!-- 이전글, 다음글 보기 -->
 	<table class="mt-3">
 		<c:if test="${not empty requestScope.boardvo.previousBoardSeq}">

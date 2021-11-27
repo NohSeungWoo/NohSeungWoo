@@ -86,9 +86,11 @@
 		    
 		    where 1=1
 		
-			<if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+		<!-- 
+			<if test='fromDate == "" and toDate == ""'> 맨처음목록보기에서는 3달전~현재의 글을 보여줌
 			and regDate BETWEEN add_months(sysdate,-3) AND sysdate
-			</if>
+			</if> 
+		-->
 			<if test='fromDate != "" and toDate != ""'>
 			and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
 			</if>

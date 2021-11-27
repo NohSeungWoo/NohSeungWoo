@@ -18,7 +18,7 @@
 	
 	$(document).ready(function(){
 		
-		setSearchDate(); // 글등록일 검색 부분에 디폴트 값 넣어주기
+		// setSearchDate(); // 글등록일 검색 부분에 디폴트 값 넣어주기
 		
 		// 글목록 중에 글제목에 마우스올리면 효과주기
 		$("span.subject").bind("mouseover",function(event){

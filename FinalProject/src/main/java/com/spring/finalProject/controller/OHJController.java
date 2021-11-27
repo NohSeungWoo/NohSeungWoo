@@ -229,12 +229,16 @@ public class OHJController {
 		System.out.println("확인용 searchWord : " + searchWord);
 	*/	
 		if(fromDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
-			fromDate = ""; // 2021-08-23 // '숫자개월수만큼 빼준 날짜인 add_months(sysdate,-3) 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
+			// 2021-08-23 // '숫자개월수만큼 빼준 날짜인 add_months(sysdate,-3) 로 검색'하려했으나 유효성검사 해서 값이 넘어왔다.
 			
-			
+			// 3달전 날짜 구하기
+			fromDate = getDate("threeMonthsAgo");
 		}
 		if(toDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
-			toDate = "";   // 2021-11-23 // 'sysdate 로 검색'하려했으나 유효성검사 했으므로 안해도된다.
+			// 2021-11-23 // 'sysdate 로 검색'하려했으나 유효성검사 해서 값이 넘어왔다.
+			
+			// 오늘 날짜 구하기
+			toDate = getDate("today");
 		}
 		////////////////////////////////////////////////////
 		if(bCategory == null) { // 맨처음 목록보기를 통해 들어가는 경우
@@ -466,13 +470,13 @@ public class OHJController {
 		
 		// get방식으로 장난치게 되면 아래의 boardvo의 결과가 조회되지 않으므로, 해당하는 글이 없다고 알려준다. 따라서 getParameter한 값을 형식에 맞게 처리는 안해줘도된다. 그냥 null인지 아닌지만 판별한다. 글이 보여지지 않으므로 gobackURL이 이상하게 갈 것에 대한 걱정은 안해도 된다.
 		if(fromDate == null) {
-			fromDate = "";
+			fromDate = getDate("threeMonthsAgo");
 		}
 		if(toDate == null) {
-			toDate = "";
+			toDate = getDate("today");
 		}
 		if(bCategory == null) {
-			bCategory = "";
+			bCategory = "0";
 		}
 		if(searchType == null) {
 			searchType = "";
@@ -506,7 +510,8 @@ public class OHJController {
 			// &126-4의 확인용
 			~~~~ 확인용 boardView.gw의 gobackURL => /recentList.gw?fromDate=2021-08-26 toDate=2021-11-24 bCategory=0 searchType=subject searchWord=글 currentShowPageNo=2
 		*/
-		
+	/*	
+		// 이 부분은 그냥 boardView.jsp에서 검색된목록으로가기 버튼을 클릭할때 replace하도록 함.
 		// &126-4(강사님은 없음). : 2021-11-05 블로그 참조해서 gobackURL 페이지 주소 올바르게 하기
 		if(gobackURL != null && gobackURL.contains(" ")) { // gobackURL에 공백(" ")이 포함되었더라면
 			gobackURL = gobackURL.replaceAll(" ", "&");
@@ -514,7 +519,7 @@ public class OHJController {
 		//	System.out.println("~~~~ 확인용 gobackURL => " + gobackURL);
 			// ~~~~ 확인용 gobackURL => /recentList.gw?fromDate=2021-08-26&toDate=2021-11-24&bCategory=0&searchType=subject&searchWord=글&currentShowPageNo=2
 		}
-		
+	*/	
 		mav.addObject("gobackURL", gobackURL);
 		/////////////////////////////////////////////////////////		
 		
@@ -579,12 +584,47 @@ public class OHJController {
 		
 		getCurrentURL(request); // AOP에 gobackURL저장하므로 원래는 이 부분 안했는데, 로그인 실패시에 gobackURL을 저장해야하므로 이 부분을 꼭 해줘야한다! // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
-		// 글 수정해야할 글번호 가져오기
+		
+		// == 글1개 조회와 동일함 시작 ============================================
+		// 수정하고자 하는 글번호 받아오기
 		String boardSeq = request.getParameter("boardSeq");
 		
-		// 글 수정해야할 글1개 내용 가져오기
+		// 수정완료시 페이지 돌아갈때,
+		// 글목록에서 검색되어진 글내용일 경우
+		// 이전글제목, 다음글제목은 검색되어진 결과물내의 이전글, 다음글이 나오도록 하기 위한 것이다. 
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
+		String bCategory = request.getParameter("bCategory");
+		String searchType = request.getParameter("searchType");
+		String searchWord = request.getParameter("searchWord");
+		
+		// 수정해야할 글1개 내용 가져오기
 		Map<String,String> paraMap = new HashMap<>();
 		paraMap.put("boardSeq", boardSeq);
+		
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
+		paraMap.put("bCategory", bCategory);
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		mav.addObject("fromDate", fromDate);
+		mav.addObject("toDate", toDate);
+		mav.addObject("bCategory", bCategory);
+		mav.addObject("searchType", searchType);
+		mav.addObject("searchWord", searchWord);
+		
+		/////////////////////////////////////////////////////////
+		// 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
+		// 사용자가 목록보기 버튼을 클릭했을 때 돌아갈 페이지를 알려주기 위해
+		// 현재 페이지 주소를 뷰단으로 넘겨준다.
+		String gobackURL = request.getParameter("gobackURL");
+	//	System.out.println("~~~~ 확인용 boardView.gw의 gobackURL => " + gobackURL);
+		// ~~~~ 확인용 boardView.gw의 gobackURL => /recentList.gw?fromDate=2021-08-26 toDate=2021-11-24 bCategory=0 searchType=subject searchWord=글 currentShowPageNo=2
+		
+		mav.addObject("gobackURL", gobackURL);
+		/////////////////////////////////////////////////////////	
+		// == 글1개 조회와 동일함 끝 ============================================
 		
 		BoardVO_OHJ boardvo = service.getViewWithNoAddCount(paraMap);
 		
@@ -598,7 +638,7 @@ public class OHJController {
 		
 		if( !loginuser.getEmployeeid().equals(boardvo.getFk_employeeId()) ) {
 			String message = "다른 사용자의 글은 수정이 불가합니다.";
-			String loc = request.getContextPath()+"/boardView.gw?boardSeq="+boardvo.getBoardSeq(); // 로그인실패 후 성공했을때 history.back()하면 로그인창이 뜨므로, 글1개 보기 페이지로 이동
+			String loc = request.getContextPath()+"/boardView.gw?boardSeq="+boardvo.getBoardSeq()+"&fromDate="+fromDate+"&toDate="+toDate+"&bCategory="+bCategory+"&searchType="+searchType+"&searchWord="+searchWord+"&gobackURL="+gobackURL; // 로그인실패 후 성공했을때 history.back()하면 로그인창이 뜨므로, 글1개 보기 페이지로 이동하도록 바꿔줘야함!
 			
 			mav.addObject("message", message);
 			mav.addObject("loc", loc);
@@ -634,7 +674,28 @@ public class OHJController {
 			mav.addObject("message", "글 수정 실패..");
 		}
 		
-		mav.addObject("loc", request.getContextPath()+"/boardView.gw?boardSeq="+boardvo.getBoardSeq());		
+		// == 글1개 조회와 동일함 시작 ============================================
+		// 수정완료시 페이지 돌아갈때,
+		// 글목록에서 검색되어진 글내용일 경우
+		// 이전글제목, 다음글제목은 검색되어진 결과물내의 이전글, 다음글이 나오도록 하기 위한 것이다. 
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
+		String bCategory = request.getParameter("bCategory");
+		String searchType = request.getParameter("searchType");
+		String searchWord = request.getParameter("searchWord");
+		
+		/////////////////////////////////////////////////////////
+		// 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
+		// 사용자가 목록보기 버튼을 클릭했을 때 돌아갈 페이지를 알려주기 위해
+		// 현재 페이지 주소를 뷰단으로 넘겨준다.
+		String gobackURL = request.getParameter("gobackURL");
+	//	System.out.println("~~~~ 확인용 boardView.gw의 gobackURL => " + gobackURL);
+		// ~~~~ 확인용 boardView.gw의 gobackURL => /recentList.gw?fromDate=2021-08-26 toDate=2021-11-24 bCategory=0 searchType=subject searchWord=글 currentShowPageNo=2
+		
+		/////////////////////////////////////////////////////////	
+		// == 글1개 조회와 동일함 끝 ============================================
+		
+		mav.addObject("loc", request.getContextPath()+"/boardView.gw?boardSeq="+boardvo.getBoardSeq()+"&fromDate="+fromDate+"&toDate="+toDate+"&bCategory="+bCategory+"&searchType="+searchType+"&searchWord="+searchWord+"&gobackURL="+gobackURL);		
 		
 		mav.setViewName("msg");
 		
@@ -648,12 +709,47 @@ public class OHJController {
 		
 		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
-		// 글 삭제해야할 글번호 가져오기
+		
+		// == 글1개 조회와 동일함 시작 ============================================
+		// 삭제하고자 하는 글번호 받아오기
 		String boardSeq = request.getParameter("boardSeq");
 		
-		// 삭제할 글 1개 내용을 가져와서, 글쓴이를 비교해서 다른 사람이 쓴 글은 삭제가 불가하도록 해야 한다.
+		// 삭제완료시 페이지 돌아갈때,
+		// 글목록에서 검색되어진 글내용일 경우
+		// 이전글제목, 다음글제목은 검색되어진 결과물내의 이전글, 다음글이 나오도록 하기 위한 것이다. 
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
+		String bCategory = request.getParameter("bCategory");
+		String searchType = request.getParameter("searchType");
+		String searchWord = request.getParameter("searchWord");
+		
+		// 삭제해야할 글1개 내용 가져와서, 글쓴이를 비교해서 다른 사람이 쓴 글은 삭제가 불가하도록 해야 한다.
 		Map<String,String> paraMap = new HashMap<>();
 		paraMap.put("boardSeq", boardSeq);
+		
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
+		paraMap.put("bCategory", bCategory);
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		mav.addObject("fromDate", fromDate);
+		mav.addObject("toDate", toDate);
+		mav.addObject("bCategory", bCategory);
+		mav.addObject("searchType", searchType);
+		mav.addObject("searchWord", searchWord);
+		
+		/////////////////////////////////////////////////////////
+		// 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
+		// 사용자가 목록보기 버튼을 클릭했을 때 돌아갈 페이지를 알려주기 위해
+		// 현재 페이지 주소를 뷰단으로 넘겨준다.
+		String gobackURL = request.getParameter("gobackURL");
+	//	System.out.println("~~~~ 확인용 boardView.gw의 gobackURL => " + gobackURL);
+		// ~~~~ 확인용 boardView.gw의 gobackURL => /recentList.gw?fromDate=2021-08-26 toDate=2021-11-24 bCategory=0 searchType=subject searchWord=글 currentShowPageNo=2
+		
+		mav.addObject("gobackURL", gobackURL);
+		/////////////////////////////////////////////////////////	
+		// == 글1개 조회와 동일함 끝 ============================================
 		
 		BoardVO_OHJ boardvo = service.getViewWithNoAddCount(paraMap);
 		// 글조회수 증가는 없고 단순히 글1개 조회
@@ -663,7 +759,7 @@ public class OHJController {
 		
 		if( !loginuser.getEmployeeid().equals(boardvo.getFk_employeeId()) ) {
 			String message = "다른 사용자의 글은 삭제가 불가합니다.";
-			String loc = request.getContextPath()+"/boardView.gw?boardSeq="+boardvo.getBoardSeq(); // 로그인실패 후 성공했을때 history.back()하면 로그인창이 뜨므로, 글1개 보기 페이지로 이동
+			String loc = request.getContextPath()+"/boardView.gw?boardSeq="+boardvo.getBoardSeq()+"&fromDate="+fromDate+"&toDate="+toDate+"&bCategory="+bCategory+"&searchType="+searchType+"&searchWord="+searchWord+"&gobackURL="+gobackURL; // 로그인실패 후 성공했을때 history.back()하면 로그인창이 뜨므로, 글1개 보기 페이지로 이동하도록 바꿔줘야함!
 			
 			mav.addObject("message", message);
 			mav.addObject("loc", loc);
@@ -779,6 +875,39 @@ public class OHJController {
 		session.setAttribute("goBackURL", MyUtil_KGH.getCurrentURL(request));
 	}
 	////////////////////////////////////////////////////////////////////////////////
+	// === fromDate와 toDate를 각각 디폴트인 3달전날짜, 오늘날짜로 구해주는 메소드 ===
+	public String getDate(String requiredTime) { // threeMonthsAgo 또는 today // requiredTime에는 3달전인지, 지금인지 알려주는 값이 들어옴.
+		
+		/* 
+		    Date 클래스 보다 조금더 향상시켜서 나온 것이 Calendar 클래스이다.
+		        간단한 날짜표현에는 Date 클래스를 사용하는 것이 더 나을 수 있으며,
+		        두개 날짜사이의 날짜연산을 할 경우에는 메소드기능이 더 많이 추가된 
+		    Calendar 클래스를 사용하는 것이 나을 수 있다.
+		*/ 
+		Calendar currentDate = Calendar.getInstance(); // 현재날짜와 시간
+		
+		if("threeMonthsAgo".equals(requiredTime)) {
+			currentDate.add(Calendar.MONTH, -3); // 3달 전 날짜와 시간
+		}
+		
+		int year = currentDate.get(Calendar.YEAR);
+		
+		int month = currentDate.get(Calendar.MONTH)+1; // 1~12
+		String strMonth = (month<10)?"0"+month:String.valueOf(month); // 01~12
+		
+		// 아래의 Calendar.DATE 와 Calendar.DAY_OF_MONTH 는 같은 것이다.
+	    int day = currentDate.get(Calendar.DATE);
+	    String strDay = day<10?"0"+day:String.valueOf(day);
+	    
+	    String date = year + "-" + strMonth + "-" + strDay;
+	//  System.out.println("확인용(requiredTime 날짜) : " + date);
+	    /*
+		    확인용(requiredTime 날짜) : 2021-08-27
+		    확인용(requiredTime 날짜) : 2021-11-27
+	    */
+	    
+	    return date;
+	}
 	
 
 	
