@@ -3,11 +3,29 @@ package com.spring.finalProject.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.board.model.BoardCategoryVO_OHJ;
 import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
 
 public interface InterOHJService {
 
+	// 카테고리명 중복체크하기(Ajax 로 처리)
+	boolean cNameDuplicateCheck(String bCategoryName);
+	
+	// 게시판 만들기
+	int makeBCategory(BoardCategoryVO_OHJ bCategoryvo);
+	
+	// 게시판 종류 목록 가져오기(Ajax 로 처리)
+	List<BoardCategoryVO_OHJ> viewCategoryList();
+		
+		
+		
+		
+		
+		
+		
+		
+	
 	// 글쓰기(파일첨부가 없는 글쓰기)
 	int boardWrite(BoardVO_OHJ boardvo);
 
@@ -40,7 +58,14 @@ public interface InterOHJService {
 
 	// 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것)
 	List<BoardVO_OHJ> boardListSearchWithPaging(Map<String, String> paraMap);
+
 	
+
+
+
+
+	
+
 	
 	
 	

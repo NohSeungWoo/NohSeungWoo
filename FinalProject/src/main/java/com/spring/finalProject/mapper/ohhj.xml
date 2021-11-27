@@ -6,6 +6,31 @@
 <!-- ==== #29. 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="ohhj"> <!-- ohhj는 고유해야하는 식별자이므로, hr.xml에도 namespace명을 똑같이하게되면 충돌난다. => 보통 파일명과 일치시킨다. -->
 
+	<!-- === 카테고리명 중복체크하기(Ajax 로 처리) === -->
+	<select id="cNameDuplicateCheck" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_boardCategory
+		where bCategoryName = #{bCategoryName}
+	</select>
+
+	<!-- === 게시판 만들기 === -->
+	<insert id="makeBCategory" parameterType="com.spring.board.model.BoardCategoryVO_OHJ">
+		insert into tbl_boardCategory(bcategoryseq,bcategoryname,usertype,writeaccess,commentaccess)
+		values(tbl_boardCategory_bCategorySeq.nextval, #{bCategoryName}, #{userType}, #{writeAccess}, #{commentAccess})
+	</insert>
+
+	<!-- === 게시판 종류 목록 가져오기(Ajax 로 처리) === -->
+	<select id="viewCategoryList" resultType="com.spring.board.model.BoardCategoryVO_OHJ">
+		select bcategoryseq, bcategoryname, usertype, writeaccess, commentaccess 
+		from tbl_boardCategory
+	</select>	
+
+
+
+	
+
+
+
 	
 	<!-- === &57. 글쓰기(파일첨부가 없는 글쓰기) === -->
 	<insert id="boardWrite" parameterType="com.spring.board.model.BoardVO_OHJ">

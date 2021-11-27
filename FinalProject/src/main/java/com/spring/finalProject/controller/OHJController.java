@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.board.model.BoardCategoryVO_OHJ;
 import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
 import com.spring.finalProject.common.MyUtil_KGH;
@@ -97,6 +98,91 @@ public class OHJController {
 	/////////////////////////////////////////////////////////////////////////////////
 						// 기본셋팅 끝이다. 여기서부터 개발 시작이다! //
 	/////////////////////////////////////////////////////////////////////////////////
+	
+	// === 게시판 만들기 폼페이지 요청 === //
+	@RequestMapping(value="/makeBCategory.gw")
+	public ModelAndView makeBCategory(ModelAndView mav) { // 뿌잉 : requiredLogin추가하기!
+		
+	//	getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
+		
+		mav.setViewName("board/makeBCategory.tiles_OHJ");
+		
+		return mav;
+	}
+	
+	
+	// === 카테고리명 중복체크하기(Ajax 로 처리) === //
+	@ResponseBody
+	@RequestMapping(value="/cNameDuplicateCheck.gw", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	public String cNameDuplicateCheck(HttpServletRequest request) {
+		
+		String bCategoryName = request.getParameter("bCategoryName");
+	//	System.out.println(">>> 확인용 bCategoryName => " + bCategoryName);
+		
+		boolean isExists = service.cNameDuplicateCheck(bCategoryName);
+		
+		JSONObject jsonObj = new JSONObject(); // {}
+		jsonObj.put("isExists", isExists); // {"isExists":true} 또는 {"isExists":false}
+			
+		return jsonObj.toString();
+	}
+	
+	
+	// === 게시판 만들기 완료 요청 === //
+	@RequestMapping(value="/makeBCategoryEnd.gw", method= {RequestMethod.POST})
+	public ModelAndView makeBCategoryEnd(ModelAndView mav, BoardCategoryVO_OHJ bCategoryvo, HttpServletRequest request) {
+		
+	//	System.out.println("체크된 라디오 값만 넘어오는지 확인용 userType : " + bCategoryvo.getUserType());
+		// 체크된 라디오 값만 넘어오는지 확인용 userType : secret
+		
+		int n = service.makeBCategory(bCategoryvo);
+		
+		String message = "";
+		
+		if(n==1) {
+			message = bCategoryvo.getbCategoryName() + "이(가) 생성되었습니다.";
+		}
+		else {
+			message = bCategoryvo.getbCategoryName() + "이(가) 생성이 실패되었습니다.";
+		}
+		
+		String loc = request.getContextPath()+"/recentList.gw";
+		
+		mav.addObject("message", message);
+		mav.addObject("loc", loc);
+		mav.setViewName("msg");
+		
+		return mav;
+	}
+	
+	
+	// === 게시판 종류 목록 가져오기(Ajax 로 처리) === //
+	@ResponseBody
+	@RequestMapping(value="/viewCategoryList.gw", produces="text/plain;charset=UTF-8")
+	public String viewCategoryList() {
+		
+		List<BoardCategoryVO_OHJ> bcategoryList = service.viewCategoryList();
+		
+		JSONArray jsonArr = new JSONArray(); // []
+		
+		if(bcategoryList != null) {
+			for(BoardCategoryVO_OHJ bCategoryvo : bcategoryList) {
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("bCategoryName", bCategoryvo.getbCategoryName());
+				
+				jsonArr.put(jsonObj);
+			}
+		}
+		
+		return jsonArr.toString();
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	// === &51. 게시판 글쓰기 폼페이지 요청 === //

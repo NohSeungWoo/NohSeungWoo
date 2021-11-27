@@ -34,6 +34,30 @@
 
 	$(document).ready(function() {
 		
+		// 문서로딩되자마자, 전사게시판 내부의 li에 게시판 종류 ajax로 넣어줌.
+		$.ajax({ // type은 안쓰면 기본이 get방식이고, data는 where절에 넘겨줄거 없으니 생략함.
+			url:"<%= ctxPath%>/viewCategoryList.gw",
+		//	type:"GET",
+			dataType:"JSON",
+			success:function(json){
+				var html = "";
+				
+				if(json.length > 0){
+					$.each(json,function(index, item){
+						html += "<li>";
+						html += "<a href='#'>"+item.bCategoryName+"</a>";
+						html += "</li>";
+					});
+				}
+				
+				$("ul#allCompany").html(html);
+				
+			},
+			error: function(request, status, error){
+            	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		});
+		
 	}); // end of ready(); ---------------------------------
 	
 	
@@ -60,21 +84,13 @@
 			<!-- .collapse 은 내용물을 숨기는 것임. -->
 			<a href="#allCompany" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action dropdown-toggle">전사 게시판</a> <!-- dropdown-toggle을 통해 ▽ 모양 보여줌 --> <!-- 원래는 data-target="#allCompany"랑 연결하는데, 여기선 href로 연결해줌. -->
 				<ul class="collapse sidesubmenu" id="allCompany" >
-		            <li>
-		                <a href="#">공지사항</a>
-		            </li>
-		            <li>
-		                <a href="#">자유게시판</a>
-		            </li>
-		            <li>
-		                <a href="#">건의사항</a>
-		            </li>
+		            <!-- ajax로부터 게시판목록 가져옴 -->
 		        </ul>
-		      
-			<a href="#" class="list-group-item list-group-item-action">그룹 게시판</a>
+		    <!--   
 			<a href="#" class="list-group-item list-group-item-action">환경설정</a>
-			<a href="#" class="list-group-item list-group-item-action">게시판 만들기</a>
-			<a href="#" class="list-group-item list-group-item-action">게시판 관리</a>
+			 -->
+			<a href="<%= ctxPath%>/makeBCategory.gw" class="list-group-item list-group-item-action">게시판 만들기</a>
+			<!-- <a href="#" class="list-group-item list-group-item-action">게시판 관리</a> -->
 	
 		</div>
 	</nav>

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.spring.board.model.BoardCategoryVO_OHJ;
 import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
 import com.spring.finalProject.model.InterOHJDAO;
@@ -29,6 +30,41 @@ public class OHJService implements InterOHJService {
 	// 기본셋팅 끝이다. 여기서부터 개발 시작이다! //
 	/////////////////////////////////////////////////////////////////////////////////
 		
+	// 카테고리명 중복체크하기(Ajax 로 처리)
+	@Override
+	public boolean cNameDuplicateCheck(String bCategoryName) {
+		boolean isExists = false;
+		
+		int n = dao.cNameDuplicateCheck(bCategoryName);
+		
+		if(n==1) {
+			isExists = true;
+		}
+		
+		return isExists;
+	}
+	
+	// === 게시판 만들기 === //
+	@Override
+	public int makeBCategory(BoardCategoryVO_OHJ bCategoryvo) {
+		int n = dao.makeBCategory(bCategoryvo);
+		return n;
+	}
+	
+	// === 게시판 종류 목록 가져오기(Ajax 로 처리) === //
+	@Override
+	public List<BoardCategoryVO_OHJ> viewCategoryList() {
+		List<BoardCategoryVO_OHJ> bcategoryList = dao.viewCategoryList();
+		return bcategoryList;
+	}
+		
+		
+		
+		
+		
+		
+	
+	
 	
 	// === &55. 글쓰기(파일첨부가 없는 글쓰기) === //
 	@Override
@@ -143,6 +179,13 @@ public class OHJService implements InterOHJService {
 		List<BoardVO_OHJ> boardList = dao.boardListSearchWithPaging(paraMap);
 		return boardList;
 	}
+
+	
+
+
+	
+
+	
 	
 
 	
