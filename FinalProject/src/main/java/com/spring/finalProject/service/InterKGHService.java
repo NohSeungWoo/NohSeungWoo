@@ -30,6 +30,15 @@ public interface InterKGHService {
 	// 로그인 처리 메서드(select)
 	EmployeeVO_KGH getLogin(Map<String, String> paraMap);
 
+	// 이메일 찾기 완료 메서드(select)
+	String emailFindEnd(Map<String, String> paraMap);
+	
+	// 해당하는 이메일과 이름에 존재하는 사원 정보 찾기(select)
+	boolean sendCodeEmail(Map<String, String> paraMap);
+	
+	// === 새비밀번호 업데이트 메서드(update) === //
+	int newPasswordUpdate(Map<String, String> paraMap);
+	
 	// 이메일 중복 여부 검사하기(select)
 	boolean emailDuplicateCheck(String email);
 
@@ -110,6 +119,10 @@ public interface InterKGHService {
 
 	// === 삭제하고자 하는 직원의 정보 update(admin, retire, retiredate) === //
 	int empDelEnd(Map<String, String> paraMap);
+	
+	
+
+	
 
 	
 

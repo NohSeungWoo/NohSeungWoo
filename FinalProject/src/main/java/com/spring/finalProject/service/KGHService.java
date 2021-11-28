@@ -74,6 +74,27 @@ public class KGHService implements InterKGHService {
 	}
 
 	@Override
+	public String emailFindEnd(Map<String, String> paraMap) {
+		// === 이메일 찾기 완료 메서드(select) === //
+		String email = dao.emailFindEnd(paraMap);
+		return email;
+	}
+	
+	@Override
+	public boolean sendCodeEmail(Map<String, String> paraMap) {
+		// === 해당하는 이메일과 이름에 존재하는 사원 정보 찾기(select) === //
+		boolean isExists = dao.sendCodeEmail(paraMap);
+		return isExists;
+	}
+
+	@Override
+	public int newPasswordUpdate(Map<String, String> paraMap) {
+		// === 새비밀번호 업데이트 메서드(update) === //
+		int n = dao.newPasswordUpdate(paraMap);
+		return n;
+	}
+	
+	@Override
 	public boolean emailDuplicateCheck(String email) {
 		// === 이메일 중복 여부 검사하기(select) === //
 		boolean isExists = dao.emailDuplicateCheck(email);
@@ -305,6 +326,7 @@ public class KGHService implements InterKGHService {
 		return n;
 	}
 
+	
 
-
+	
 }

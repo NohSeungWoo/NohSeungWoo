@@ -31,6 +31,36 @@
 			
 		});// end of $("button#loginBtn").click(function() {}
 		
+		
+		// === 이메일 찾기 클릭 이벤트 === //
+		$("span#findMyEmail").click(function() {
+			
+			var url = "<%= request.getContextPath()%>/emailFind.gw;"
+			
+			var pop_width = 500;
+		    var pop_height = 400;
+		    var pop_left = Math.ceil( (window.screen.width - pop_width) / 2 ); 		// 정수로 형변환
+		    var pop_top  = Math.ceil( (window.screen.height - pop_height) / 2 );	// 정수로 형변환
+			
+		    window.open(url, "emailFind", 
+		    			"left=" + (pop_left-100) + ", top=" + (pop_top-100) + ", width=" + pop_width + ", height=" + pop_height);
+			
+		});// end of $("span#findMyEmail").click(function() { })
+		
+		
+		// === 비밀번호 찾기 팝업창 이벤트 === //
+		$("span#findMyPassword").click(function() {
+			var url = "<%= request.getContextPath()%>/passwordFind.gw;"
+				
+			var pop_width = 500;
+		    var pop_height = 550;
+		    var pop_left = Math.ceil( (window.screen.width - pop_width) / 2 ); 		// 정수로 형변환
+		    var pop_top  = Math.ceil( (window.screen.height - pop_height) / 2 );	// 정수로 형변환
+			
+		    window.open(url, "emailFind", 
+		    			"left=" + (pop_left-100) + ", top=" + (pop_top-100) + ", width=" + pop_width + ", height=" + pop_height);
+		});
+		
 	});// end of $(document).ready(function() {}
 
 	
@@ -70,7 +100,7 @@
 		var frm = document.loginFrm;
 		frm.action = "<%= request.getContextPath()%>/loginEnd.gw";
 		frm.method = "POST";
-		//frm.submit();
+		frm.submit();
 		
 	}
 	
@@ -106,8 +136,8 @@
 		    <div class="col-8 col-lg-6 offset-lg-3">
 		       <input id="saveEmailCheckbox" type="checkbox" />
 		       <label id="saveEmail" for="saveEmailCheckbox" class="mr-4" style="font-size: 10pt;">이메일 저장</label>
-		       <span class="findMyInfo" style="font-size: 10pt;">이메일</span><span>.</span>
-		       <span class="findMyInfo" style="font-size: 10pt;">비밀번호 찾기</span>
+		       <span class="findMyInfo mr-1" id="findMyEmail" style="font-size: 10pt;">이메일</span>&middot;
+		       <span class="findMyInfo" id="findMyPassword" style="font-size: 10pt;">비밀번호 찾기</span>
 		    </div>
 	    </div>
 	    <div class="row justify-content-center mt-1">

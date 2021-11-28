@@ -137,6 +137,26 @@
 		and password = #{password}
 	</select>
 	
+	<!-- === 이메일 찾기 완료 메서드(select) === -->
+	<select id="emailFindEnd" parameterType="HashMap" resultType="String">
+		select employeeid
+		from tbl_employee
+		where email = #{email} and name = #{name}
+	</select>
+	
+	<!-- === 해당하는 이메일과 이름에 존재하는 사원 정보 찾기(select) === -->
+	<select id="sendCodeEmail" parameterType="HashMap" resultType="String">
+		select employeeid
+		from tbl_employee
+		where email = #{email} and name = #{name}
+	</select>
+	
+	<!-- === 새비밀번호 업데이트 메서드(update) === -->
+	<update id="newPasswordUpdate" parameterType="HashMap">
+		update tbl_employee set password = #{newPassword}
+		where email = #{email} and name = #{name}
+	</update>
+	
 	<!-- === 이메일 중복 여부 검사하기(select) === -->
 	<select id="emailDuplicateCheck" parameterType="String" resultType="String">
 		select email

@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.finalProject.common.FileManager;
+import com.spring.finalProject.common.GoogleMail_KGH;
 import com.spring.finalProject.common.MyUtil_KGH;
 import com.spring.finalProject.common.Sha256;
 import com.spring.finalProject.model.DepartmentVO_KGH;
@@ -145,6 +146,183 @@ public class KGHController {
 	   mav.setViewName("msg");
 	   
 	   return mav;
+	}
+	
+	
+	// === 이메일 찾기 팝업창 메서드 === //
+	@RequestMapping(value = "emailFind.gw")
+	public ModelAndView emailFind(ModelAndView mav) {
+		mav.setViewName("tiles1/main/emailFind");
+		return mav;
+	}
+	
+	
+	// === 이메일 찾기 완료 메서드 === //
+	@ResponseBody
+	@RequestMapping(value = "/emailFindEnd.gw", method = {RequestMethod.POST}, produces = "text/plain;charset=UTF-8")
+	public String emailFindEnd(HttpServletRequest request) {
+		String employeeid = request.getParameter("employeeid");
+		String name = request.getParameter("name");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("employeeid", employeeid);
+		paraMap.put("name", name);
+		
+		// === 이메일 찾기 완료 메서드(select) === //
+		String email = service.emailFindEnd(paraMap);
+		
+		JSONObject jsonObj = new JSONObject(); // {}
+		jsonObj.put("email", email);
+		
+		String json = jsonObj.toString();
+		
+		return json;
+	}
+	
+	
+	// === 비밀번호 찾기 팝업창 메서드 === //
+	@RequestMapping(value = "passwordFind.gw")
+	public ModelAndView passwordFind(ModelAndView mav) {
+		mav.setViewName("tiles1/main/passwordFind");
+		return mav;
+	}
+
+	
+	// === 비밀번호 찾기 인증번호 발송 메서드 === //
+	@ResponseBody
+	@RequestMapping(value = "/sendCodeEmail.gw", method = {RequestMethod.POST}, produces = "text/plain;charset=UTF-8")
+	public String sendCodeEmail(HttpServletRequest request) {
+		String email = request.getParameter("email");
+		String name = request.getParameter("name");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("email", email);
+		paraMap.put("name", name);
+		
+		// === 해당하는 이메일과 이름에 존재하는 사원 정보 찾기(select) === //
+		boolean isExists = service.sendCodeEmail(paraMap);
+		
+		boolean sendEmail = false;
+		
+		if(isExists) {
+			// 회원으로 존재하는 경우
+			
+			// 인증키를 랜덤하게 생성하도록 한다.
+			Random rnd = new Random();
+			
+			String certificationCode = "";
+			// 인증키는 영문소문자 5글자 + 숫자 7글자 로 만들겠습니다.
+			// 예: certificationCode = awkfk7274003
+			
+			char randchar = ' ';
+			for(int i=0; i < 5; i++) {
+			/*
+			    min 부터 max 사이의 값으로 랜덤한 정수를 얻으려면 
+			    int rndnum = rnd.nextInt(max - min + 1) + min;
+			       영문 소문자 'a' 부터 'z' 까지 랜덤하게 1개를 만든다.  	
+			 */		
+				
+			randchar = (char) (rnd.nextInt('z' - 'a' + 1) + 'a');
+			certificationCode += randchar;
+			
+			}
+			
+			int randnum = 0;
+			for(int i=0; i < 5; i++) {
+				randnum = rnd.nextInt(9 - 0 + 1) + 0;
+				certificationCode += randnum;
+			}
+			
+			// 랜덤하게 생성한 인증코드(certificationCode)를 비밀번호 찾기를 하고자 하는 사용자의 email로 전송시킨다.
+			GoogleMail_KGH mail = new GoogleMail_KGH();
+			
+			try {
+				mail.sendmail(email, certificationCode);
+				sendEmail = true; // 메일 전송 성공했음을 기록함.
+				
+				// 세션불러오기
+				HttpSession session = request.getSession();
+				session.setAttribute("certificationCode", certificationCode);
+				// 발급한 인증코드를 세션에 저장시킴.
+				
+			} catch(Exception e) { // 메일 전송이 실패한 경우
+				e.printStackTrace();
+				sendEmail = false; // 메일 전송 실패했음을 기록함.
+			}
+		}
+
+		JSONObject jsonObj = new JSONObject(); // {}
+		jsonObj.put("sendEmail", sendEmail);
+		
+		String json = jsonObj.toString();
+		
+		return json;
+	}
+	
+	
+	// === 인증번호 체크 메서드 === ///
+	@ResponseBody
+	@RequestMapping(value = "/checkCode.gw", method = {RequestMethod.POST}, produces = "text/plain;charset=UTF-8")
+	public String checkCode(HttpServletRequest request) {
+		// 입력한 인증번호 값 가져오기
+		String codeNo = request.getParameter("codeNo");
+		
+		// 세션불러오기
+		HttpSession session = request.getSession();
+		String certificationCode = (String)session.getAttribute("certificationCode");
+		
+		String message = "";
+		boolean isSuccess = false;
+		
+		if(certificationCode.equals(codeNo)) {
+			message = "인증 성공되었습니다.";
+			isSuccess = true;
+		}
+		else {
+			message = "인증코드가 일치하지 않습니다. 다시 시도하세요.";
+			isSuccess = false;
+		}
+		
+		JSONObject jsonObj = new JSONObject(); // {}
+		jsonObj.put("message", message);
+		jsonObj.put("isSuccess", isSuccess);
+		
+		String json = jsonObj.toString();
+		
+		return json;
+	}
+	
+	
+	// === 새비밀번호 업데이트 메서드(update) === //
+	@ResponseBody
+	@RequestMapping(value = "/newPasswordUpdate.gw", method = {RequestMethod.POST})
+	public String newPasswordUpdate(HttpServletRequest request) {
+		String email = request.getParameter("email");
+		String name = request.getParameter("name");
+		String newPassword = request.getParameter("newPassword");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("email", email);
+		paraMap.put("name", name);
+		paraMap.put("newPassword", Sha256.encrypt(newPassword));
+		
+		int n = service.newPasswordUpdate(paraMap);
+		
+		boolean isSuccess = false;
+		JSONObject jsonObj = new JSONObject(); // {}
+		
+		if(n == 1) {
+			isSuccess = true;
+			jsonObj.put("isSuccess", isSuccess);
+		}
+		else {
+			isSuccess = false;
+			jsonObj.put("isSuccess", isSuccess);
+		}
+		
+		String json = jsonObj.toString();
+		
+		return json;
 	}
 	
 	
