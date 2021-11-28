@@ -21,6 +21,27 @@
 	
 	$(document).ready(function(){
 		
+		<%-- === &167. 스마트 에디터 구현 시작 === --%>
+		//전역변수
+		var obj = [];
+		
+		//스마트에디터 프레임생성
+		nhn.husky.EZCreator.createInIFrame({
+		    oAppRef: obj,
+		    elPlaceHolder: "content",
+		    sSkinURI: "<%= ctxPath%>/resources/smarteditor/SmartEditor2Skin.html",
+		    htParams : {
+		        // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+		        bUseToolbar : true,            
+		        // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+		        bUseVerticalResizer : true,    
+		        // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+		        bUseModeChanger : true,
+		    }
+		});
+		<%-- === 스마트 에디터 구현 끝 === --%>
+		
+		
 		// input태그에 글제목 한글자씩 입력할때마다, 총글자수 나타내기
 		$("input#subject").keyup(function(){
 			
@@ -40,8 +61,15 @@
 			$("span#subjectLen").text(subjectLen);
 		}); // end of $("input#subject").keyup(function(){})------------
 		
+		
 		// 글쓰기 버튼 누르면, 유효성 검사 후 전송함.
 		$("button#btnWrite").click(function(){
+			
+			<%-- === 스마트 에디터 구현 시작 === --%>
+			//id가 content인 textarea에 에디터에서 대입
+			 obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+			<%-- === 스마트 에디터 구현 끝 === --%>
+			
 			
 			// 게시판 종류 유효성 검사
 			var boardTypeVal = $("select#boardType").val();
@@ -62,11 +90,46 @@
 			
 			
 			// 글내용 유효성 검사(스마트에디터 사용 안할시)
+		<%-- 
 			var contentVal = $("textarea#content").val().trim();
 			if(contentVal == ""){
 				alert("글내용을 입력하세요!!");
 				return;
 			}
+		--%>
+		<%-- === 스마트에디터 구현 시작 === --%>
+	       	// 스마트에디터 사용시 무의미하게 생기는 p태그 제거
+			var contentval = $("textarea#content").val();
+			       
+			// === 확인용 ===
+			// alert(contentval); // content에 내용을 아무것도 입력치 않고 쓰기할 경우 알아보는것.
+			// "<p>&nbsp;</p>" 이라고 나온다.
+			 
+			// 스마트에디터 사용시 무의미하게 생기는 p태그 제거하기전에 먼저 유효성 검사를 하도록 한다.
+			// 글내용 유효성 검사 
+			if(contentval == "" || contentval == "<p>&nbsp;</p>") {
+				alert("글내용을 입력하세요!!");
+				return;
+			}
+			    
+			// 스마트에디터 사용시 무의미하게 생기는 p태그 제거하기
+			contentval = $("textarea#content").val().replace(/<p><br><\/p>/gi, "<br>"); //<p><br></p> -> <br>로 변환
+			/*    
+			            대상문자열.replace(/찾을 문자열/gi, "변경할 문자열");
+			    ==> 여기서 꼭 알아야 될 점은 나누기(/)표시안에 넣는 찾을 문자열의 따옴표는 없어야 한다는 점입니다. 
+			                 그리고 뒤의 gi는 다음을 의미합니다.
+			
+			       g : 전체 모든 문자열을 변경 global
+			       i : 영문 대소문자를 무시, 모두 일치하는 패턴 검색 ignore
+			*/    
+		    contentval = contentval.replace(/<\/p><p>/gi, "<br>"); //</p><p> -> <br>로 변환  
+		    contentval = contentval.replace(/(<\/p><br>|<p><br>)/gi, "<br><br>"); //</p><br>, <p><br> -> <br><br>로 변환
+		    contentval = contentval.replace(/(<p>|<\/p>)/gi, ""); //<p> 또는 </p> 모두 제거시
+		
+		    $("textarea#content").val(contentval);
+		 
+		    // alert(contentval);
+		<%-- === 스마트에디터 구현 끝 === --%>
 			
 			// 폼(form)을 전송(submit)
 			var frm = document.writeFrm;
@@ -97,21 +160,32 @@
 				<tr>
 					<th>게시판종류&nbsp;<span class="star">*</span></th>
 					<td>
-						<select name="fk_bCategorySeq" id="boardType">
+						<select name="fk_bCategorySeq" id="boardType" style="height: 30px;">
 							<option value="0">-[필수]옵션을 선택해주세요-</option>
 							<optgroup label="전사 게시판">
 							
-							<c:if test="${sessionScope.loginuser.admin == 1}"> <!-- 공지사항 게시판은 관리자만 글쓰기가 가능하다. --> 
-								<option value="1">공지사항</option>
-							</c:if>
+							<c:forEach var="category" items="${requestScope.bcategoryList}">
 							
-								<option value="2">자유</option>
-								<option value="3">건의사항</option>
+								<c:if test="${sessionScope.loginuser.admin == 1}"> <!-- 관리자일 경우, 모든 카테고리 목록을 다 보여준다. --> 
+									<option value="${category.bCategorySeq}">${category.bCategoryName}</option>
+								</c:if>
+							
+							
+								<c:if test="${sessionScope.loginuser.admin != 1}"> <!-- 관리자가 아닐 경우, 쓰기권한이 있는 카테고리 목록만 보여준다. -->
+									<c:if test='${category.writeAccess == "y"}'> <!-- 일반사용자의 글쓰기허용이 yes -->
+										<option value="${category.bCategorySeq}">${category.bCategoryName}</option>
+									</c:if>
+								</c:if>
+								
+							</c:forEach>
+							
 							</optgroup>
+							<!-- 
 							<optgroup label="그룹 게시판">
 								<option>인사팀</option>
 								<option>회계팀</option>
 							</optgroup>
+							 -->
 						</select>
 					</td>
 				</tr>

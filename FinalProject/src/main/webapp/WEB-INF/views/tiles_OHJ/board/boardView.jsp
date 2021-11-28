@@ -325,9 +325,11 @@
 	<!--
 		카테고리번호가 ${requestScope.boardvo.fk_bCategorySeq}인데, <br>1이면 공지사항, 2이면 자유게시판, 3이면 건의사항임.
 		공지사항은 댓글X
-		건의사항은 댓글O 
+		건의사항은 댓글O
+		
+		해당 boardvo의 fk_bCategorySeq에 해당하는 commentAccess가 y이면 댓글이 있는거다.
 	-->
-	<c:if test="${requestScope.boardvo.fk_bCategorySeq eq 3}"> <%-- ${not empty sessionScope.loginuser} 를 추가안해도 글1개보기를 로그인한 사람만 볼 수 있도록 함. --%>
+	<c:if test='${requestScope.boardvo.commentAccess eq "y"}'> <%-- ${not empty sessionScope.loginuser} 를 추가안해도 글1개보기를 로그인한 사람만 볼 수 있도록 함. --%>
 		
 		<!-- 댓글쓰기 시작 -->
 		<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->

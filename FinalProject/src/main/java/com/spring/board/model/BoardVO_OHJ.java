@@ -19,11 +19,12 @@ public class BoardVO_OHJ {
 	// === &137. 답변글쓰기 게시판을 위한 필드 추가하기
     //		먼저, 오라클에서 tbl_boardComment 테이블과 tbl_board 테이블을 drop 한 이후에
     //		tbl_board 테이블 및 tbl_boardComment 테이블을 재생성 한 이후에 아래처럼 해야 한다.
-    private String groupno; 		// 답글의 그룹번호
+/*    
+	private String groupno; 		// 답글의 그룹번호
 	private String fk_boardSeq; 	// 답글의 원글번호
 	private String depthno; 		// 답글의 들여쓰기
 	
-/*	
+	
 	private String fileName; 		// 톰캣저장시 파일명
 	private String orgFilename; 	// 실제파일명
 	private String fileSize; 		// 파일크기
@@ -39,6 +40,8 @@ public class BoardVO_OHJ {
 	private String previousSubject;	 // 이전글제목
 	private String nextBoardSeq;	 // 다음글번호
 	private String nextSubject;		 // 다음글제목
+	////////////////////////////////////////////
+	private String commentAccess; 	 // 댓글허용
 	////////////////////////////////////////////
 	
 	public BoardVO_OHJ() {}
@@ -182,9 +185,19 @@ public class BoardVO_OHJ {
 
 	public void setCommentCount(String commentCount) {
 		this.commentCount = commentCount;
+	}
+	
+	///////////////////////////////////////////////////////
+	
+	public String getCommentAccess() {
+		return commentAccess;
+	}
+
+	public void setCommentAccess(String commentAccess) {
+		this.commentAccess = commentAccess;
 	}	
 	
-
+	
 	
 	
 	
