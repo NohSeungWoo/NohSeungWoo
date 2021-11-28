@@ -195,3 +195,61 @@ where retire = 0
 and email = 'eomjh@gmail.com' 
 and password = 211029002;
 commit;
+
+
+-------------------------------------------------------------------------------------
+-- *** 일정테이블 *** --
+
+drop table tbl_schedule;
+
+create table tbl_schedule (
+  seq           number,
+  subject       varchar2(50)  NOT NULL,    -- 일정 제목
+  startDate     varchar2(20)  NOT NULL,    -- 일정 시작 날짜
+  endDate       varchar2(20)  NOT NULL,    -- 일정 종료 날짜
+  memo          varchar2(500) NOT NULL,    -- 일정 메모
+  fk_employeeID    varchar2(100) NOT NULL, -- 사원번호 (f key)
+  fk_departNo       number    not null    -- 부서번호(foreign key)
+  ,constraint PK_tbl_schedule_num primary key(seq)
+  ,constraint FK_tbl_schedule_employeeID foreign key(fk_employeeID) references tbl_employee (employeeID)
+  ,constraint FK_tbl_schedule_departNo foreign key(fk_departNo) references tbl_department (departNo));
+  
+create sequence scheduleSeq
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache; 
+
+commit;
+
+INSERT INTO tbl_schedule (seq,subject,startDate,endDate,memo,fk_employeeID,fk_departNo)
+                  values (scheduleSeq.nextval,'ㅎㅇ','2021-11-26','2021-11-27','ㅎㅇㅎㅇ',211019001,104);
+
+
+  
+  
+  {subject: "ㅁㅁㅁ", startDate: "2021-11-29", endDate: "2021-11-29", memo: "ㅁㅁㅋㅇㅋㅁ"}
+endDate: "2021-11-29"
+memo: "ㅁㅁㅋㅇㅋㅁ"
+startDate: "2021-11-29"
+subject: "ㅁㅁㅁ"
+
+INSERT INTO
+	    		tbl_schedule(num, fk_employeeID,subject,startDate,endDate,memo)
+	    	VALUES
+	    		(1,'211019001','ㅁㅁㅁ','2021-11-29','2021-11-29','ㅁㅁㅋㅇㅋㅁ')
+;
+
+select * from tbl_schedule;
+
+    		SELECT
+    			seq,subject,startDate,endDate,memo,fk_employeeID,fk_departNo
+    		FROM
+    			tbl_schedule
+    		WHERE
+    			fk_employeeID = '211019001'
+    		ORDER BY
+    			startDate
+    		DESC
