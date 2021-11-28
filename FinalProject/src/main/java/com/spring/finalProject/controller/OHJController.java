@@ -168,6 +168,8 @@ public class OHJController {
 		if(bcategoryList != null) {
 			for(BoardCategoryVO_OHJ bCategoryvo : bcategoryList) {
 				JSONObject jsonObj = new JSONObject();
+				
+				jsonObj.put("bCategorySeq", bCategoryvo.getbCategorySeq());
 				jsonObj.put("bCategoryName", bCategoryvo.getbCategoryName());
 				
 				jsonArr.put(jsonObj);
@@ -311,7 +313,6 @@ public class OHJController {
 		*/
 		/////////////////////////////////////////////////////////////////
 		
-		
 		// === &114. 페이징 처리를 한, 검색어가 있는, 전체 글목록 보여주기 시작 === //
 		String fromDate = request.getParameter("fromDate");
 		String toDate = request.getParameter("toDate");
@@ -327,6 +328,7 @@ public class OHJController {
 		System.out.println("확인용 searchType : " + searchType);
 		System.out.println("확인용 searchWord : " + searchWord);
 	*/	
+		
 		if(fromDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
 			// 2021-08-23 // '숫자개월수만큼 빼준 날짜인 add_months(sysdate,-3) 로 검색'하려했으나 유효성검사 해서 값이 넘어왔다.
 			
@@ -340,9 +342,31 @@ public class OHJController {
 			toDate = getDate("today");
 		}
 		////////////////////////////////////////////////////
+		
+		
+		/////////////////////////////////////////////////////////////////////////////////////////////
+		// === 최근 게시물이 아니라 sideinfo.jsp에서 클릭한 게시물을 보여주는 용 START ===
+		String bCategorySeq = request.getParameter("bCategorySeq");
+		// 최근 게시물은 bCategorySeq 이 null이고, bCategory는 null일수도 null이 아닐수도있는데
+		// 									bCategory가 null이면        -> 맨 처음 목록보기로 들어가는 경우. 이 경우에는 bCategory가 0이다.
+		// 									bCategory가 null이 아니면 -> 최근게시물이나 기타게시물에서 조회한 경우. 이 경우에는 bCategory가 넘어온 값이다. 
+		// 공지사항, 자유게시판, 건의사항은 해당하는 bCategorySeq 가 넘어온다. -> 이 때 bCategory는 null로 넘어오는데, bCategory가 bCategorySeq이다.
+		if(bCategorySeq == null && bCategory == null) {
+			bCategory = "0";
+		}
+		if(bCategorySeq == null && bCategory != null) {
+			// bCategory는 넘어온 그 자체이다.
+		}
+		if(bCategorySeq != null && bCategory == null) {
+			bCategory = bCategorySeq;
+		}
+		// === 최근 게시물이 아니라 sideinfo.jsp에서 클릭한 게시물을 보여주는 용 END ===
+		/////////////////////////////////////////////////////////////////////////////////////////////
+	/*	
 		if(bCategory == null) { // 맨처음 목록보기를 통해 들어가는 경우
 			bCategory = "0";
 		}
+	*/	
 	/*	
 		if( !"0".equals(bCategory)&&!"1".equals(bCategory)&&!"2".equals(bCategory)&&!"3".equals(bCategory) ) { // 유저가 게시판종류를 장난친 경우
 			bCategory = "";

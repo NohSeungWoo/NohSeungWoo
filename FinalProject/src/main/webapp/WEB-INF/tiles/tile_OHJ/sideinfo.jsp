@@ -39,13 +39,14 @@
 			url:"<%= ctxPath%>/viewCategoryList.gw",
 		//	type:"GET",
 			dataType:"JSON",
-			success:function(json){
+			success:function(json){ 
+				// json ==> [{"bCategoryName":"공지사항","bCategorySeq":"1"},{"bCategoryName":"자유게시판","bCategorySeq":"2"},{"bCategoryName":"건의사항","bCategorySeq":"3"}]
 				var html = "";
 				
 				if(json.length > 0){
 					$.each(json,function(index, item){
 						html += "<li>";
-						html += "<a href='#'>"+item.bCategoryName+"</a>";
+						html += "<a href='<%= ctxPath%>/recentList.gw?bCategorySeq="+item.bCategorySeq+"'>"+item.bCategoryName+"</a>";
 						html += "</li>";
 					});
 				}

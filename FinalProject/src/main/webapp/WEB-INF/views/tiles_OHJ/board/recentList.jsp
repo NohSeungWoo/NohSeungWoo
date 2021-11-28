@@ -191,7 +191,7 @@
 
 <div class="container">
 
-	<h3>최근 게시물</h3>
+	<h3>게시물</h3>
 	<hr style="border: solid 1px gray;" />
 		
 	
@@ -241,7 +241,7 @@
 	
 	<!-- 게시물이 존재하는지 존재안하는지에 따라 달라짐. 시작-->
 	<c:if test='${empty requestScope.boardList and requestScope.bCategory ne ""}'> <!-- 없든지 텅비었으며, 유저가 카테고리번호를 장난친게 아닌 경우 -->
-		<h4 class="mt-3" style="border-top: solid 1px #d9d9d9; border-bottom: solid 1px #d9d9d9; padding-top: 50px; padding-bottom: 50px;" align="center">최근 게시물이 없습니다.</h4>
+		<h4 class="mt-3" style="border-top: solid 1px #d9d9d9; border-bottom: solid 1px #d9d9d9; padding-top: 50px; padding-bottom: 50px;" align="center">게시물이 없습니다.</h4>
 	</c:if>
 	
 	<c:if test='${requestScope.bCategory eq ""}'> <!-- 유저가 카테고리번호를 장난친 경우 -->
