@@ -207,14 +207,14 @@ public class OHJController {
 	// === &54. 게시판 글쓰기 완료 요청 === //
 	@RequestMapping(value="/boardWriteEnd.gw", method= {RequestMethod.POST})
 	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo) {
-		
-		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 작성하기 **** // 
+	/*	
+		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 작성하기 **** // -> 스마트에디터에서 자동으로 해줌
 		String content = boardvo.getContent();
 		content = content.replaceAll("<", "&lt;");
 		content = content.replaceAll(">", "&gt;");
 		content = content.replaceAll("\r\n", "<br>"); // 입력한 엔터는 <br>처리하기
 		boardvo.setContent(content);
-		
+	*/	
 		int n = service.boardWrite(boardvo); // <== 파일첨부가 없는 글쓰기
 		
 		mav.setViewName("redirect:/recentList.gw");
@@ -738,12 +738,12 @@ public class OHJController {
 		// == 글1개 조회와 동일함 끝 ============================================
 		
 		BoardVO_OHJ boardvo = service.getViewWithNoAddCount(paraMap);
-		
-		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 해제하기 **** // 
+	/*	
+		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 해제하기 **** // -> 스마트에디터에서 자동으로 해줌 
 		String content = boardvo.getContent();
 		content = content.replaceAll("<br>", "\r\n"); // <br>은 엔터로 처리하기
 		boardvo.setContent(content);
-		
+	*/	
 		HttpSession session = request.getSession();
 		EmployeeVO_KGH loginuser = (EmployeeVO_KGH) session.getAttribute("loginuser");
 		
@@ -768,14 +768,14 @@ public class OHJController {
 	// === &72. 글수정 페이지 완료하기 === //
 	@RequestMapping(value="/boardEditEnd.gw", method= {RequestMethod.POST})
 	public ModelAndView boardEditEnd(ModelAndView mav, BoardVO_OHJ boardvo, HttpServletRequest request) {
-		
-		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 작성하기 **** // 
+	/*	
+		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 작성하기 **** // -> 스마트에디터에서 자동으로 해줌 
 		String content = boardvo.getContent();
 		content = content.replaceAll("<", "&lt;");
 		content = content.replaceAll(">", "&gt;");
 		content = content.replaceAll("\r\n", "<br>"); // 입력한 엔터는 <br>처리하기
 		boardvo.setContent(content);
-		
+	*/	
 		int n = service.boardEdit(boardvo);
 		
 		if(n==1) {
