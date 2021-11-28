@@ -213,9 +213,11 @@
 					<div style="display: inline-block; width: 100px;">게시판 종류</div>
 					<select name="bCategory" id="bCategory" style="width: 350px; height: 28.76px;">
 						<option value="0">전체</option>
-						<option value="1">공지사항</option>
-						<option value="2">자유게시판</option>
-						<option value="3">건의사항</option>
+						
+						<c:forEach var="category" items="${requestScope.bcategoryList}">
+							    <option value="${category.bCategorySeq}">${category.bCategoryName}</option>
+						</c:forEach>
+						
 					</select>
 				</div>
 				

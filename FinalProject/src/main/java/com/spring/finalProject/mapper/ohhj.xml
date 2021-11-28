@@ -15,14 +15,15 @@
 
 	<!-- === 게시판 만들기 === -->
 	<insert id="makeBCategory" parameterType="com.spring.board.model.BoardCategoryVO_OHJ">
-		insert into tbl_boardCategory(bcategoryseq,bcategoryname,usertype,writeaccess,commentaccess)
+		insert into tbl_boardCategory(bCategorySeq,bCategoryName,userType,writeAccess,commentAccess)
 		values(tbl_boardCategory_bCategorySeq.nextval, #{bCategoryName}, #{userType}, #{writeAccess}, #{commentAccess})
 	</insert>
 
 	<!-- === 게시판 종류 목록 가져오기(Ajax 로 처리) === -->
 	<select id="viewCategoryList" resultType="com.spring.board.model.BoardCategoryVO_OHJ">
-		select bcategoryseq, bcategoryname, usertype, writeaccess, commentaccess 
+		select bCategorySeq, bCategoryName, userType, writeAccess, commentAccess
 		from tbl_boardCategory
+		order by bCategorySeq
 	</select>	
 
 
@@ -86,9 +87,10 @@
 	</select>
 	-->
 	
-	<!-- === 먼저 &65 를 주석처리 하고서, &126-2(강사님은 없음). : 글1개 조회하기(이전글,다음글에 검색조건 적용) === -->
+	<!-- === 먼저 &65 를 주석처리 하고서, &126-2(강사님은 없음). : 글1개 조회하기(이전글,다음글에 검색조건 적용 + commentAccess 컬럼 추가) === -->
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select previousBoardSeq, previousSubject
+			 , commentAccess
 		     , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		     , regDate, readCount
 		     , nextBoardSeq,nextSubject
@@ -97,6 +99,7 @@
 		    select lag(boardSeq,1) over(order by boardSeq desc) AS previousBoardSeq
 		         , lag(subject,1) over(order by boardSeq desc) AS previousSubject
 		              
+		         , commentAccess     
 		         , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		         , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 		    

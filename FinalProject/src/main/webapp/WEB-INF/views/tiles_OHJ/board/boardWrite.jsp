@@ -97,21 +97,32 @@
 				<tr>
 					<th>게시판종류&nbsp;<span class="star">*</span></th>
 					<td>
-						<select name="fk_bCategorySeq" id="boardType">
+						<select name="fk_bCategorySeq" id="boardType" style="height: 30px;">
 							<option value="0">-[필수]옵션을 선택해주세요-</option>
 							<optgroup label="전사 게시판">
 							
-							<c:if test="${sessionScope.loginuser.admin == 1}"> <!-- 공지사항 게시판은 관리자만 글쓰기가 가능하다. --> 
-								<option value="1">공지사항</option>
-							</c:if>
+							<c:forEach var="category" items="${requestScope.bcategoryList}">
 							
-								<option value="2">자유</option>
-								<option value="3">건의사항</option>
+								<c:if test="${sessionScope.loginuser.admin == 1}"> <!-- 관리자일 경우, 모든 카테고리 목록을 다 보여준다. --> 
+									<option value="${category.bCategorySeq}">${category.bCategoryName}</option>
+								</c:if>
+							
+							
+								<c:if test="${sessionScope.loginuser.admin != 1}"> <!-- 관리자가 아닐 경우, 쓰기권한이 있는 카테고리 목록만 보여준다. -->
+									<c:if test='${category.writeAccess == "y"}'> <!-- 일반사용자의 글쓰기허용이 yes -->
+										<option value="${category.bCategorySeq}">${category.bCategoryName}</option>
+									</c:if>
+								</c:if>
+								
+							</c:forEach>
+							
 							</optgroup>
+							<!-- 
 							<optgroup label="그룹 게시판">
 								<option>인사팀</option>
 								<option>회계팀</option>
 							</optgroup>
+							 -->
 						</select>
 					</td>
 				</tr>

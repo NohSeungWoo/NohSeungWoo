@@ -191,6 +191,12 @@ public class OHJController {
 		
 		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
+		// == 카테고리 목록 가져오기 시작 == //
+		List<BoardCategoryVO_OHJ> bcategoryList = service.viewCategoryList();
+		mav.addObject("bcategoryList", bcategoryList);
+		// == 카테고리 목록 가져오기 끝 == //
+		
+		
 		mav.setViewName("board/boardWrite.tiles_OHJ");
 		//  /WEB-INF/views/tiles_OHJ/board/boardWrite.jsp 파일을 생성한다.
 		
@@ -224,6 +230,13 @@ public class OHJController {
 		
 		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
+		// == 카테고리 목록 가져오기 시작 == //
+		List<BoardCategoryVO_OHJ> bcategoryList = service.viewCategoryList();
+		mav.addObject("bcategoryList", bcategoryList);
+		// == 카테고리 목록 가져오기 끝 == //
+		
+		
+		// == 글목록 가져오기 == //
 		List<BoardVO_OHJ> boardList = null;
 		
 		// == 페이징 처리를 안한, 검색어가 없는, 전체 글목록 보여주기 == //
@@ -330,7 +343,19 @@ public class OHJController {
 		if(bCategory == null) { // 맨처음 목록보기를 통해 들어가는 경우
 			bCategory = "0";
 		}
+	/*	
 		if( !"0".equals(bCategory)&&!"1".equals(bCategory)&&!"2".equals(bCategory)&&!"3".equals(bCategory) ) { // 유저가 게시판종류를 장난친 경우
+			bCategory = "";
+		}
+	*/	
+		boolean flag = false; // 글목록보기로 넘어온 id가 bCategory인 select태그 속 bCategorySeq가, 실제 존재하는 것인지아닌지 여부
+		for(BoardCategoryVO_OHJ bcvo : bcategoryList) {
+			if(bcvo.getbCategorySeq().equals(bCategory)) {
+				flag = true;
+				break;// 반복문 종료
+			}
+		}
+		if(!"0".equals(bCategory) && !flag) { // select태그에서 전체를 선택한 것도 아니고, 카테고리분류에 실제 존재하는것도 아니라면
 			bCategory = "";
 		}
 		////////////////////////////////////////////////////
