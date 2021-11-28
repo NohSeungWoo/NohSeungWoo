@@ -91,6 +91,8 @@
 			<a href="#" class="list-group-item list-group-item-action">환경설정</a>
 			 -->
 			<a href="<%= ctxPath%>/makeBCategory.gw" class="list-group-item list-group-item-action">게시판 만들기</a>
+			
+			<a href="<%= ctxPath%>/board/wordCloud.gw" class="list-group-item list-group-item-action">통계</a>
 			<!-- <a href="#" class="list-group-item list-group-item-action">게시판 관리</a> -->
 	
 		</div>
