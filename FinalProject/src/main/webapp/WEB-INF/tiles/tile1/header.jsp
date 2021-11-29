@@ -84,7 +84,7 @@
 			     	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>/recentList.gw"><i class="fas fa-chalkboard fa-lg"></i><br>게시판</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
-			     	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>"><i class="fas fa-user-friends fa-lg"></i><br>조직도</a>
+			     	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>/organization-chart.gw"><i class="fas fa-user-friends fa-lg"></i><br>조직도</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">          
 	             	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>"><i class="far fa-calendar-alt fa-lg"></i><br>일정</a>
@@ -96,15 +96,16 @@
                    <a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%=ctxPath%>/survey.gw"><i class="fas fa-book-reader"></i><br>설문조사</a>
                  </li>
 			     <c:if test="${sessionScope.loginuser != null and sessionScope.loginuser.admin == '1' }"> <%-- admin 으로 로그인 했으면 --%>
-					 <li class="nav-item dropdown">
-				        <a class="nav-link dropdown-toggle menufont_size text-info" href="#" id="navbarDropdown" data-toggle="dropdown"> 
+					 <li class="nav-item dropdown ml-3 mt-3">
+				        <a class="nav-link dropdown-toggle menufont_size text-white" href="#" id="navbarDropdown" data-toggle="dropdown"> 
 				          	 관리자전용   	                           
 				        </a>
 				        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				           <%-- <a class="dropdown-item text-info" href="<%= ctxPath %>">사원등록</a> --%>
-				           <a class="dropdown-item text-info" href="<%= ctxPath %>">사원관리</a>
-				           <div class="dropdown-divider"></div>
-				           <a class="dropdown-item text-info" href="<%= ctxPath %>">추가기능있으면 넣기</a>
+				           <a class="dropdown-item text-dark" href="<%= ctxPath %>/admin/empList.gw">직원목록</a>
+				           <a class="dropdown-item text-dark" href="<%= ctxPath %>/admin/empRegister.gw">직원등록</a>
+				           <a class="dropdown-item text-dark" href="<%= ctxPath %>/admin/department.gw">부서관리</a>
+				           <a class="dropdown-item text-dark" href="<%= ctxPath %>/admin/empChart.gw">직원통계</a>
+				           <a class="dropdown-item text-dark" href="<%= ctxPath %>/admin/adminList.gw">관리자목록</a>
 				        </div>
 				     </li>
 		     	</c:if>
