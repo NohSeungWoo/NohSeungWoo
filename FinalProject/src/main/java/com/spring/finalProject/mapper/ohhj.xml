@@ -91,6 +91,7 @@
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select previousBoardSeq, previousSubject
 			 , commentAccess
+			 , profilename
 		     , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		     , regDate, readCount
 		     , nextBoardSeq,nextSubject
@@ -99,7 +100,8 @@
 		    select lag(boardSeq,1) over(order by boardSeq desc) AS previousBoardSeq
 		         , lag(subject,1) over(order by boardSeq desc) AS previousSubject
 		              
-		         , commentAccess     
+		         , commentAccess
+		         , profilename 
 		         , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		         , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 		    
