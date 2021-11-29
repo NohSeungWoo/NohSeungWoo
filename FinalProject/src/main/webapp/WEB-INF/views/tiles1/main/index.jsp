@@ -150,7 +150,7 @@
 					<span><img src="<%= ctxPath%>/resources/images/기본프로필_kh.jpg" style="border-radius: 50%; width:50px;"></span>
 				</c:if>
 				<c:if test="${sessionScope.loginuser.profilename != null }">
-					<span><img src="<%= ctxPath%>/resources/images/empIMG/${sessionScope.loginuser.profilename}" style="border-radius: 50%; width:50px;"></span>
+					<span><img src="<%= ctxPath%>/resources/empIMG/${sessionScope.loginuser.profilename}" style="border-radius: 50%; width:50px;"></span>
 				</c:if>
 				<b>${sessionScope.loginuser.name}님 안녕하세요!</b>
 			</c:if>
