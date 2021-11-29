@@ -188,6 +188,15 @@ public class OHJDAO implements InterOHJDAO {
 		List<String> keywordList = sqlsession.selectList("ohhj.getKeywordHistory");
 		return keywordList;
 	}
+
+	
+	
+	// === &158. 글쓰기(파일첨부가 있는 글쓰기) === //
+	@Override
+	public int boardWrite_withFile(BoardVO_OHJ boardvo) {
+		int n = sqlsession.insert("ohhj.boardWrite_withFile", boardvo);
+		return n;
+	}
 	
 
 	

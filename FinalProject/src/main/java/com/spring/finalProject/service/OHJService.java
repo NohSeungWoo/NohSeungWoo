@@ -217,6 +217,18 @@ public class OHJService implements InterOHJService {
 	}
 
 	
+	
+	
+	
+	
+	// === &157. 글쓰기(파일첨부가 있는 글쓰기) === //
+	@Override
+	public int boardWrite_withFile(BoardVO_OHJ boardvo) {
+		int n = dao.boardWrite_withFile(boardvo); // 첨부파일이 있는 경우
+		return n;
+	}
+
+	
 
 	
 

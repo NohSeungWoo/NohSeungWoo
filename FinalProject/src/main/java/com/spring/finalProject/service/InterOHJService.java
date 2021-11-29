@@ -70,6 +70,9 @@ public interface InterOHJService {
 
 	
 
+	// 글쓰기(파일첨부가 있는 글쓰기)
+	int boardWrite_withFile(BoardVO_OHJ boardvo);
+
 	
 
 

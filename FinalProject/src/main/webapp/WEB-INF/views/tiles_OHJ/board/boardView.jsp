@@ -268,6 +268,7 @@
 				<td>작성일자 : ${requestScope.boardvo.regDate}</td>
 			</tr>
 		</table>
+		
 		<!-- 글내용 -->
 		<div class="p-3" style="border: solid 1px #dee2e6; word-break: break-all; min-height: 300px;">${requestScope.boardvo.content}</div>
 		<%-- 
@@ -276,6 +277,25 @@
 		             테이블태그의 <td>태그에는 안되고 <p> 나 <div> 태그안에서 적용되어지므로 <td>태그에서 적용하려면
 		      <table>태그속에 style="word-wrap: break-word; table-layout: fixed;" 을 주면 된다.
 		--%>
+		
+		
+		
+		<!-- 첨부파일 -->
+		<c:if test="${not empty requestScope.boardvo.orgFilename}">
+		<table class="table mt-3">
+			<tr style="border-bottom: solid 1px #dee2e6;">
+				<th style="width: 142px;">첨부파일</th>
+				<td>
+					<c:if test="${sessionScope.loginuser != null}"> <!-- 로그인된 경우 -->
+						<i class="fas fa-paperclip mr-2"></i><a href="<%= ctxPath%>/downloadBoardAttach.gw?boardSeq=${requestScope.boardvo.boardSeq}">${requestScope.boardvo.orgFilename}</a><i class="fas fa-download ml-2"></i> <!-- WAS에 있는 실제파일명을 알아오기위해 where절에 글번호를 넘김. -->
+					</c:if>
+					<c:if test="${sessionScope.loginuser == null}">
+						<i class="fas fa-paperclip mr-2"></i>${requestScope.boardvo.orgFilename}<i class="fas fa-download ml-2"></i>
+					</c:if>
+				</td>
+			</tr>
+		</table>
+		</c:if>
 		
 	</c:if>
 	<!-- 글1개에 대한 정보 보여주기 종료 -->

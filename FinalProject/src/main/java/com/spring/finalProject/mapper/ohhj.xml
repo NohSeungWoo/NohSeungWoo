@@ -98,6 +98,9 @@
 	-->
 	
 	<!-- === 먼저 &65 를 주석처리 하고서, &126-2(강사님은 없음). : 글1개 조회하기(이전글,다음글에 검색조건 적용 + commentAccess 컬럼 추가) === -->
+	
+	<!-- === &161. (댓글 및 (답변글쓰기 및) "파일첨부가 있는" 게시판에서) 글1개 조회하기 === 
+			  먼저 위의 &140(나는 &65) 을 주석처리 한 다음에 아래와 같이 한다. (fileName, orgFilename, fileSize 컬럼 추가)-->
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select previousBoardSeq, previousSubject
 			 , commentAccess
@@ -105,6 +108,8 @@
 		     , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		     , regDate, readCount
 		     , nextBoardSeq,nextSubject
+		     
+		     , fileName, orgFilename, fileSize
 		from
 		(
 		    select lag(boardSeq,1) over(order by boardSeq desc) AS previousBoardSeq
@@ -114,6 +119,8 @@
 		         , profilename 
 		         , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		         , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		         
+		         , fileName, B.orgFilename, B.fileSize
 		    
 		         , lead(boardSeq,1) over(order by boardSeq desc) AS nextBoardSeq
 		         , lead(subject,1) over(order by boardSeq desc) AS nextSubject
@@ -267,14 +274,20 @@
 	
 	
 	<!-- === &120. 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) + 기존의 regDate정렬에서 boardSeq정렬로 바꿈. + fk_bCategorySeq 조회 === -->
+	
+	<!-- === &160. "파일첨부가 있는" (답변형 게시판의) 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) === 
+			  먼저 위의 &148(나는 &120) 을 주석처리 한 이후에 아래와 같이 한다. -> ,fileName(WAS에 저장된 파일명) 추가함.
+	-->
 	<select id="boardListSearchWithPaging" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select fk_bCategorySeq, boardSeq, subject, name, regDate, readCount, commentCount
+			  ,fileName
 		from
 		(
 		    select row_number() over(order by boardSeq desc) AS rno
 		    	 , fk_bCategorySeq
 		         , boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 		         , commentCount
+		         ,fileName
 		    from tbl_board B JOIN tbl_employee E
 		    ON B.fk_employeeId = E.employeeId
 		    where 1=1
@@ -317,6 +330,11 @@
 	
 	
 	
+	<!-- === &159. 글쓰기(파일첨부가 있는 글쓰기) === -->
+	<insert id="boardWrite_withFile" parameterType="com.spring.board.model.BoardVO_OHJ">
+		insert into tbl_board(boardSeq, fk_bCategorySeq, fk_employeeId, subject, content, regDate, readCount, fileName, orgFilename, fileSize)
+		values(tbl_board_boardSeq.nextval, #{fk_bCategorySeq}, #{fk_employeeId}, #{subject}, #{content}, default, default, #{fileName}, #{orgFilename}, #{fileSize})
+	</insert>
 	
 	
 	

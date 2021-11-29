@@ -1,12 +1,15 @@
 package com.spring.finalProject.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+//import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -28,8 +31,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.finalProject.common.FileManager;
 import com.spring.board.model.BoardCategoryVO_OHJ;
 import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
@@ -108,10 +114,16 @@ public class OHJController {
 	@Autowired
 	private InterOHJService service;
 	// Type에 따라 알아서 Bean 을 주입해준다.
-
+	
 	/////////////////////////////////////////////////////////////////////////////////
 						// 기본셋팅 끝이다. 여기서부터 개발 시작이다! //
 	/////////////////////////////////////////////////////////////////////////////////
+	
+	// === &155. 파일업로드 및 다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) ===
+	@Autowired
+	private FileManager fileManager;
+	// Type에 따라 알아서 Bean 을 주입해준다.
+	
 	
 	// === 게시판 만들기 폼페이지 요청 === //
 	@RequestMapping(value="/makeBCategory.gw")
@@ -222,7 +234,8 @@ public class OHJController {
 	
 	// === &54. 게시판 글쓰기 완료 요청 === //
 	@RequestMapping(value="/boardWriteEnd.gw", method= {RequestMethod.POST})
-	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo) {
+//	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo) { // => 파일첨부가 안된 글쓰기
+	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo, MultipartHttpServletRequest mrequest) { // => 파일첨부된 글쓰기
 	/*	
 		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 작성하기 **** // -> 스마트에디터에서 자동으로 해줌
 		String content = boardvo.getContent();
@@ -231,7 +244,115 @@ public class OHJController {
 		content = content.replaceAll("\r\n", "<br>"); // 입력한 엔터는 <br>처리하기
 		boardvo.setContent(content);
 	*/	
-		int n = service.boardWrite(boardvo); // <== 파일첨부가 없는 글쓰기
+		
+		
+	/*
+		=== &151. 파일첨부가 된 글쓰기 이므로 
+			먼저 위의 public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo) 을
+			주석처리 한 이후에 아래와 같이 한다.
+			MultipartHttpServletRequest mrequest 를 사용하기 위해서는
+			먼저, /FinalProject/src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml 에서
+			&21. 파일업로드 및 파일다운로드에 필요한 의존객체 설정하기 를 해두어야 한다.
+	*/
+		
+	/*
+		    웹페이지에 요청 form이 enctype="multipart/form-data" 으로 되어있어서 Multipart 요청(파일처리 요청)이 들어올때 
+		    컨트롤러에서는 HttpServletRequest 대신 MultipartHttpServletRequest 인터페이스를 사용해야 한다.
+		  MultipartHttpServletRequest 인터페이스는 HttpServletRequest 인터페이스와  MultipartRequest 인터페이스를 상속받고있다.
+		    즉, 웹 요청 정보를 얻기 위한 getParameter()와 같은 메소드와 Multipart(파일처리) 관련 메소드를 모두 사용가능하다.     
+	*/
+		
+		// === 사용자가 쓴 글에 파일이 첨부되어 있는 것인지, 아니면 파일첨부가 안된 것인지 구분을 지어 주어야 한다. ===
+		// === &153. !!! 첨부파일이 있는 경우 작업 시작 !!! ===
+		MultipartFile attach = boardvo.getAttach();
+		
+		if( !attach.isEmpty() ) {
+			// attach(첨부파일)가 비어있지 않으면(즉, 첨부파일이 있는 경우라면)
+			
+			/*
+				1. 사용자가 보낸 첨부파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다.
+				>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
+					우리는 WAS의 webapp/resources/files 라는 폴더로 지정해준다.
+					조심할 것은 Package Explorer 에서  files 라는 폴더를 만드는 것이 아니다. (해도 상관은 없지만, 어짜피 .metadate에 자동으로 복제된다.)
+			*/
+			// WAS의 webapp 의 절대경로를 알아와야 한다.
+			HttpSession session = mrequest.getSession();
+			String root = session.getServletContext().getRealPath("/");
+			
+		//	System.out.println("~~~~ 확인용 webapp 의 절대경로 => " + root);
+			// ~~~~ 확인용 webapp 의 절대경로 => C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
+			
+			String path = root + "resources" + File.separator + "files";
+			/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+			       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+			       운영체제가 UNIX, Linux 이라면  File.separator 는 "/" 이다. 
+			*/
+			
+			// path 는 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+		//	System.out.println("~~~~ 확인용 path => " + path);
+			// ~~~~ 확인용 path => C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\files
+			
+			
+			/*
+				2. 파일첨부를 위한 변수의 설정 및 값을 초기화 한 후 파일올리기
+			*/
+			String newFileName = "";
+			// WAS(톰캣)의 디스크에 저장될 파일명 	  ex)2021110809271535243254235235234.png
+			
+			byte[] bytes = null; // 파일첨부의 InputStream, OutputStream은 1바이트 기반이다.
+			// 첨부파일의 내용물을 담는 것
+			
+			long fileSize = 0;
+			// 첨부파일의 크기
+			
+			try {
+				bytes = attach.getBytes();
+				// 첨부파일의 내용물을 읽어오는 것
+				
+				newFileName = fileManager.doFileUpload(bytes, attach.getOriginalFilename(), path); // 파라미터 : 내용물, 확장자 알아오기위한 첨부파일명, 업로드되어질경로명
+				// 첨부되어진 파일을 업로드 하도록 하는 것이다. 
+	            // attach.getOriginalFilename() 은 첨부파일의 파일명(예: 강아지.png)이다.
+				
+			//	System.out.println(">>> 확인용 newFileName => " + newFileName);
+				// >>> 확인용 newFileName => 2021110811273450592448100700.jpg
+			
+			/*
+				3. BoardVO boardvo 에 fileName 값과 orgFilename 값과 fileSize 값을 넣어주기
+			*/
+				boardvo.setFileName(newFileName);
+				// WAS(톰캣)에 저장될 파일명(2021110811273450592448100700.jpg)
+				
+				boardvo.setOrgFilename(attach.getOriginalFilename());
+				// 게시판 페이지에서 첨부된 파일(강아지.png)을 보여줄 때 사용.
+				// 또한 사용자가 파일을 다운로드 할때 사용되어지는 파일명으로 사용.
+				
+				fileSize = attach.getSize(); // 첨부파일의 크기(단위는 byte임)
+				boardvo.setFileSize(String.valueOf(fileSize));
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+		// === !!! 첨부파일이 있는 경우 작업 끝 !!! ===
+		
+	//	int n = service.boardWrite(boardvo); // <== 파일첨부가 없는 글쓰기
+		
+		
+		// === &156. 파일첨부가 있는 글쓰기 또는 파일첨부가 없는 글쓰기로 나뉘어서 service 호출하기 === //
+		// 먼저 위의 int n = service.boardWrite(boardvo); 부분을 주석처리 하고서 아래와 같이 한다.
+		int n = 0;
+		
+		if( attach.isEmpty() ) {
+			// 첨부파일이 없는 경우라면
+			n = service.boardWrite(boardvo);
+		}
+		
+		else {
+			// 첨부파일이 있는 경우라면
+			n = service.boardWrite_withFile(boardvo);
+		}
+		
 		
 		mav.setViewName("redirect:/recentList.gw");
 		//	/list.gw 페이지로 redirect(페이지이동)해라는 말이다.
@@ -1303,7 +1424,102 @@ public class OHJController {
 	
 	
 	
-	
+	// === &163. 첨부파일 다운로드 받기 === //
+	@RequestMapping(value="/downloadBoardAttach.gw")
+	public void requiredLogin_download(HttpServletRequest request, HttpServletResponse response) {
+		
+		String boardSeq = request.getParameter("boardSeq");
+		// 첨부파일이 있는 글번호
+		
+		/*
+			첨부파일이 있는 글번호에서
+			2021110812474555403647625200.jpg 처럼
+			이러한 fileName 값을 DB 에서 가져와야 한다. (무엇을 다운받을것인지)
+			또한 orgFilename 값도 DB 에서 가져와야 한다. (파일명을 뭐라고 다운받을것인지 : berkelekle심플V넥02.jpg)
+		*/
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("boardSeq", boardSeq);
+		
+		paraMap.put("fromDate", ""); /* ohhj.xml에서 id="getView"를 재사용할껀데, 이것들이 paraMap에 있어야 오류가 안난다. */
+		paraMap.put("toDate", "");
+		paraMap.put("bCategory", "0");
+		paraMap.put("searchType", "");
+		paraMap.put("searchWord", "");
+		
+		response.setContentType("text/html; charset=UTF-8"); // 응답은 어떤형식이니? 웹브라우저에 찍어주겠다.
+		PrintWriter out = null;
+		
+		try {
+			Integer.parseInt(boardSeq);
+			
+			BoardVO_OHJ boardvo = service.getViewWithNoAddCount(paraMap);
+			
+			if(boardvo == null || (boardvo != null && boardvo.getFileName() == null)) { // ① 존재하지않는글번호 ② 존재하는 글번호이지만, 첨부파일이 없는 경우
+				out = response.getWriter();
+				// out은 웹브라우저상에 메시지를 쓰기 위한 객체생성
+				
+				out.println("<script type='text/javascript'> alert('존재하지 않는 글번호 이거나 첨부파일이 없으므로 파일 다운로드가 불가합니다!!'); history.back(); </script>");
+				
+				return; // 종료
+			}
+			else {
+				String fileName = boardvo.getFileName();
+				// 2021110812474555403647625200.jpg  이것이 바로 WAS(톰캣) 디스크에 저장된 파일명이다.
+				
+				String orgFilename = boardvo.getOrgFilename();
+				// berkelekle심플V넥02.jpg  다운로드시 보여줄 파일명
+				
+				
+				// 첨부파일이 저장되어 있는 WAS(톰캣)의 디스크 경로명을 알아와야만 다운로드를 해줄수 있다. 
+	            // 이 경로는 우리가 파일첨부를 위해서 /boardWriteEnd.gw 에서 설정해두었던 경로와 똑같아야 한다.
+				// WAS의 webapp 의 절대경로를 알아와야 한다.
+				HttpSession session = request.getSession();
+				String root = session.getServletContext().getRealPath("/");
+				
+			//	System.out.println("~~~~ 확인용 webapp 의 절대경로 => " + root);
+				// ~~~~ 확인용 webapp 의 절대경로 => C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
+				
+				String path = root + "resources" + File.separator + "files";
+				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+				       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+				       운영체제가 UNIX, Linux 이라면  File.separator 는 "/" 이다. 
+				*/
+				
+				// path 는 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+			//	System.out.println("~~~~ 확인용 path => " + path);
+				// ~~~~ 확인용 path => C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\files
+				
+				// **** file 다운로드 하기 **** //
+				boolean flag = fileManager.doFileDownload(fileName, orgFilename, path, response);
+				// flag 값이 true 로 받아오면 다운로드 성공을 말하고,
+				// flag 값이 false 로 받아오면 다운로드 실패를 말한다.
+				
+				if(flag == false) {
+					// 다운로드가 실패할 경우 메시지를 띄워준다.
+					
+					out = response.getWriter();
+					// out은 웹브라우저상에 메시지를 쓰기 위한 객체생성
+					
+					out.println("<script type='text/javascript'> alert('파일 다운로드가 실패되었습니다!!'); history.back(); </script>");
+				}
+				
+			}
+		} catch(NumberFormatException e) {
+			
+			try {
+				out = response.getWriter();
+				// out은 웹브라우저상에 메시지를 쓰기 위한 객체생성
+				
+				out.println("<script type='text/javascript'> alert('존재하지 않는 글번호 이므로 파일 다운로드가 불가합니다!!'); history.back(); </script>");
+			} catch(IOException e1) {
+				
+			}
+			
+		} catch(IOException e2) {
+			
+		}
+		
+	}
 	
 	
 	
