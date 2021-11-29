@@ -172,6 +172,15 @@ public class OHJDAO implements InterOHJDAO {
 		List<BoardVO_OHJ> boardList = sqlsession.selectList("ohhj.boardListSearchWithPaging", paraMap);
 		return boardList;
 	}
+
+	
+	
+	
+	// === 검색어의 빈도를 나타내기 위해, 검색어가 있으면 '검색키워드 기록'테이블에 insert하기 === //
+	@Override
+	public void registerSearchKeyword(String searchWord) {
+		sqlsession.insert("ohhj.registerSearchKeyword", searchWord);
+	}
 	
 
 	

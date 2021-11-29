@@ -303,8 +303,11 @@
 	
 	
 	
-	
-	
+	<!-- === 검색어의 빈도를 나타내기 위해, 검색어가 있으면 '검색키워드 기록'테이블에 insert하기 === -->
+	<insert id="registerSearchKeyword" parameterType="String">
+		insert into tbl_keywordHistory(keywordSeq,keyword)
+		values(tbl_keywordHistory_keywordSeq.nextval, lower(#{searchWord}))
+	</insert>
 	
 	
 	
