@@ -1099,6 +1099,16 @@ public class OHJController {
 		// 페이징처리를 안한, 검색어가 있는 글목록 가져오기
 		List<BoardVO_OHJ> boardList = service.boardListSearch(paraMap);
 		
+		
+		// 해당하는 게시판 카테고리명 알아오기
+		String bCategoryName = "";
+		if("0".equals(bCategory) || "".equals(bCategory)) { // ⓐ전체를 선택한 경우임.  ⓑ해당하지 않는 bCategory로 장난친 경우는 글목록이 안나오는데 1행의 header는 '전체'로 줌.
+			bCategoryName = "전체"; // 디폴트는 전체게시판이다.
+		}
+		if(!"0".equals(bCategory) && !"".equals(bCategory)) { // 제대로된 카테고리번호를 입력한 경우
+			bCategoryName = service.getBCategoryName(bCategory);
+		}
+		
 		// == 엑셀 꾸미기 START == // ---------------------------------------------------------------------------------
 		
 		// === 조회결과물인 boardList 를 가지고 엑셀 시트 생성하기 ===
@@ -1171,11 +1181,13 @@ public class OHJController {
         // 병합할 행 만들기
 	    Row mergeRow = sheet.createRow(rowLocation); // 엑셀에서 행의 시작은 0 부터 시작한다.
 	    
+	    
 	    // 병합할 행에 "우리회사 사원정보" 로 셀을 만들어 셀에 스타일을 주기  
 	    for(int i=0; i<6; i++) {
 	    	Cell cell = mergeRow.createCell(i); // 셀 생성
 	    	cell.setCellStyle(mergeRowStyle);
-	    	cell.setCellValue("우리회사 게시글 목록");
+	    	
+	    	cell.setCellValue("우리회사 게시글목록 (" + bCategoryName + ")"); // 예 : 우리회사 게시글목록 (전체), 우리회사 게시글목록 (자유게시판)
 	    }
 	    
 	    // 셀 병합하기

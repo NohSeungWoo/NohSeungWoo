@@ -62,6 +62,20 @@ public class OHJDAO implements InterOHJDAO {
 		return bcategoryList;
 	}
 	
+	// === 해당하는 게시판 카테고리명 알아오기 === //
+	@Override
+	public String getBCategoryName(String bCategory) {
+		String bCategoryName = sqlsession.selectOne("ohhj.getBCategoryName", bCategory);
+		return bCategoryName;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -158,6 +172,7 @@ public class OHJDAO implements InterOHJDAO {
 		List<BoardVO_OHJ> boardList = sqlsession.selectList("ohhj.boardListSearchWithPaging", paraMap);
 		return boardList;
 	}
+	
 
 	
 	
