@@ -30,8 +30,8 @@
 	#mycontainer   { padding: 0; }
 	#myheader      { display: flex; position: relative; background-color: black;}
 														/* bg-color : 헤더가 양옆으로 꽉 차게 보이게 하는 용도 */	
-	#mycontent     { min-height:900px; position: relative; padding-top: 40px; /* background-color:#f4f5f7; */ border-left: solid 1px gray;
-	                 float:right; width:80%; }
+	#mycontent     { min-height:900px; position: relative; padding-top: 40px; /* background-color:#f4f5f7; */ margin: 0 auto;
+	                 width:80%; }
 	                 
 	#myfooter      { display: flex; position: relative; background-color:#555555; clear:both; }
 	 
