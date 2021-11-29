@@ -225,7 +225,12 @@ nocache;
 commit;
 
 INSERT INTO tbl_schedule (seq,subject,startDate,endDate,memo,fk_employeeID,fk_departNo)
-                  values (scheduleSeq.nextval,'ㅎㅇ','2021-11-26','2021-11-27','ㅎㅇㅎㅇ',211019001,104);
+                  values (scheduleSeq.nextval,'ㅎㅇ','2021-11-26','2021-11-27','ㅎㅇㅎㅇ','211019001',104);
+
+
+
+select tbl_schedule
+
 
 
   
@@ -249,7 +254,7 @@ select * from tbl_schedule;
     		FROM
     			tbl_schedule
     		WHERE
-    			fk_employeeID = '211019001'
+    			seq = 5
     		ORDER BY
     			startDate
     		DESC

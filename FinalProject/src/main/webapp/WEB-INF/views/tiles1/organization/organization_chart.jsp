@@ -82,6 +82,26 @@
 <script type="text/javascript">
 	
 	$(document).ready(function() {
+		func_organization();
+	});// end of $(document).ready(function() {})
+
+	
+	// === Function Declaration === //
+	function func_organization() {
+		$.ajax({
+			url:"<%= request.getContextPath()%>/getOrganizationList.gw",
+			type:"GET",
+			dataType:"JSON",
+			success:function(json) {
+				if(json != null) {
+					
+				}
+			}, 
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+        	}
+		});
+		
 		Highcharts.chart('container', {
 		    chart: {
 		        height: 600,
@@ -185,8 +205,7 @@
 		            name: 'Sales team'
 		        }, {
 		            id: 'Market',
-		            name: 'Marketing team',
-		            column: 5
+		            name: 'Marketing team'	
 		        }],
 		        colorByPoint: false,
 		        color: '#007ad0',
@@ -206,9 +225,9 @@
 		    }
 
 		});
-
-	});// end of $(document).ready(function() {})
-
+	}// end of function func_organization() { }
+	
+	
 </script>
 
 <figure class="highcharts-figure mt-4">

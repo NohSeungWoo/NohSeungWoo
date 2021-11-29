@@ -573,6 +573,15 @@ public class OHJController {
 		
 		// === 페이징 처리를 한, 검색어가 있는, 전체 글목록 보여주기 끝 === //
 		
+		
+		// === 하이차트 - 검색어의 빈도를 나타내기 위해, 검색어가 있으면 테이블에 담는 용도 START === //
+		if(!"".equals(searchWord)) { // 검색어가 있는 경우
+			// tbl_keywordCloud테이블에 keyword컬럼에 searchWord값을 insert한다.
+		}
+		// === 하이차트 - 검색어의 빈도를 나타내기 위해, 검색어가 있으면 테이블에 담는 용도 END === //
+		
+		
+		
 		mav.addObject("totalCount", totalCount); // 게시글 총 몇 건인지 보여주는 용도
 		
 		mav.addObject("boardList", boardList);
@@ -978,6 +987,12 @@ public class OHJController {
 	
 	
 	
+	
+	// === &192. 차트를 보여주는 view단 === //
+	@RequestMapping(value="/board/wordCloud.gw")
+	public String wordCloud() {
+		return "board/wordCloud.tiles_OHJ";
+	}
 	
 	
 	

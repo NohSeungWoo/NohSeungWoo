@@ -137,6 +137,26 @@
 		and password = #{password}
 	</select>
 	
+	<!-- === 이메일 찾기 완료 메서드(select) === -->
+	<select id="emailFindEnd" parameterType="HashMap" resultType="String">
+		select employeeid
+		from tbl_employee
+		where email = #{email} and name = #{name}
+	</select>
+	
+	<!-- === 해당하는 이메일과 이름에 존재하는 사원 정보 찾기(select) === -->
+	<select id="sendCodeEmail" parameterType="HashMap" resultType="String">
+		select employeeid
+		from tbl_employee
+		where email = #{email} and name = #{name}
+	</select>
+	
+	<!-- === 새비밀번호 업데이트 메서드(update) === -->
+	<update id="newPasswordUpdate" parameterType="HashMap">
+		update tbl_employee set password = #{newPassword}
+		where email = #{email} and name = #{name}
+	</update>
+	
 	<!-- === 이메일 중복 여부 검사하기(select) === -->
 	<select id="emailDuplicateCheck" parameterType="String" resultType="String">
 		select email
@@ -180,6 +200,7 @@
 	<update id="mypageEnd" parameterType="com.spring.finalProject.model.EmployeeVO_KGH">
 		update tbl_employee set name = #{name},
 								password = #{password},
+								email = #{email},
 								mobile = #{mobile}, 
 								profilename = #{profilename},
 								orgProfilename = #{orgProfilename},
@@ -195,6 +216,7 @@
 	<update id="mypageEndNoFile" parameterType="com.spring.finalProject.model.EmployeeVO_KGH">
 		update tbl_employee set name = #{name},
 								password = #{password},
+								email = #{email},
 								mobile = #{mobile}, 
 								profilename = null,
 								orgProfilename = null,
@@ -467,5 +489,30 @@
 		                        admin = 0
 		where employeeid = #{employeeid}
 	</update>
+	
+	<!-- === 조직도 리스트 가져오기(select) === -->
+	<resultMap type="HashMap" id="organizationList">
+		<result property="employeeid"		column="employeeid" 		javaType="String" />
+		<result property="fk_departno"		column="fk_departno" 		javaType="String" />
+		<result property="departmentname"	column="departmentname" 	javaType="String" />
+		<result property="fk_positionno"	column="fk_positionno" 		javaType="String" />
+		<result property="positionname"		column="positionname" 		javaType="String" />
+		<result property="name"		 		column="name" 				javaType="String" />
+	</resultMap>
+	<select id="getOrganization" resultMap="organizationList">
+		select employeeid, fk_departno, departmentname, fk_positionno, positionname, name
+		from 
+		(
+		    select employeeid, fk_departno, departmentname, fk_positionno, name,retire
+		    from tbl_employee E
+		    JOIN tbl_department D
+		    ON E.fk_departno = D.departno
+		    where admin = 1
+		) V
+		JOIN tbl_position P
+		ON V.fk_positionno = P.positionno
+		where V.retire = 0
+		order by fk_positionNo, fk_departno, employeeID asc
+	</select>
 	
 </mapper>
