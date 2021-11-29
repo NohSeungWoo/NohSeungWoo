@@ -57,6 +57,7 @@ public class BoardVO_OHJ {
 	////////////////////////////////////////////
 	private String profilename; 	 // 글쓴이의 프로필 이미지
 	////////////////////////////////////////////
+	private String userType;		 // 글쓴이타입 (공개게시판은 public, 익명게시판은 secret이다.)
 	
 	public BoardVO_OHJ() {}
 	
@@ -257,9 +258,19 @@ public class BoardVO_OHJ {
 
 	public void setAttach(MultipartFile attach) {
 		this.attach = attach;
+	}
+	
+	////////////////////////////////////////////	
+	
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
 	}	
 
-	
+
 	
 
 	

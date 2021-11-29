@@ -322,7 +322,16 @@
 								<%-- === 댓글쓰기가 있는 게시판 끝 === --%>
 							
 							</td>
-							<td class="verticalM" align="center">${boardvo.name}</td>
+							<td class="verticalM" align="center">
+								
+								<c:if test='${boardvo.userType == "secret"}'> <!-- 게시판유형이 익명형인 경우 -->
+									***
+								</c:if>
+								<c:if test='${boardvo.userType == "public"}'> <!-- 게시판유형이 일반형인 경우 -->
+									${boardvo.name}
+								</c:if>
+								
+							</td>
 							<td class="verticalM" align="center">${boardvo.regDate}</td>
 							<td class="verticalM" align="center">${boardvo.readCount}</td>
 						</tr>

@@ -180,7 +180,16 @@
 							/* 댓글이 존재하는 경우 */
 							html += "<td class='brStyle' align='center'>"+(index+1)+"</td>";
 							html += "<td class='brStyle'>"+item.content+"</td>";
-							html += "<td class='brStyle' align='center'>"+item.positionName+"&nbsp;"+item.name+"</td>";
+							html += "<td class='brStyle' align='center'>"+
+										
+										"<c:if test='${boardvo.userType == \"secret\"}'>"+
+											"***"+
+										"</c:if>"+
+										"<c:if test='${boardvo.userType == \"public\"}'>"+
+											item.positionName+"&nbsp;"+item.name+
+										"</c:if>"+
+										
+									"</td>";
 							html += "<td align='center'>"+item.regDate+"</td>";
 						html += "</tr>";
 					});
@@ -262,7 +271,16 @@
 				<td colspan="4"><strong style="font-size: 18px;">${requestScope.boardvo.subject}</strong></td>
 			</tr>
 			<tr style="border-bottom: solid 1px #dee2e6;">
-				<td>작성자 : ${requestScope.boardvo.positionName} ${requestScope.boardvo.name}</td>
+				<td>작성자 : 
+				
+					<c:if test='${boardvo.userType == "secret"}'> <!-- 게시판유형이 익명형인 경우 -->
+						***
+					</c:if>
+					<c:if test='${boardvo.userType == "public"}'> <!-- 게시판유형이 일반형인 경우 -->
+						${requestScope.boardvo.positionName} ${requestScope.boardvo.name}
+					</c:if>
+				
+				</td>
 				<td>글종류 : ${requestScope.boardvo.bCategoryName}</td>
 				<td>조회수 : <span>${requestScope.boardvo.readCount}</span></td>
 				<td>작성일자 : ${requestScope.boardvo.regDate}</td>
