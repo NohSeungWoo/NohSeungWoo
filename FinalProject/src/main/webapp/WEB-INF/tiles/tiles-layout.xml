@@ -46,7 +46,7 @@
    
 	<!-- 여기서부터는 개인별 tiles입니다.(정렬 : 이름 가나다순) -->   
 	
-	<!-- ==== 강경훈 ==== -->
+	<!-- ==== 강경훈(1) ==== -->
 	<definition name="layout-tiles_KKH"  template="/WEB-INF/tiles/layout/layout-tiles_KKH.jsp"> 
 	   <put-attribute name="header"  value="/WEB-INF/tiles/tile_KKH/header.jsp" />
 	   <put-attribute name="sideinfo"  value="/WEB-INF/tiles/tile_KKH/sideinfo.jsp" />
@@ -61,6 +61,23 @@
 	   <put-attribute name="content" value="/WEB-INF/views/tiles_KKH/{1}/{2}.jsp"/>
 	</definition>
 	<definition name="*/*/*.tiles_KKH" extends="layout-tiles_KKH">
+	   <put-attribute name="content" value="/WEB-INF/views/tiles_KKH/{1}/{2}/{3}.jsp"/>
+	</definition>
+	<!-- ==== 강경훈(2) ==== -->
+	<definition name="layout-tiles_KKH2"  template="/WEB-INF/tiles/layout/layout-tiles_KKH2.jsp"> 
+	   <put-attribute name="header"  value="/WEB-INF/tiles/tile_KKH2/header.jsp" />
+	   <put-attribute name="sideinfo"  value="/WEB-INF/tiles/tile_KKH2/sideinfo.jsp" />
+	   <put-attribute name="content" value="" />
+	   <put-attribute name="footer"  value="/WEB-INF/tiles/tile_KKH2/footer.jsp" />
+	</definition>
+	
+	<definition name="*.tiles_KKH2" extends="layout-tiles_KKH2">
+	   <put-attribute name="content" value="/WEB-INF/views/tiles_KKH/{1}.jsp"/>
+	</definition>
+	<definition name="*/*.tiles_KKH2" extends="layout-tiles_KKH2">
+	   <put-attribute name="content" value="/WEB-INF/views/tiles_KKH/{1}/{2}.jsp"/>
+	</definition>
+	<definition name="*/*/*.tiles_KKH2" extends="layout-tiles_KKH2">
 	   <put-attribute name="content" value="/WEB-INF/views/tiles_KKH/{1}/{2}/{3}.jsp"/>
 	</definition>
 	
