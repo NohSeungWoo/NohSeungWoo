@@ -62,6 +62,8 @@ public class WHCController {
 	@RequestMapping(value = "/index.gw")
 	public String index(HttpServletRequest request) {
 		
+		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
+		
 		return "main/index.tiles1";
 		//	/WEB-INF/views/tiles1/main/index.jsp 파일을 생성한다.
 	}

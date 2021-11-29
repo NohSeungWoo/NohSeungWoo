@@ -181,7 +181,7 @@
 				  	</div>
 				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
-				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>"><i style="" class="far fa-calendar-alt fa-2x"></i><br>일정</a>
+				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/schedule.gw"><i style="" class="far fa-calendar-alt fa-2x"></i><br>일정</a>
 				    	</div>
 				  	</div>
 				  	<div class="card bg-primary py-2 shadow">
