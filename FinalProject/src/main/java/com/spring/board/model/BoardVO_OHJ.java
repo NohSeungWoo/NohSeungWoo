@@ -58,6 +58,8 @@ public class BoardVO_OHJ {
 	private String profilename; 	 // 글쓴이의 프로필 이미지
 	////////////////////////////////////////////
 	private String userType;		 // 글쓴이타입 (공개게시판은 public, 익명게시판은 secret이다.)
+	////////////////////////////////////////////
+	private String header; 			 // 말머리설정 ([공지]같은걸 보여주는 용도임. 사용하면 y, 사용안하면 n)
 	
 	public BoardVO_OHJ() {}
 	
@@ -268,8 +270,17 @@ public class BoardVO_OHJ {
 
 	public void setUserType(String userType) {
 		this.userType = userType;
-	}	
+	}
 
+	////////////////////////////////////////////	
+	
+	public String getHeader() {
+		return header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
+	}	
 
 	
 

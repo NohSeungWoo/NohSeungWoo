@@ -15,8 +15,8 @@
 
 	<!-- === 게시판 만들기 === -->
 	<insert id="makeBCategory" parameterType="com.spring.board.model.BoardCategoryVO_OHJ">
-		insert into tbl_boardCategory(bCategorySeq,bCategoryName,userType,writeAccess,commentAccess)
-		values(tbl_boardCategory_bCategorySeq.nextval, #{bCategoryName}, #{userType}, #{writeAccess}, #{commentAccess})
+		insert into tbl_boardCategory(bCategorySeq,bCategoryName,userType,writeAccess,commentAccess,header)
+		values(tbl_boardCategory_bCategorySeq.nextval, #{bCategoryName}, #{userType}, #{writeAccess}, #{commentAccess},#{header})
 	</insert>
 
 	<!-- === 게시판 종류 목록 가져오기(Ajax 로 처리) === -->
@@ -282,10 +282,12 @@
 			  먼저 위의 &148(나는 &120) 을 주석처리 한 이후에 아래와 같이 한다. -> ,fileName(WAS에 저장된 파일명) 추가함.
 	-->
 	<!-- 익명형 게시판을 위해, join과 userType추가함 -->
+	<!-- 말머리설정을 위해, header와 bCategoryName추가함 -->
 	<select id="boardListSearchWithPaging" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select fk_bCategorySeq, boardSeq, subject, name, regDate, readCount, commentCount
 			  ,fileName
 			  , userType
+			  , header, bCategoryName
 		from
 		(
 		    select row_number() over(order by boardSeq desc) AS rno
@@ -294,6 +296,7 @@
 		         , commentCount
 		         ,fileName
 		         , userType
+		         , header, bCategoryName
 		    from tbl_board B JOIN tbl_employee E
 		    ON B.fk_employeeId = E.employeeId
 		    JOIN tbl_boardCategory C

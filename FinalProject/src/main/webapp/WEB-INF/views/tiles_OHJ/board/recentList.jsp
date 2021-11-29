@@ -308,9 +308,11 @@
 								--%>
 								
 								
-								<c:if test="${boardvo.fk_bCategorySeq == 1}">
+								<c:if test='${boardvo.header == "y"}'> <!-- 말머리를 사용하는 게시판인 경우 -->
+									<%-- <span style="color: #3377ff; font-weight: bold;">[${boardvo.bCategoryName}]</span>&nbsp; --%> <!-- 뿌잉 -->
 									<span style="color: #3377ff; font-weight: bold;">[공지]</span>&nbsp;
 								</c:if>
+								
 								
 								<%-- === 댓글쓰기가 있는 게시판 시작 === --%>
 								<c:if test="${boardvo.commentCount > 0}">
