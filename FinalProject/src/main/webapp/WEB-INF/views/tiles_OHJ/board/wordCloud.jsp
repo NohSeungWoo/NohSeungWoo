@@ -5,7 +5,7 @@
 	.highcharts-figure,
 	.highcharts-data-table table {
 	    min-width: 320px;
-	    max-width: 800px;
+	    max-width: 800px; 
 	    margin: 1em auto;
 	}
 	
@@ -44,7 +44,9 @@
 	.highcharts-data-table tr:hover {
 	    background: #f1f7ff;
 	}
+	
 	/* 이 위에는 하이차트에서 가져온거다. */
+	
 </style>
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -100,11 +102,12 @@
 	});// end of $(document).ready(function(){})------------------------
 </script>
 
-<figure class="highcharts-figure">
+
+<figure class="highcharts-figure border">
     <div id="container"></div>
     <p class="highcharts-description">
     	위의 통계자료는 각각의 단어들이 얼마나 검색이 되었는지 빈도를 시각화해줍니다.<br>
-    	글자의 크기가 클수록 검색 빈도가 높은 글자이며, 크기가 작을수록 검색 빈도가 낮은 글자입니다.
+    	* 글자의 크기가 클수록 검색 빈도가 높은 글자이며, 크기가 작을수록 검색 빈도가 낮은 글자입니다.
     </p>
 </figure>
 
