@@ -249,7 +249,15 @@
 		<table class="table">
 			<tr>
 				<th rowspan="2" width="10%" style="padding: 0; text-align: center;">
-					<img alt="기본프로필_kh.jpg" src="<%= ctxPath%>/resources/images/기본프로필_kh.jpg" width="90" height="100">
+					
+					<c:if test="${empty requestScope.boardvo.profilename}">
+					<img alt="기본프로필 이미지.jpg" src="<%= ctxPath%>/resources/images/기본프로필_kh.jpg" width="90" height="100">
+					</c:if>
+					
+					<c:if test="${not empty requestScope.boardvo.profilename}">
+					<img alt="해당사원의 프로필이미지.jpg" src="<%= ctxPath%>/resources/empIMG/${requestScope.boardvo.profilename}" width="90" height="100">
+					</c:if>
+					
 				</th>
 				<td colspan="4"><strong style="font-size: 18px;">${requestScope.boardvo.subject}</strong></td>
 			</tr>

@@ -43,6 +43,8 @@ public class BoardVO_OHJ {
 	////////////////////////////////////////////
 	private String commentAccess; 	 // 댓글허용
 	////////////////////////////////////////////
+	private String profilename; 	 // 글쓴이의 프로필 이미지
+	////////////////////////////////////////////
 	
 	public BoardVO_OHJ() {}
 	
@@ -195,9 +197,20 @@ public class BoardVO_OHJ {
 
 	public void setCommentAccess(String commentAccess) {
 		this.commentAccess = commentAccess;
+	}
+	
+	////////////////////////////////////////////
+	
+	public String getProfilename() {
+		return profilename;
+	}
+
+	public void setProfilename(String profilename) {
+		this.profilename = profilename;
 	}	
 	
 	
+
 	
 	
 	
