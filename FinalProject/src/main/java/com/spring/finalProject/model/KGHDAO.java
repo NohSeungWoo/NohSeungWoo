@@ -357,6 +357,13 @@ public class KGHDAO implements InterKGHDAO {
 		int n = sqlsession.update("KangGH.empDelEnd", paraMap);
 		return n;
 	}
+
+	// === 조직도 리스트 가져오기(select) === //
+	@Override
+	public List<Map<String, String>> getOrganization() {
+		List<Map<String, String>> organizationList = sqlsession.selectList("KangGH.getOrganization");
+		return organizationList;
+	}
 	
 
 

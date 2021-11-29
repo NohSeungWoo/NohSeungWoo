@@ -130,6 +130,9 @@ public interface InterKGHDAO {
 
 	// 새비밀번호 업데이트 메서드(update) 
 	int newPasswordUpdate(Map<String, String> paraMap);
+
+	// 조직도 리스트 가져오기(select)
+	List<Map<String, String>> getOrganization();
 	
 
 	

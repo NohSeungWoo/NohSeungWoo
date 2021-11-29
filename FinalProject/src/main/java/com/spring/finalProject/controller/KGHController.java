@@ -32,6 +32,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.spring.finalProject.common.FileManager;
 import com.spring.finalProject.common.GoogleMail_KGH;
 import com.spring.finalProject.common.MyUtil_KGH;
@@ -329,9 +332,7 @@ public class KGHController {
 	// === 마이페이지 이동 메서드 === //
 	@RequestMapping(value = "mypage.gw")
 	public ModelAndView requiredLogin_mypage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
-		
 		mav.setViewName("main/mypage.tiles1");
-		
 		return mav;
 	}
 	
@@ -421,6 +422,13 @@ public class KGHController {
 		}
 		
 		if(n == 1) {
+			HttpSession session = mrequest.getSession();
+			EmployeeVO_KGH loginuser = (EmployeeVO_KGH)session.getAttribute("loginuser");
+			loginuser.setProfilename(empvo.getProfilename());
+			loginuser.setOrgProfilename(empvo.getOrgProfilename());
+			loginuser.setFileSize(empvo.getFileSize());
+			session.setAttribute("loginuser", loginuser);
+			
 			String msg = "정보 수정이 완료되었습니다.";
 			String loc = mrequest.getContextPath() + "/index.gw";
 			
@@ -445,9 +453,6 @@ public class KGHController {
 	public ModelAndView requiredAdmin_empList(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
 		List<Map<String, String>> empList = null;
-		
-		// 직원목록 가져오기 메서드
-		// empList = service.getEmpList();
 		
 		String department = request.getParameter("departmentname");
 		String position = request.getParameter("positionname");
@@ -619,7 +624,6 @@ public class KGHController {
 	@RequestMapping(value = "admin/empRegister.gw")
 	public ModelAndView requiredAdmin_empRegister(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		mav.setViewName("admin/empRegister.tiles_KKH");
-		
 		return mav;
 	}
 	
@@ -802,8 +806,6 @@ public class KGHController {
 	public ModelAndView requiredAdmin_empListEdit(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
 		String employeeID = request.getParameter("empId");
-		
-		// System.out.println(employeeID);
 		
 		// === 특정 회원에 대한 정보 가져오기(select) === //
 		Map<String, String> map = service.empListEdit(employeeID);
@@ -1621,12 +1623,37 @@ public class KGHController {
 	}
 	
 	// === 직원 조직도 페이지 이동 === //
-	@RequestMapping(value = "organization-chart.gw")
+	@RequestMapping(value = "/organization-chart.gw")
 	public ModelAndView requiredLogin_organization_chart(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		getCurrentURL(request);
 		
-		mav.setViewName("organization/organization_chart.tiles_KKH");
-		
+		mav.setViewName("organization/organization_chart.tiles1");
 		return mav;
+	}
+	
+	
+	// === 관리자 조직도 가져오기(select) === //
+	@ResponseBody
+	@RequestMapping(value = "/getOrganizationList.gw", produces = "text/plain;charset=UTF-8")
+	public String getOrganizationList() {
+		List<Map<String, String>> organizationList = service.getOrganization();
+		
+		Gson gson = new Gson();
+		JsonArray jsonArr = new JsonArray();
+		
+		for(Map<String, String> map : organizationList) {
+			JsonObject jsonObj = new JsonObject();
+			jsonObj.addProperty("employeeid", map.get("employeeid"));
+			jsonObj.addProperty("fk_departno", map.get("fk_departno"));
+			jsonObj.addProperty("departmentname", map.get("departmentname"));
+			jsonObj.addProperty("fk_positionno", map.get("fk_positionno"));
+			jsonObj.addProperty("positionname", map.get("positionname"));
+			jsonObj.addProperty("name", map.get("name"));
+		
+			jsonArr.add(jsonObj);
+		}
+		
+		return gson.toJson(jsonArr);
 	}
 	
 	////////////////////////////////////////////////////////

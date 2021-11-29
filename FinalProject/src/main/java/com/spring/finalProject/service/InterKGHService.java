@@ -114,11 +114,14 @@ public interface InterKGHService {
 	// 관리자 권한 삭제 메서드(update)
 	int adminDelEnd(String employeeid);
 
-	// === 삭제하고자 하는 직원의 정보가 팀장일 경우 부서 테이블 managerid null처리 (update) === //
+	// 삭제하고자 하는 직원의 정보가 팀장일 경우 부서 테이블 managerid null처리 (update)
 	void delManagerId(Map<String, String> paraMap);
 
-	// === 삭제하고자 하는 직원의 정보 update(admin, retire, retiredate) === //
+	// 삭제하고자 하는 직원의 정보 update(admin, retire, retiredate)
 	int empDelEnd(Map<String, String> paraMap);
+
+	// 조직도 리스트 가져오기(select)
+	List<Map<String, String>> getOrganization();
 	
 	
 

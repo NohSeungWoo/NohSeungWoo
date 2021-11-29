@@ -222,7 +222,7 @@
 		       <label class="float-right">이메일</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <input type="text" class="form-control mt-1" id="email" name="email" value="${sessionScope.loginuser.email}" disabled style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="email" name="email" value="${sessionScope.loginuser.email}" style="width: 100%;">
 		    </div>
 		    <div class="w-100 my-4"></div>
 		    
@@ -286,9 +286,9 @@
 		       <label class="float-right">프로필사진</label>
 	    	</div>
 		    <div class="col-8 col-lg-4 filebox">
-		    	<input class="upload-name form-control" value="${sessionScope.loginuser.profilename}"  disabled placeholder="첨부파일">
+		    	<input class="upload-name form-control"  disabled placeholder="첨부파일">
 			    <label for="file">파일찾기</label> 
-			    <input type="file" id="file">
+			    <input type="file" id="file" name="attach">
 			    
 		       <!-- <input type="file" class="mt-1 btn" id="attach" name="attach" style="width: 100%;"> -->
 		    </div>
