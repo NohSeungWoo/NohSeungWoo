@@ -590,7 +590,8 @@ public class OHJController {
 		
 		// === 하이차트 - 검색어의 빈도를 나타내기 위해, 검색어가 있으면 테이블에 담는 용도 START === //
 		if(!"".equals(searchWord)) { // 검색어가 있는 경우
-			// tbl_keywordCloud테이블에 keyword컬럼에 searchWord값을 insert한다.
+			// tbl_keywordHistory테이블의 keyword컬럼에 searchWord값을 insert한다.
+			service.registerSearchKeyword(searchWord);
 		}
 		// === 하이차트 - 검색어의 빈도를 나타내기 위해, 검색어가 있으면 테이블에 담는 용도 END === //
 		
@@ -1005,6 +1006,15 @@ public class OHJController {
 	// === &192. 차트를 보여주는 view단 === //
 	@RequestMapping(value="/board/wordCloud.gw")
 	public String wordCloud() {
+		
+		// '검색어키워드기록'을 가져와서 하나의 문자열로 만들기
+	/*	List<String> keywordList = service.getKeywordHistory();
+		
+		String str_keyword = "";
+		for(int i=0; i<keywordList.size(); i++) {
+			str_keyword += keywordList.get(i);
+		}
+	*/	
 		return "board/wordCloud.tiles_OHJ";
 	}
 	
