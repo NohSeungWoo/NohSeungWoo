@@ -26,8 +26,18 @@
 		order by bCategorySeq
 	</select>	
 
+	<!-- === 해당하는 게시판 카테고리명 알아오기 === -->
+	<select id="getBCategoryName" parameterType="String" resultType="String">
+		select bCategoryName
+		from tbl_boardCategory
+		where bCategorySeq = #{bCategory}
+	</select>
 
 
+	
+	
+	
+	
 	
 
 
@@ -91,6 +101,7 @@
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select previousBoardSeq, previousSubject
 			 , commentAccess
+			 , profilename
 		     , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		     , regDate, readCount
 		     , nextBoardSeq,nextSubject
@@ -99,7 +110,8 @@
 		    select lag(boardSeq,1) over(order by boardSeq desc) AS previousBoardSeq
 		         , lag(subject,1) over(order by boardSeq desc) AS previousSubject
 		              
-		         , commentAccess     
+		         , commentAccess
+		         , profilename 
 		         , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		         , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 		    
@@ -188,17 +200,23 @@
 	</select>
 	
 	
-	<!-- === &105. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === -->
+	<!-- === &105. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === + fk_bCategorySeq와 content추가 / + JOIN 및 bCategoryName추가 -->
 	<select id="boardListSearch" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
-		select boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		select fk_bCategorySeq, content, bCategoryName
+			 , boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 			 , commentCount
 		from tbl_board B JOIN tbl_employee E
 		ON B.fk_employeeId = E.employeeId
+		JOIN tbl_boardCategory C
+		ON B.fk_bCategorySeq = C.bCategorySeq
+		
 		where 1=1
 		
-		<if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+	<!--	
+		<if test='fromDate == "" and toDate == ""'> 맨처음목록보기에서는 3달전~현재의 글을 보여줌
 		and regDate BETWEEN add_months(sysdate,-3) AND sysdate
 		</if>
+	-->	
 		<if test='fromDate != "" and toDate != ""'>
 		and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
 		</if>

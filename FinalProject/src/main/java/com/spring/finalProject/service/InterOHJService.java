@@ -17,9 +17,9 @@ public interface InterOHJService {
 	
 	// 게시판 종류 목록 가져오기(Ajax 로 처리)
 	List<BoardCategoryVO_OHJ> viewCategoryList();
-		
-		
-		
+	
+	// 해당하는 게시판 카테고리명 알아오기
+	String getBCategoryName(String bCategory);	
 		
 		
 		
@@ -58,6 +58,8 @@ public interface InterOHJService {
 
 	// 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것)
 	List<BoardVO_OHJ> boardListSearchWithPaging(Map<String, String> paraMap);
+
+	
 
 	
 

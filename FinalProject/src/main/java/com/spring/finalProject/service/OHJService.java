@@ -58,7 +58,23 @@ public class OHJService implements InterOHJService {
 		return bcategoryList;
 	}
 		
-		
+	// === 해당하는 게시판 카테고리명 알아오기 === //
+	@Override
+	public String getBCategoryName(String bCategory) {
+		String bCategoryName = dao.getBCategoryName(bCategory);
+		return bCategoryName;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 		
 		
 		
@@ -179,6 +195,8 @@ public class OHJService implements InterOHJService {
 		List<BoardVO_OHJ> boardList = dao.boardListSearchWithPaging(paraMap);
 		return boardList;
 	}
+
+	
 
 	
 

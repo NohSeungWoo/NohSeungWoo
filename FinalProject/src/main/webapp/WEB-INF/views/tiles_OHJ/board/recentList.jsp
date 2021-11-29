@@ -79,6 +79,23 @@
 			$("input#searchWord").val("${requestScope.searchWord}");
 		}
 		
+		
+		
+		// === Excel파일로 저장 클릭시 START === //
+		$("button#btnExcel").click(function(){
+			
+			var frm = document.searchFrm;
+			
+			frm.method = "POST"; // 엑셀파일로 다운이므로 POST방식이다!
+			frm.action = "<%= ctxPath%>/excel/boardDownloadExcelFile.gw"; // 절대경로
+			frm.submit();
+		//	alert("엑셀로 저장하기!");
+			
+		});// end of $("button#btnExcel").click(function(){})-----------------------
+		// === Excel파일로 저장 클릭시 END === //
+		
+		
+		
 	});// end of $(document).ready(function(){})---------------------------
 	
 	
@@ -260,6 +277,9 @@
 				<option>10</option>
 			</select>
 			 -->
+			
+			<button type="button" class="btn btn-outline-secondary btn-sm" id="btnExcel" >Excel파일로 저장</button>
+			
 		</div>
 		<!-- 게시물 건수 종료 -->
 		
