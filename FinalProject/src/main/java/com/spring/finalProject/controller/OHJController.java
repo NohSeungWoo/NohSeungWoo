@@ -1005,16 +1005,25 @@ public class OHJController {
 	
 	// === &192. 차트를 보여주는 view단 === //
 	@RequestMapping(value="/board/wordCloud.gw")
-	public String wordCloud() {
+	public String wordCloud(Model model) {
 		
 		// '검색어키워드기록'을 가져와서 하나의 문자열로 만들기
-	/*	List<String> keywordList = service.getKeywordHistory();
+		List<String> keywordList = service.getKeywordHistory();
 		
 		String str_keyword = "";
 		for(int i=0; i<keywordList.size(); i++) {
-			str_keyword += keywordList.get(i);
+			
+			if(i==0) {
+				str_keyword += keywordList.get(i);
+			}
+			else {
+				str_keyword += ", " + keywordList.get(i);
+			}
+			
 		}
-	*/	
+		
+		model.addAttribute("str_keyword", str_keyword);
+		
 		return "board/wordCloud.tiles_OHJ";
 	}
 	

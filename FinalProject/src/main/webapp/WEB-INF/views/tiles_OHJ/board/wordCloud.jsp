@@ -56,12 +56,12 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
-		
-		const text = 'Apple apple Apple PIZZA Apple apple';
+	//    const text = 'Lorem amet, elit amet. amet amet elit, amet quam.',	
+		const text = '${requestScope.str_keyword}';
 	    // 검색했던 기록들 가져오기(중복 허용)
-	    
 		
-		lines = text.split(/[,\. ]+/g),
+		
+		lines = text.split(/[,\.]+/g),
 	    data = lines.reduce((arr, word) => {
 	        let obj = Highcharts.find(arr, obj => obj.name === word);
 	        if (obj) {

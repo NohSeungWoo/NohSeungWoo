@@ -309,7 +309,10 @@
 		values(tbl_keywordHistory_keywordSeq.nextval, lower(#{searchWord}))
 	</insert>
 	
-	
+	<!-- === '검색어키워드기록'을 가져와서 하나의 문자열로 만들기 === -->
+	<select id="getKeywordHistory" resultType="String">
+		select keyword from tbl_keywordHistory
+	</select>
 	
 	
 	
