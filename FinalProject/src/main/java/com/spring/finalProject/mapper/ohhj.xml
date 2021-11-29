@@ -190,17 +190,20 @@
 	</select>
 	
 	
-	<!-- === &105. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === -->
+	<!-- === &105. 페이징 처리를 안한, 검색어가 있는 전체 글목록 보여주기 === + fk_bCategorySeq와 content추가 -->
 	<select id="boardListSearch" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
-		select boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		select fk_bCategorySeq, content
+			 , boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 			 , commentCount
 		from tbl_board B JOIN tbl_employee E
 		ON B.fk_employeeId = E.employeeId
 		where 1=1
 		
-		<if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
+	<!--	
+		<if test='fromDate == "" and toDate == ""'> 맨처음목록보기에서는 3달전~현재의 글을 보여줌
 		and regDate BETWEEN add_months(sysdate,-3) AND sysdate
 		</if>
+	-->	
 		<if test='fromDate != "" and toDate != ""'>
 		and to_char(regDate, 'yyyy-mm-dd') BETWEEN #{fromDate} AND #{toDate}
 		</if>
