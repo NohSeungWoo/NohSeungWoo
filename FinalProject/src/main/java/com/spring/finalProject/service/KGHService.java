@@ -1,5 +1,8 @@
 package com.spring.finalProject.service;
 
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.spring.finalProject.common.AES256;
 import com.spring.finalProject.model.DepartmentVO_KGH;
 import com.spring.finalProject.model.EmployeeVO_KGH;
 import com.spring.finalProject.model.InterKGHDAO;
@@ -22,17 +26,43 @@ public class KGHService implements InterKGHService {
 	// Type 에 따라 Spring 컨테이너가 알아서 bean 으로 등록된 com.spring.model.BoardDAO 의 bean 을  dao 에 주입시켜준다. 
     // 그러므로 dao 는 null 이 아니다.
 	
+	// === #45. 양방향 암호화 알고리즘인 AES256 를 사용하여 복호화 하기 위한 클래스 의존객체 주입하기(DI: Dependency Injection) ===
+	@Autowired
+	private AES256 aes;
+	// Type 에 따라 Spring 컨테이너가 알아서 bean 으로 등록된 com.spring.board.common.AES256 의 bean 을  aes 에 주입시켜준다. 
+    // 그러므로 aes 는 null 이 아니다.
+    // com.spring.board.common.AES256 의 bean 은 /webapp/WEB-INF/spring/appServlet/servlet-context.xml 파일에서 bean 으로 등록시켜주었음.
+	
 	@Override
 	public List<Map<String, String>> getEmpList() {
-		
 		// === 직원 목록 가져오기(select) 메서드 === //
 		List<Map<String, String>> empList = dao.getEmpList();
+		
+//		for (int i = 0; i < empList.size(); i++) {
+//			String email = empList.get(i).get("email");
+//			String mobile = empList.get(i).get("mobile");
+//			
+//			Map<String, String> paraMap = new HashMap<>();
+//			try {
+//				paraMap.put("email", aes.decrypt(email));
+//				paraMap.put("mobile", aes.decrypt(mobile));
+//			} catch (UnsupportedEncodingException | GeneralSecurityException e) {
+//				e.printStackTrace();
+//			}
+//			
+//			empList.add(i, paraMap);
+//			System.out.println(paraMap.get("email"));
+//			System.out.println(paraMap.get("mobile"));
+//			
+//			System.out.println(empList.get(i).get("email"));
+//			System.out.println(empList.get(i).get("mobile"));
+//		}
+//		
 		return empList;
 	}
 
 	@Override
 	public int getTotalCount(Map<String, String> paraMap) {
-		
 		// === 총 게시물 건수(totalCount) 가져오기(select) === //
 		int totalCount = dao.getTotalCount(paraMap);
 		return totalCount;
@@ -42,6 +72,7 @@ public class KGHService implements InterKGHService {
 	public List<Map<String, String>> getEmpListWithPaging(Map<String, String> paraMap) {
 		// === 페이징 처리한 직원 목록 가져오기(검색이 있든지, 검색이 없든지 다 포함된 것) === //
 		List<Map<String, String>> empList = dao.getEmpListWithPaging(paraMap);
+
 		return empList;
 	}
 
@@ -73,6 +104,27 @@ public class KGHService implements InterKGHService {
 		return empvo;
 	}
 
+	@Override
+	public String emailFindEnd(Map<String, String> paraMap) {
+		// === 이메일 찾기 완료 메서드(select) === //
+		String email = dao.emailFindEnd(paraMap);
+		return email;
+	}
+	
+	@Override
+	public boolean sendCodeEmail(Map<String, String> paraMap) {
+		// === 해당하는 이메일과 이름에 존재하는 사원 정보 찾기(select) === //
+		boolean isExists = dao.sendCodeEmail(paraMap);
+		return isExists;
+	}
+
+	@Override
+	public int newPasswordUpdate(Map<String, String> paraMap) {
+		// === 새비밀번호 업데이트 메서드(update) === //
+		int n = dao.newPasswordUpdate(paraMap);
+		return n;
+	}
+	
 	@Override
 	public boolean emailDuplicateCheck(String email) {
 		// === 이메일 중복 여부 검사하기(select) === //
@@ -305,6 +357,14 @@ public class KGHService implements InterKGHService {
 		return n;
 	}
 
+	@Override
+	public List<Map<String, String>> getOrganization() {
+		// === 조직도 리스트 가져오기(select) === //
+		List<Map<String, String>> organizationList = dao.getOrganization();
+		return organizationList;
+	}
 
+	
 
+	
 }

@@ -13,7 +13,7 @@
 		font-weight: bold;
 	} 
 	
-	#aStyle{ /* 삭제링크에 마우스올리면 커서 모양 변경 */
+	.aStyle{ /* 수정, 삭제링크에 마우스올리면 커서 모양 변경 */
 		cursor: pointer;
 	}
 	
@@ -228,8 +228,8 @@
 			<!-- 링크 (답글, 수정, 삭제, 게시글종류 이동) -->
 			<span class="mr-auto d-flex"> <!-- 바깥에 d-flex를 주고, 내부에 오른쪽margin을 auto로 주면 [*     **] 이런식으로 배치된다. -->
 				<a href="#" class="linkStyle mr-2 my-auto">답글</a> <!-- 세로중 가운데에 정렬하기 위해서 바깥에 d-flex를 주고 내부에 y축으로 auto를 줌. -->
-				<a onclick="goEdit();" class="linkStyle mr-2 my-auto">수정</a>
-				<a id="aStyle" onclick="delConfirm()" class="linkStyle mr-2 my-auto">삭제</a>
+				<a onclick="goEdit();" class="linkStyle aStyle mr-2 my-auto">수정</a>
+				<a onclick="delConfirm()" class="linkStyle aStyle mr-2 my-auto">삭제</a>
 				<a href="#" class="linkStyle my-auto">이동</a>
 			</span>
 			

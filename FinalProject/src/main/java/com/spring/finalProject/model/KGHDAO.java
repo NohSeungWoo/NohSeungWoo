@@ -64,6 +64,36 @@ public class KGHDAO implements InterKGHDAO {
 		return empvo;
 	}
 
+	// === 이메일 찾기 완료 메서드(select) === //
+	@Override
+	public String emailFindEnd(Map<String, String> paraMap) {
+		String email = sqlsession.selectOne("KangGH.emailFindEnd", paraMap);
+		return email;
+	}
+	
+	// === 해당하는 이메일과 이름에 존재하는 사원 정보 찾기(select) === //
+	@Override
+	public boolean sendCodeEmail(Map<String, String> paraMap) {
+		String employeeid = sqlsession.selectOne("KangGH.sendCodeEmail", paraMap);
+		boolean isExists = false;
+		
+		if(employeeid != null) {
+			isExists = true;
+		}
+		else {
+			isExists = false;
+		}
+		
+		return isExists;
+	}
+	
+	// === 새비밀번호 업데이트 메서드(update) === //
+	@Override
+	public int newPasswordUpdate(Map<String, String> paraMap) {
+		int n = sqlsession.update("KangGH.newPasswordUpdate", paraMap);
+		return n;
+	}
+	
 	// === 이메일 중복여부 검사하기(select) === //
 	@Override
 	public boolean emailDuplicateCheck(String email) {
@@ -88,7 +118,6 @@ public class KGHDAO implements InterKGHDAO {
 		return empId;
 	}
 
-	
 	// === 직원 정보 등록하기(insert) === //
 	@Override
 	public int empRegister(EmployeeVO_KGH emp) {
@@ -329,10 +358,13 @@ public class KGHDAO implements InterKGHDAO {
 		return n;
 	}
 
+	// === 조직도 리스트 가져오기(select) === //
+	@Override
+	public List<Map<String, String>> getOrganization() {
+		List<Map<String, String>> organizationList = sqlsession.selectList("KangGH.getOrganization");
+		return organizationList;
+	}
 	
-
-	
-
 
 
 }

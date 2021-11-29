@@ -158,8 +158,6 @@
 				var department = "";
 				var position = "";
 				
-				console.log(searchEmp);
-				
 				var frm = document.excelFrm;
 				frm.excelDepart.value = department;
 				frm.excelPosition.value = position;
@@ -182,8 +180,6 @@
 			dataType:"JSON",
 			success:function(json) {
 				if(json.length > 0) {
-			<%--	var html = "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=전체'>전체</a>"; --%>
-					
 					var html = "<a class='dropdown-item department'>전체</a>";
 					
 					$.each(json, function(index, item) {
@@ -192,8 +188,6 @@
 							
 						html += "<a class='dropdown-item department'>"+ departmentname +"</a>";
 						
-					<%--	html += "<a class='dropdown-item department' href='<%= ctxPath%>/admin/empList.gw?department=" + departmentname + "'>" + departmentname + "</a>";
-					--%>
 					});
 					
 					$("div#departmentName").html(html);
@@ -202,9 +196,6 @@
 						var department = $(this).text();
 						sessionStorage.setItem("department",department);
 						var position = sessionStorage.getItem("position");
-						
-						// alert("부서명 : " + department + ", 직급 : " + position);
-						// $.ajax
 						
 						departPositionSearch();
 						
@@ -240,8 +231,6 @@
 						sessionStorage.setItem("position",position);
 						var department = sessionStorage.getItem("department");
 						
-						// alert("부서명 : " + department + ", 직급 : " + position);
-						// $.ajax
 						departPositionSearch(department, position);
 					});
 				}
@@ -269,8 +258,6 @@
 	function departPositionSearch() {
 		var department = sessionStorage.getItem("department");
 		var position = sessionStorage.getItem("position");
-		
-		alert("~~ 확인용 department : " + department + ", 확인용 position : " + position);
 		
 		location.href = "<%= ctxPath%>/admin/empList.gw?departmentname=" + department + "&positionname=" + position;
 	}
@@ -332,7 +319,7 @@
 	  	</div>
 	  </div>
 	  <div id="displayList" style="position:absolute; z-index:2; background-color: white;  border: solid 1px #bfbfbf; width: 336px; height: 150px; margin-left: 8px; margin-top: 58px; border-top:0px; padding-left: 9px; border-radius: 10px;"></div>
-	  <div class="table-responsive" style="z-index: 1;">
+	  <div class="table-responsive" style="z-index: 1; height: 315px;">
 		  <table class="table col-12" style="width: 95%;">
 		    <thead class="thead-light">
 		      <tr>
