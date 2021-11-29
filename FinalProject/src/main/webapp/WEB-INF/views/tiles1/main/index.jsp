@@ -150,7 +150,7 @@
 					<span><img src="<%= ctxPath%>/resources/images/기본프로필_kh.jpg" style="border-radius: 50%; width:50px;"></span>
 				</c:if>
 				<c:if test="${sessionScope.loginuser.profilename != null }">
-					<span><img src="<%= ctxPath%>/resources/empIMG/${sessionScope.loginuser.profilename}" style="border-radius: 50%; width:50px;"></span>
+					<span><img src="<%= ctxPath%>/resources/empIMG/${sessionScope.loginuser.profilename}" style="border-radius: 50%; width:50px; height: 50px;"></span>
 				</c:if>
 				<b>${sessionScope.loginuser.name}님 안녕하세요!</b>
 			</c:if>
@@ -163,24 +163,20 @@
 				      		<a class="stretched-link" style="color:white" href="<%= ctxPath %>/timemanager.gw"><i style="" class="fas fa-stopwatch fa-2x"></i><br>근태관리</a>
 				    	</div>
 				  	</div>
+				  	
+				  	<div class="card bg-primary py-2 shadow">
+				    	<div class="card-body text-center">
+				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/organization-chart.gw"><i style="" class="fas fa-user-friends fa-2x"></i><br>조직도</a>
+				    	</div>
+				  	</div>
+				  	<div class="card bg-primary py-2 shadow">
+				    	<div class="card-body text-center">
+				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/chat.gw"><i style="" class="far fa-envelope fa-2x"></i><br>웹채팅</a>
+				    	</div>
+				  	</div>
 				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
 				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/approval.gw"><i style="" class="far fa-file-alt fa-2x"></i><br>전자결재</a>
-				    	</div>
-				  	</div>
-				  	<div class="card bg-primary py-2 shadow">
-				    	<div class="card-body text-center">
-				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/recentList.gw"><i style="" class="fas fa-chalkboard fa-2x"></i><br>게시판</a>
-				    	</div>
-				  	</div>
-				  	<div class="card bg-primary py-2 shadow">
-				    	<div class="card-body text-center">
-				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>"><i style="" class="fas fa-user-friends fa-2x"></i><br>조직도</a>
-				    	</div>
-				  	</div>
-			  		<div class="card bg-primary py-2 shadow">
-				    	<div class="card-body text-center">
-				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/chat.gw"><i style="" class="far fa-envelope fa-2x"></i><br>웹채팅</a>
 				    	</div>
 				  	</div>
 				  	<div class="card bg-primary py-2 shadow">
@@ -193,6 +189,23 @@
 				      		<a class="stretched-link" style="color:white;" href="<%=ctxPath%>/survey.gw"><i style="" class="fas fa-book-reader fa-2x"></i><br>설문조사</a>
 				    	</div>
 				  	</div>
+				  	<div class="card bg-primary py-2 shadow">
+				    	<div class="card-body text-center">
+				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/recentList.gw"><i style="" class="fas fa-chalkboard fa-2x"></i><br>게시판</a>
+				    	</div>
+				  	</div>
+				  	<div class="card bg-primary py-2 shadow">
+				    	<div class="card-body text-center">
+				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/mypage.gw"><i class="fas fa-user fa-2x"></i></i><br>마이페이지</a>
+				    	</div>
+				  	</div>
+				  	<c:if test="${sessionScope.loginuser != null and sessionScope.loginuser.admin == '1' }"> <%-- admin 으로 로그인 했으면 --%>
+				  	<div class="card bg-primary py-2 shadow">
+				    	<div class="card-body text-center">
+				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/admin/empList.gw"><i class="far fa-address-card fa-2x"></i><br>직원관리</a>
+				    	</div>
+				  	</div>
+				  	</c:if>
 				</div>
 				
 			</div>
