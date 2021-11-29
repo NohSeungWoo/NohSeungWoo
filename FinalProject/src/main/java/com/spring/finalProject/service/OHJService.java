@@ -209,6 +209,13 @@ public class OHJService implements InterOHJService {
 		dao.registerSearchKeyword(searchWord);
 	}
 
+	// === '검색어키워드기록'을 가져와서 하나의 문자열로 만들기 === //
+	@Override
+	public List<String> getKeywordHistory() {
+		List<String> keywordList = dao.getKeywordHistory();
+		return keywordList;
+	}
+
 	
 
 	

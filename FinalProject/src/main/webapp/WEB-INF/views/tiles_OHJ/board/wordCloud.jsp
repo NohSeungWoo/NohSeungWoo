@@ -56,12 +56,12 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
-		
-		const text = 'Apple apple Apple PIZZA Apple apple';
+	//    const text = 'Lorem amet, elit amet. amet amet elit, amet quam.',	
+		const text = '${requestScope.str_keyword}';
 	    // 검색했던 기록들 가져오기(중복 허용)
-	    
 		
-		lines = text.split(/[,\. ]+/g),
+		// , 또는 .이 나올 경우 구분자로 인식함 => 기존 하이차트 구분자에서 " "는 제거했다. 왜냐하면 "좋아하는 음식"이렇게 검색할 수도 있기 때문이다.
+		lines = text.split(/[,\.]+/g),
 	    data = lines.reduce((arr, word) => {
 	        let obj = Highcharts.find(arr, obj => obj.name === word);
 	        if (obj) {
