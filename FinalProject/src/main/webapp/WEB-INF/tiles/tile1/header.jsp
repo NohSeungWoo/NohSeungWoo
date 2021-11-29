@@ -87,7 +87,7 @@
 			     	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>/organization-chart.gw"><i class="fas fa-user-friends fa-lg"></i><br>조직도</a>
 			     </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">          
-	             	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>"><i class="far fa-calendar-alt fa-lg"></i><br>일정</a>
+	             	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>/schedule.gw"><i class="far fa-calendar-alt fa-lg"></i><br>일정</a>
 	          	 </li>
 			     <li class="nav-item active mx-2" style="text-align: center;">
 	             	<a class="nav-link menufont_size hovmenu" style="color:gray;" href="<%= ctxPath %>/chat.gw"><i class="far fa-envelope fa-lg"></i><br>웹채팅</a>
