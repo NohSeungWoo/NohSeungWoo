@@ -264,7 +264,12 @@
 					</c:if>
 					
 					<c:if test="${not empty requestScope.boardvo.profilename}">
-					<img alt="해당사원의 프로필이미지.jpg" src="<%= ctxPath%>/resources/empIMG/${requestScope.boardvo.profilename}" width="90" height="100">
+						<c:if test='${boardvo.userType == "secret"}'> <!-- 게시판유형이 익명형인 경우 -->
+							<img alt="기본프로필 이미지.jpg" src="<%= ctxPath%>/resources/images/기본프로필_kh.jpg" width="90" height="100">
+						</c:if>
+						<c:if test='${boardvo.userType == "public"}'> <!-- 게시판유형이 일반형인 경우 -->
+							<img alt="해당사원의 프로필이미지.jpg" src="<%= ctxPath%>/resources/empIMG/${requestScope.boardvo.profilename}" width="90" height="100">
+						</c:if>
 					</c:if>
 					
 				</th>
@@ -365,7 +370,7 @@
 		</c:if>
 	</table>
 	
-	
+	<br/>
 	
 	<%-- &83. 댓글쓰기 폼 추가 --%>
 	<!--
@@ -378,7 +383,7 @@
 	<c:if test='${requestScope.boardvo.commentAccess eq "y"}'> <%-- ${not empty sessionScope.loginuser} 를 추가안해도 글1개보기를 로그인한 사람만 볼 수 있도록 함. --%>
 		
 		<!-- 댓글쓰기 시작 -->
-		<div class="mt-5" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
+		<div class="mt-2" style="border-bottom: solid 1px #dee2e6; display: flex;"> <!-- span태그를 위아래로 꽉 채우기위한 flex -->
 			<strong style="border-bottom: solid 2px #37f;">댓글쓰기</strong>
 		</div>
 		
