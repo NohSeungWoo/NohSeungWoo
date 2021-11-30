@@ -239,7 +239,7 @@
 				<a href="#" class="linkStyle mr-2 my-auto">답글</a> <!-- 세로중 가운데에 정렬하기 위해서 바깥에 d-flex를 주고 내부에 y축으로 auto를 줌. -->
 				<a onclick="goEdit();" class="linkStyle aStyle mr-2 my-auto">수정</a>
 				<a onclick="delConfirm()" class="linkStyle aStyle mr-2 my-auto">삭제</a>
-				<a href="#" class="linkStyle my-auto">이동</a>
+				<!-- <a href="#" class="linkStyle my-auto">이동</a> -->
 			</span>
 			
 			<span>
