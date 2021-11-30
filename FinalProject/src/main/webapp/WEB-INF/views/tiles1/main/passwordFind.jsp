@@ -175,7 +175,7 @@
 <body>
 	<div class="row mt-4 mb-5">
 		<div class="col-8 offset-1">
-			<span class="h4" style="font-weight: bold;">이메일 찾기</span>
+			<span class="h4" style="font-weight: bold;">비밀번호 찾기</span>
 		</div>
 	</div>
 	

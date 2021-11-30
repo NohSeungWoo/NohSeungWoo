@@ -93,6 +93,10 @@
 	        	}
 			})
 			
+			$(".closeBtn").click(function() {
+				window.close();
+			});
+			
 			
 		});// end of $("span#findBtn").click(function() { })
 		
@@ -136,14 +140,20 @@
     </div>
     
     <div id="afterFind">
-    	<div id="findResult" class="row justify-content-center mt-5 pt-4">
+    	<div id="findResult" class="row justify-content-center mt-5 mb-5 pt-4">
 		       
+	    </div>
+	    <div class="col-6 offset-4">
+		    <span id="closeBtn2" class="closeBtn btn btn-dark ml-3" style="float:left; width: 80px; justify-content: center;">닫기</span>
 	    </div>
     </div>
     
     <div id="noFind">
-    	<div class="row justify-content-center mt-5 pt-4">
+    	<div class="row justify-content-center mt-5 mb-5 pt-4">
 		     <span style="font-weight: bold;">조회된 이메일이 없습니다.</span>
+	    </div>
+	    <div class="col-6 offset-4">
+		    <span id="closeBtn3" class="closeBtn btn btn-dark ml-3" style="float:left; width: 80px; justify-content: center;">닫기</span>
 	    </div>
     </div>
 </body>
