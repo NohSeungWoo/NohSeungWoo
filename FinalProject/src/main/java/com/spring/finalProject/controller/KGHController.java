@@ -375,6 +375,7 @@ public class KGHController {
 			String path = "C:\\git\\FinalProject\\FinalProject\\src\\main\\webapp\\resources\\empIMG";
           
 			try {
+				// 기존의 프로필 파일명에 대한 삭제 처리하기
 				FileManager.doFileDelete(fileName, path);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -424,6 +425,8 @@ public class KGHController {
 		if(n == 1) {
 			HttpSession session = mrequest.getSession();
 			EmployeeVO_KGH loginuser = (EmployeeVO_KGH)session.getAttribute("loginuser");
+			loginuser.setName(empvo.getName());
+			loginuser.setMobile(empvo.getMobile());
 			loginuser.setProfilename(empvo.getProfilename());
 			loginuser.setOrgProfilename(empvo.getOrgProfilename());
 			loginuser.setFileSize(empvo.getFileSize());

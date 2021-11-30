@@ -222,7 +222,7 @@
 		       <label class="float-right">이메일</label>
 	    	</div>
 		    <div class="col-8 col-lg-4">
-		       <input type="text" class="form-control mt-1" id="email" name="email" value="${sessionScope.loginuser.email}" style="width: 100%;">
+		       <input type="text" class="form-control mt-1" id="email" name="email" value="${sessionScope.loginuser.email}" disabled style="width: 100%;">
 		    </div>
 		    <div class="w-100 my-4"></div>
 		    
