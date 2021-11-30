@@ -101,7 +101,7 @@
 					var	html2 = "<span style='font-size:20pt; margin-left:20px;'>";
 					
 					if(pty == 0) { // 비가 안올때
-						html = "<img src='<%= request.getContextPath()%>/resources/images/weather/"+sky+".png'/ style='width:60px;'>"
+						html = "<img src='<%= request.getContextPath()%>/resources/images/weather/"+sky+".png' style='width:60px;'/>"
 						
 						if(sky == 1) {
 							html2 += "맑음";
@@ -116,11 +116,11 @@
 					}
 					else { // 비가 올때
 						if(pty == 7 || pty == 3){
-							html = "<img src='<%= request.getContextPath()%>/resources/images/weather/p3.png'/>"
+							html = "<img src='<%= request.getContextPath()%>/resources/images/weather/p3.png' style='width:60px;'/>"
 							html2 += "눈";
 						}
 						else {
-							html = "<img src='<%= ctxPath%>/resources/images/weather/p1.png'/>"
+							html = "<img src='<%= ctxPath%>/resources/images/weather/p1.png' style='width:60px;' />"
 							html2 += "비";
 						}
 					}
