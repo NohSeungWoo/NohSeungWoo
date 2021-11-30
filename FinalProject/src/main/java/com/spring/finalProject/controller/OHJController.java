@@ -363,8 +363,8 @@ public class OHJController {
 	
 	// === &58. 글목록 보기 페이지 요청(최근 게시물) === //
 	@RequestMapping(value="/recentList.gw")
-	public ModelAndView recentList(ModelAndView mav, HttpServletRequest request) { /* 뿌잉) 그룹웨어이므로 requiredLogin_을 추가해야한다. */
-		
+//	public ModelAndView recentList(ModelAndView mav, HttpServletRequest request) { /* 뿌잉) 그룹웨어이므로 requiredLogin_을 추가해야한다. */
+	public ModelAndView requiredLogin_recentList(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		getCurrentURL(request); // 로그인 또는 로그아웃을 했을 때 현재 보이던 그 페이지로 그대로 돌아가기 위한 메소드 호출
 		
 		// == 카테고리 목록 가져오기 시작 == //
