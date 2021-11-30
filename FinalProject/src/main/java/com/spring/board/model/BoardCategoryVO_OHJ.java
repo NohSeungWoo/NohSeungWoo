@@ -8,16 +8,19 @@ public class BoardCategoryVO_OHJ {
 	private String writeAccess; 	// 일반사용자의 글쓰기허용 (y/n)
 	private String commentAccess; 	// 댓글허용 (y/n)
 	
+	private String header;			// 말머리설정 (y/n)
+	
 	public BoardCategoryVO_OHJ() {}
 	
 	public BoardCategoryVO_OHJ(String bCategorySeq, String bCategoryName, String userType, String writeAccess,
-			String commentAccess) {
+			String commentAccess, String header) {
 		super();
 		this.bCategorySeq = bCategorySeq;
 		this.bCategoryName = bCategoryName;
 		this.userType = userType;
 		this.writeAccess = writeAccess;
 		this.commentAccess = commentAccess;
+		this.header = header;
 	}
 
 	
@@ -59,6 +62,14 @@ public class BoardCategoryVO_OHJ {
 
 	public void setCommentAccess(String commentAccess) {
 		this.commentAccess = commentAccess;
+	}
+
+	public String getHeader() {
+		return header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
 	}
 	
 	

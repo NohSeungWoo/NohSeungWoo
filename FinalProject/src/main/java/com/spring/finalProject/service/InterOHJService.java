@@ -60,6 +60,18 @@ public interface InterOHJService {
 	List<BoardVO_OHJ> boardListSearchWithPaging(Map<String, String> paraMap);
 
 	
+	
+	
+	// 검색어의 빈도를 나타내기 위해, 검색어가 있으면 '검색키워드 기록'테이블에 insert하기
+	void registerSearchKeyword(String searchWord);
+
+	// '검색어키워드기록'을 가져와서 하나의 문자열로 만들기
+	List<String> getKeywordHistory();
+
+	
+
+	// 글쓰기(파일첨부가 있는 글쓰기)
+	int boardWrite_withFile(BoardVO_OHJ boardvo);
 
 	
 

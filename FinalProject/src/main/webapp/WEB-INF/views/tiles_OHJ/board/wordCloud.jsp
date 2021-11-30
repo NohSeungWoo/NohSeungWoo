@@ -5,7 +5,7 @@
 	.highcharts-figure,
 	.highcharts-data-table table {
 	    min-width: 320px;
-	    max-width: 800px;
+	    max-width: 800px; 
 	    margin: 1em auto;
 	}
 	
@@ -44,7 +44,9 @@
 	.highcharts-data-table tr:hover {
 	    background: #f1f7ff;
 	}
+	
 	/* 이 위에는 하이차트에서 가져온거다. */
+	
 </style>
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -56,11 +58,12 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		
+	//    const text = 'Lorem amet, elit amet. amet amet elit, amet quam.',	
+		const text = '${requestScope.str_keyword}';
+	    // 검색했던 기록들 가져오기(중복 허용)
 		
-		const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean bibendum erat ac justo sollicitudin, quis lacinia ligula fringilla. Pellentesque hendrerit, nisi vitae posuere condimentum, lectus urna accumsan libero, rutrum commodo mi lacus pretium erat. Phasellus pretium ultrices mi sed semper. Praesent ut tristique magna. Donec nisl tellus, sagittis ut tempus sit amet, consectetur eget erat. Sed ornare gravida lacinia. Curabitur iaculis metus purus, eget pretium est laoreet ut. Quisque tristique augue ac eros malesuada, vitae facilisis mauris sollicitudin. Mauris ac molestie nulla, vitae facilisis quam. Curabitur placerat ornare sem, in mattis purus posuere eget. Praesent non condimentum odio. Nunc aliquet, odio nec auctor congue, sapien justo dictum massa, nec fermentum massa sapien non tellus. Praesent luctus eros et nunc pretium hendrerit. In consequat et eros nec interdum. Ut neque dui, maximus id elit ac, consequat pretium tellus. Nullam vel accumsan lorem.',
-	    // 검색했던 기록들(중복 허용)
-		
-		lines = text.split(/[,\. ]+/g),
+		// , 또는 .이 나올 경우 구분자로 인식함 => 기존 하이차트 구분자에서 " "는 제거했다. 왜냐하면 "좋아하는 음식"이렇게 검색할 수도 있기 때문이다.
+		lines = text.split(/[,\.]+/g),
 	    data = lines.reduce((arr, word) => {
 	        let obj = Highcharts.find(arr, obj => obj.name === word);
 	        if (obj) {
@@ -99,11 +102,12 @@
 	});// end of $(document).ready(function(){})------------------------
 </script>
 
-<figure class="highcharts-figure">
+
+<figure class="highcharts-figure border">
     <div id="container"></div>
     <p class="highcharts-description">
     	위의 통계자료는 각각의 단어들이 얼마나 검색이 되었는지 빈도를 시각화해줍니다.<br>
-    	글자의 크기가 클수록 검색 빈도가 높은 글자이며, 크기가 작을수록 검색 빈도가 낮은 글자입니다.
+    	* 글자의 크기가 클수록 검색 빈도가 높은 글자이며, 크기가 작을수록 검색 빈도가 낮은 글자입니다.
     </p>
 </figure>
 

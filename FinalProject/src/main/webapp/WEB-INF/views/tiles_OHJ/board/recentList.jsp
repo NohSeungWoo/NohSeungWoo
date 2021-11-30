@@ -290,6 +290,7 @@
 					<tr style="text-align: center; background-color: #F7F7F7;"> <!-- 글자 가운데정렬 -->
 						<th>번호</th>
 						<th>제목</th>
+						<th>첨부파일</th>
 						<th>작성자</th>
 						<th>등록일</th>
 						<th>조회수</th>
@@ -308,9 +309,11 @@
 								--%>
 								
 								
-								<c:if test="${boardvo.fk_bCategorySeq == 1}">
+								<c:if test='${boardvo.header == "y"}'> <!-- 말머리를 사용하는 게시판인 경우 -->
+									<%-- <span style="color: #3377ff; font-weight: bold;">[${boardvo.bCategoryName}]</span>&nbsp; --%> <!-- 뿌잉 -->
 									<span style="color: #3377ff; font-weight: bold;">[공지]</span>&nbsp;
 								</c:if>
+								
 								
 								<%-- === 댓글쓰기가 있는 게시판 시작 === --%>
 								<c:if test="${boardvo.commentCount > 0}">
@@ -322,7 +325,28 @@
 								<%-- === 댓글쓰기가 있는 게시판 끝 === --%>
 							
 							</td>
-							<td class="verticalM" align="center">${boardvo.name}</td>
+							<td class="verticalM" align="center">
+								<c:if test="${not empty boardvo.fileName}"> <!-- 첨부파일이 존재할 경우 -->
+									
+									<c:if test="${sessionScope.loginuser != null}"> <!-- 로그인된 경우 -->
+										<a href="<%= ctxPath%>/downloadBoardAttach.gw?boardSeq=${boardvo.boardSeq}"><i class="fas fa-paperclip mr-2"></i></a> <!-- WAS에 있는 실제파일명을 알아오기위해 where절에 글번호를 넘김. -->
+									</c:if>
+									<c:if test="${sessionScope.loginuser == null}">
+										<i class="fas fa-paperclip" ></i>
+									</c:if>
+								
+								</c:if>
+							</td>
+							<td class="verticalM" align="center">
+								
+								<c:if test='${boardvo.userType == "secret"}'> <!-- 게시판유형이 익명형인 경우 -->
+									***
+								</c:if>
+								<c:if test='${boardvo.userType == "public"}'> <!-- 게시판유형이 일반형인 경우 -->
+									${boardvo.name}
+								</c:if>
+								
+							</td>
 							<td class="verticalM" align="center">${boardvo.regDate}</td>
 							<td class="verticalM" align="center">${boardvo.readCount}</td>
 						</tr>

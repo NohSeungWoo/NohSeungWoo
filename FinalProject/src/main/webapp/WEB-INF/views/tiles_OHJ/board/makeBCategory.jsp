@@ -101,6 +101,13 @@
 					</td>
 				</tr>
 				<tr>	
+					<th>말머리 설정</th>
+					<td>
+						<input type="radio" name="header" id="headerY" value="y" class="mr-1"/><label for="headerY" style="width: 35%;">사용</label>
+						<input type="radio" name="header" id="headerN" value="n" checked class="mr-1"/><label for="headerN">미사용</label>
+					</td>
+				</tr>
+				<tr>	
 					<th>글쓰기 권한</th>
 					<td>
 						<input type="radio" name="writeAccess" id="writeY" value="y" checked class="mr-1"/><label for="writeY" style="width: 35%;">누구나</label>

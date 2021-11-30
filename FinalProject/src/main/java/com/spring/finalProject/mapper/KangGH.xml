@@ -139,9 +139,9 @@
 	
 	<!-- === 이메일 찾기 완료 메서드(select) === -->
 	<select id="emailFindEnd" parameterType="HashMap" resultType="String">
-		select employeeid
+		select email
 		from tbl_employee
-		where email = #{email} and name = #{name}
+		where employeeid = #{employeeid} and name = #{name}
 	</select>
 	
 	<!-- === 해당하는 이메일과 이름에 존재하는 사원 정보 찾기(select) === -->

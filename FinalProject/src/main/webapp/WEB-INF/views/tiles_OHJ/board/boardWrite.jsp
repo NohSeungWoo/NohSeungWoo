@@ -153,7 +153,12 @@
 		<span class="star">*</span><span style="font-size: 15px;">&nbsp;필수입력사항</span>
 	</div>
 	
-	<form name="writeFrm">
+	<%-- <form name="writeFrm"> --%>
+	<%-- === &149. 파일첨부하기 ===
+			  먼저 위의 <form name="writeFrm"> 을 주석처리한 이후에 아래와 같이 해야 한다.
+			 enctype="multipart/form-data" 를 해주어야만 파일첨부가 되어진다. (파일첨부는 무조건 POST방식임.)
+	--%>
+	<form name="writeFrm" enctype="multipart/form-data">
 		<!-- 글쓰기에 대한 정보 테이블 시작 -->
 		<div class="table-responsive">
 			<table class="table">
@@ -200,17 +205,22 @@
 						<span id="subjectLen" style="font-weight: bold;">0</span>/50
 					</td>
 				</tr>
-			<!-- 
-				<tr>
+				
+				<%-- === &150. 파일첨부 타입 추가하기 === --%>
+				<tr style="border-bottom: solid 1px #dee2e6;">
 					<th>파일첨부</th>
-					<td><button type="button" id="fileAttach" class="btn btn-outline-secondary btn-sm">+</button></td>
-				</tr> 
-			-->	
+					<td>
+						<!-- <button type="button" id="fileAttach" class="btn btn-outline-secondary btn-sm">+</button> -->
+						<input type="file" name="attach" />
+					</td>
+				</tr>
+				
+				<!-- 
 				<tr style="border-bottom: solid 1px #dee2e6;">
 					<th>참조글</th>
 					<td><button type="button" id="refBoard" class="btn btn-outline-secondary btn-sm">+</button></td>
 				</tr>
-			
+			 	-->
 			</table>
 		</div>
 		<!-- 글쓰기에 대한 정보 테이블 종료 -->

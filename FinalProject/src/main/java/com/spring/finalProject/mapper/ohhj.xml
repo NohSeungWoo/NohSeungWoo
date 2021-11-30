@@ -15,8 +15,8 @@
 
 	<!-- === 게시판 만들기 === -->
 	<insert id="makeBCategory" parameterType="com.spring.board.model.BoardCategoryVO_OHJ">
-		insert into tbl_boardCategory(bCategorySeq,bCategoryName,userType,writeAccess,commentAccess)
-		values(tbl_boardCategory_bCategorySeq.nextval, #{bCategoryName}, #{userType}, #{writeAccess}, #{commentAccess})
+		insert into tbl_boardCategory(bCategorySeq,bCategoryName,userType,writeAccess,commentAccess,header)
+		values(tbl_boardCategory_bCategorySeq.nextval, #{bCategoryName}, #{userType}, #{writeAccess}, #{commentAccess},#{header})
 	</insert>
 
 	<!-- === 게시판 종류 목록 가져오기(Ajax 로 처리) === -->
@@ -98,6 +98,10 @@
 	-->
 	
 	<!-- === 먼저 &65 를 주석처리 하고서, &126-2(강사님은 없음). : 글1개 조회하기(이전글,다음글에 검색조건 적용 + commentAccess 컬럼 추가) === -->
+	
+	<!-- === &161. (댓글 및 (답변글쓰기 및) "파일첨부가 있는" 게시판에서) 글1개 조회하기 === 
+			  먼저 위의 &140(나는 &65) 을 주석처리 한 다음에 아래와 같이 한다. (fileName, orgFilename, fileSize 컬럼 추가)-->
+	<!-- 익명형 게시판을 위해, join과 userType추가함 -->
 	<select id="getView" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select previousBoardSeq, previousSubject
 			 , commentAccess
@@ -105,6 +109,9 @@
 		     , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		     , regDate, readCount
 		     , nextBoardSeq,nextSubject
+		     
+		     , fileName, orgFilename, fileSize
+		     , userType
 		from
 		(
 		    select lag(boardSeq,1) over(order by boardSeq desc) AS previousBoardSeq
@@ -114,6 +121,9 @@
 		         , profilename 
 		         , boardSeq, fk_bCategorySeq, bCategoryName, subject, fk_employeeid, name, positionName, content
 		         , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
+		         
+		         , fileName, B.orgFilename, B.fileSize
+		         , userType
 		    
 		         , lead(boardSeq,1) over(order by boardSeq desc) AS nextBoardSeq
 		         , lead(subject,1) over(order by boardSeq desc) AS nextSubject
@@ -267,16 +277,31 @@
 	
 	
 	<!-- === &120. 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) + 기존의 regDate정렬에서 boardSeq정렬로 바꿈. + fk_bCategorySeq 조회 === -->
+	
+	<!-- === &160. "파일첨부가 있는" (답변형 게시판의) 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) === 
+			  먼저 위의 &148(나는 &120) 을 주석처리 한 이후에 아래와 같이 한다. -> ,fileName(WAS에 저장된 파일명) 추가함.
+	-->
+	<!-- 익명형 게시판을 위해, join과 userType추가함 -->
+	<!-- 말머리설정을 위해, header와 bCategoryName추가함 -->
 	<select id="boardListSearchWithPaging" parameterType="HashMap" resultType="com.spring.board.model.BoardVO_OHJ">
 		select fk_bCategorySeq, boardSeq, subject, name, regDate, readCount, commentCount
+			  ,fileName
+			  , userType
+			  , header, bCategoryName
 		from
 		(
 		    select row_number() over(order by boardSeq desc) AS rno
 		    	 , fk_bCategorySeq
 		         , boardSeq, subject, name, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate, readCount
 		         , commentCount
+		         ,fileName
+		         , userType
+		         , header, bCategoryName
 		    from tbl_board B JOIN tbl_employee E
 		    ON B.fk_employeeId = E.employeeId
+		    JOIN tbl_boardCategory C
+    		ON B.fk_bCategorySeq = C.bCategorySeq
+		    
 		    where 1=1
 		    
 		    <if test='fromDate == "" and toDate == ""'> <!-- 맨처음목록보기에서는 3달전~현재의 글을 보여줌 -->
@@ -303,14 +328,25 @@
 	
 	
 	
+	<!-- === 검색어의 빈도를 나타내기 위해, 검색어가 있으면 '검색키워드 기록'테이블에 insert하기 === -->
+	<insert id="registerSearchKeyword" parameterType="String">
+		insert into tbl_keywordHistory(keywordSeq,keyword)
+		values(tbl_keywordHistory_keywordSeq.nextval, lower(#{searchWord}))
+	</insert>
+	
+	<!-- === '검색어키워드기록'을 가져와서 하나의 문자열로 만들기 === -->
+	<select id="getKeywordHistory" resultType="String">
+		select keyword from tbl_keywordHistory
+	</select>
 	
 	
 	
 	
-	
-	
-	
-	
+	<!-- === &159. 글쓰기(파일첨부가 있는 글쓰기) === -->
+	<insert id="boardWrite_withFile" parameterType="com.spring.board.model.BoardVO_OHJ">
+		insert into tbl_board(boardSeq, fk_bCategorySeq, fk_employeeId, subject, content, regDate, readCount, fileName, orgFilename, fileSize)
+		values(tbl_board_boardSeq.nextval, #{fk_bCategorySeq}, #{fk_employeeId}, #{subject}, #{content}, default, default, #{fileName}, #{orgFilename}, #{fileSize})
+	</insert>
 	
 	
 	
