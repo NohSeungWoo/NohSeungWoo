@@ -58,7 +58,23 @@ public class OHJService implements InterOHJService {
 		return bcategoryList;
 	}
 		
-		
+	// === 해당하는 게시판 카테고리명 알아오기 === //
+	@Override
+	public String getBCategoryName(String bCategory) {
+		String bCategoryName = dao.getBCategoryName(bCategory);
+		return bCategoryName;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 		
 		
 		
@@ -179,6 +195,40 @@ public class OHJService implements InterOHJService {
 		List<BoardVO_OHJ> boardList = dao.boardListSearchWithPaging(paraMap);
 		return boardList;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	// === 검색어의 빈도를 나타내기 위해, 검색어가 있으면 '검색키워드 기록'테이블에 insert하기 === //
+	@Override
+	public void registerSearchKeyword(String searchWord) {
+		dao.registerSearchKeyword(searchWord);
+	}
+
+	// === '검색어키워드기록'을 가져와서 하나의 문자열로 만들기 === //
+	@Override
+	public List<String> getKeywordHistory() {
+		List<String> keywordList = dao.getKeywordHistory();
+		return keywordList;
+	}
+
+	
+	
+	
+	
+	
+	// === &157. 글쓰기(파일첨부가 있는 글쓰기) === //
+	@Override
+	public int boardWrite_withFile(BoardVO_OHJ boardvo) {
+		int n = dao.boardWrite_withFile(boardvo); // 첨부파일이 있는 경우
+		return n;
+	}
+
+	
 
 	
 

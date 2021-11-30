@@ -181,7 +181,6 @@
 				  	</div>
 				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
-<<<<<<< HEAD
 				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/recentList.gw"><i style="" class="fas fa-chalkboard fa-2x"></i><br>게시판</a>
 				    	</div>
 				  	</div>
@@ -198,9 +197,6 @@
 				  	<div class="card bg-primary py-2 shadow">
 				    	<div class="card-body text-center">
 				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>/schedule.gw"></a><i style="" class="far fa-calendar-alt fa-2x"></i><br>일정</a>
-=======
-				      		<a class="stretched-link" style="color:white;" href="<%= ctxPath %>"><i style="" class="far fa-calendar-alt fa-2x"></i><br>일정</a>
->>>>>>> branch 'main' of https://github.com/OhHyeonJi3088/FinalProject.git
 				    	</div>
 				  	</div>
 				  	<div class="card bg-primary py-2 shadow">

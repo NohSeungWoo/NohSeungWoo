@@ -1,21 +1,41 @@
 package com.spring.finalProject.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+//import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.finalProject.common.FileManager;
 import com.spring.board.model.BoardCategoryVO_OHJ;
 import com.spring.board.model.BoardCommentVO_OHJ;
 import com.spring.board.model.BoardVO_OHJ;
@@ -94,10 +114,16 @@ public class OHJController {
 	@Autowired
 	private InterOHJService service;
 	// Type에 따라 알아서 Bean 을 주입해준다.
-
+	
 	/////////////////////////////////////////////////////////////////////////////////
 						// 기본셋팅 끝이다. 여기서부터 개발 시작이다! //
 	/////////////////////////////////////////////////////////////////////////////////
+	
+	// === &155. 파일업로드 및 다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) ===
+	@Autowired
+	private FileManager fileManager;
+	// Type에 따라 알아서 Bean 을 주입해준다.
+	
 	
 	// === 게시판 만들기 폼페이지 요청 === //
 	@RequestMapping(value="/makeBCategory.gw")
@@ -208,7 +234,8 @@ public class OHJController {
 	
 	// === &54. 게시판 글쓰기 완료 요청 === //
 	@RequestMapping(value="/boardWriteEnd.gw", method= {RequestMethod.POST})
-	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo) {
+//	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo) { // => 파일첨부가 안된 글쓰기
+	public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo, MultipartHttpServletRequest mrequest) { // => 파일첨부된 글쓰기
 	/*	
 		// **** 크로스 사이트 스크립트 공격에 대응하는 안전한 코드(시큐어 코드) 작성하기 **** // -> 스마트에디터에서 자동으로 해줌
 		String content = boardvo.getContent();
@@ -217,7 +244,115 @@ public class OHJController {
 		content = content.replaceAll("\r\n", "<br>"); // 입력한 엔터는 <br>처리하기
 		boardvo.setContent(content);
 	*/	
-		int n = service.boardWrite(boardvo); // <== 파일첨부가 없는 글쓰기
+		
+		
+	/*
+		=== &151. 파일첨부가 된 글쓰기 이므로 
+			먼저 위의 public ModelAndView boardWriteEnd(ModelAndView mav, BoardVO_OHJ boardvo) 을
+			주석처리 한 이후에 아래와 같이 한다.
+			MultipartHttpServletRequest mrequest 를 사용하기 위해서는
+			먼저, /FinalProject/src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml 에서
+			&21. 파일업로드 및 파일다운로드에 필요한 의존객체 설정하기 를 해두어야 한다.
+	*/
+		
+	/*
+		    웹페이지에 요청 form이 enctype="multipart/form-data" 으로 되어있어서 Multipart 요청(파일처리 요청)이 들어올때 
+		    컨트롤러에서는 HttpServletRequest 대신 MultipartHttpServletRequest 인터페이스를 사용해야 한다.
+		  MultipartHttpServletRequest 인터페이스는 HttpServletRequest 인터페이스와  MultipartRequest 인터페이스를 상속받고있다.
+		    즉, 웹 요청 정보를 얻기 위한 getParameter()와 같은 메소드와 Multipart(파일처리) 관련 메소드를 모두 사용가능하다.     
+	*/
+		
+		// === 사용자가 쓴 글에 파일이 첨부되어 있는 것인지, 아니면 파일첨부가 안된 것인지 구분을 지어 주어야 한다. ===
+		// === &153. !!! 첨부파일이 있는 경우 작업 시작 !!! ===
+		MultipartFile attach = boardvo.getAttach();
+		
+		if( !attach.isEmpty() ) {
+			// attach(첨부파일)가 비어있지 않으면(즉, 첨부파일이 있는 경우라면)
+			
+			/*
+				1. 사용자가 보낸 첨부파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다.
+				>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
+					우리는 WAS의 webapp/resources/files 라는 폴더로 지정해준다.
+					조심할 것은 Package Explorer 에서  files 라는 폴더를 만드는 것이 아니다. (해도 상관은 없지만, 어짜피 .metadate에 자동으로 복제된다.)
+			*/
+			// WAS의 webapp 의 절대경로를 알아와야 한다.
+			HttpSession session = mrequest.getSession();
+			String root = session.getServletContext().getRealPath("/");
+			
+		//	System.out.println("~~~~ 확인용 webapp 의 절대경로 => " + root);
+			// ~~~~ 확인용 webapp 의 절대경로 => C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
+			
+			String path = root + "resources" + File.separator + "files";
+			/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+			       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+			       운영체제가 UNIX, Linux 이라면  File.separator 는 "/" 이다. 
+			*/
+			
+			// path 는 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+		//	System.out.println("~~~~ 확인용 path => " + path);
+			// ~~~~ 확인용 path => C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\files
+			
+			
+			/*
+				2. 파일첨부를 위한 변수의 설정 및 값을 초기화 한 후 파일올리기
+			*/
+			String newFileName = "";
+			// WAS(톰캣)의 디스크에 저장될 파일명 	  ex)2021110809271535243254235235234.png
+			
+			byte[] bytes = null; // 파일첨부의 InputStream, OutputStream은 1바이트 기반이다.
+			// 첨부파일의 내용물을 담는 것
+			
+			long fileSize = 0;
+			// 첨부파일의 크기
+			
+			try {
+				bytes = attach.getBytes();
+				// 첨부파일의 내용물을 읽어오는 것
+				
+				newFileName = fileManager.doFileUpload(bytes, attach.getOriginalFilename(), path); // 파라미터 : 내용물, 확장자 알아오기위한 첨부파일명, 업로드되어질경로명
+				// 첨부되어진 파일을 업로드 하도록 하는 것이다. 
+	            // attach.getOriginalFilename() 은 첨부파일의 파일명(예: 강아지.png)이다.
+				
+			//	System.out.println(">>> 확인용 newFileName => " + newFileName);
+				// >>> 확인용 newFileName => 2021110811273450592448100700.jpg
+			
+			/*
+				3. BoardVO boardvo 에 fileName 값과 orgFilename 값과 fileSize 값을 넣어주기
+			*/
+				boardvo.setFileName(newFileName);
+				// WAS(톰캣)에 저장될 파일명(2021110811273450592448100700.jpg)
+				
+				boardvo.setOrgFilename(attach.getOriginalFilename());
+				// 게시판 페이지에서 첨부된 파일(강아지.png)을 보여줄 때 사용.
+				// 또한 사용자가 파일을 다운로드 할때 사용되어지는 파일명으로 사용.
+				
+				fileSize = attach.getSize(); // 첨부파일의 크기(단위는 byte임)
+				boardvo.setFileSize(String.valueOf(fileSize));
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+		// === !!! 첨부파일이 있는 경우 작업 끝 !!! ===
+		
+	//	int n = service.boardWrite(boardvo); // <== 파일첨부가 없는 글쓰기
+		
+		
+		// === &156. 파일첨부가 있는 글쓰기 또는 파일첨부가 없는 글쓰기로 나뉘어서 service 호출하기 === //
+		// 먼저 위의 int n = service.boardWrite(boardvo); 부분을 주석처리 하고서 아래와 같이 한다.
+		int n = 0;
+		
+		if( attach.isEmpty() ) {
+			// 첨부파일이 없는 경우라면
+			n = service.boardWrite(boardvo);
+		}
+		
+		else {
+			// 첨부파일이 있는 경우라면
+			n = service.boardWrite_withFile(boardvo);
+		}
+		
 		
 		mav.setViewName("redirect:/recentList.gw");
 		//	/list.gw 페이지로 redirect(페이지이동)해라는 말이다.
@@ -576,7 +711,8 @@ public class OHJController {
 		
 		// === 하이차트 - 검색어의 빈도를 나타내기 위해, 검색어가 있으면 테이블에 담는 용도 START === //
 		if(!"".equals(searchWord)) { // 검색어가 있는 경우
-			// tbl_keywordCloud테이블에 keyword컬럼에 searchWord값을 insert한다.
+			// tbl_keywordHistory테이블의 keyword컬럼에 searchWord값을 insert한다.
+			service.registerSearchKeyword(searchWord);
 		}
 		// === 하이차트 - 검색어의 빈도를 나타내기 위해, 검색어가 있으면 테이블에 담는 용도 END === //
 		
@@ -990,18 +1126,400 @@ public class OHJController {
 	
 	// === &192. 차트를 보여주는 view단 === //
 	@RequestMapping(value="/board/wordCloud.gw")
-	public String wordCloud() {
+	public String wordCloud(Model model) {
+		
+		// '검색어키워드기록'을 가져와서 하나의 문자열로 만들기
+		List<String> keywordList = service.getKeywordHistory();
+		
+		String str_keyword = "";
+		for(int i=0; i<keywordList.size(); i++) {
+			
+			if(i==0) {
+				str_keyword += keywordList.get(i);
+			}
+			else {
+				str_keyword += ", " + keywordList.get(i);
+			}
+			
+		}
+		
+		model.addAttribute("str_keyword", str_keyword);
+		
 		return "board/wordCloud.tiles_OHJ";
+	}
+	
+	
+	// >>> &191. Excel 파일로 다운받기 예제 <<< // 
+	@RequestMapping(value="/excel/boardDownloadExcelFile.gw", method= {RequestMethod.POST})
+	public String boardDownloadExcelFile(HttpServletRequest request, Model model) { // Model model은 저장기능+뷰단보여주는 ModelAndView와 달리 저장기능만 있음. 그냥 request를 사용해도 된다.
+		
+		//== recentList.gw에서 가져온 코드 == START ////////////////////////////////////////////////////////////////////////
+		
+		// == 카테고리 목록 가져오기 시작 == //
+		List<BoardCategoryVO_OHJ> bcategoryList = service.viewCategoryList();
+		// mav.addObject("bcategoryList", bcategoryList);
+		// == 카테고리 목록 가져오기 끝 == //
+		
+		String fromDate = request.getParameter("fromDate");
+		String toDate = request.getParameter("toDate");
+		String bCategory = request.getParameter("bCategory");
+		String searchType = request.getParameter("searchType");
+		String searchWord = request.getParameter("searchWord");
+		
+	//	String str_currentShowPageNo = request.getParameter("currentShowPageNo");
+	/*	
+		System.out.println("확인용 fromDate : " + fromDate);
+		System.out.println("확인용 toDate : " + toDate);
+		System.out.println("확인용 bCategory : " + bCategory);
+		System.out.println("확인용 searchType : " + searchType);
+		System.out.println("확인용 searchWord : " + searchWord);
+	*/	
+		
+		if(fromDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			// 2021-08-23 // '숫자개월수만큼 빼준 날짜인 add_months(sysdate,-3) 로 검색'하려했으나 유효성검사 해서 값이 넘어왔다.
+			
+			// 3달전 날짜 구하기
+			fromDate = getDate("threeMonthsAgo");
+		}
+		if(toDate == null) { // 맨처음 목록보기를 통해 들어가는 경우
+			// 2021-11-23 // 'sysdate 로 검색'하려했으나 유효성검사 해서 값이 넘어왔다.
+			
+			// 오늘 날짜 구하기
+			toDate = getDate("today");
+		}
+		
+		
+		// === 최근 게시물이 아니라 sideinfo.jsp에서 클릭한 게시물을 보여주는 용 START ===
+		String bCategorySeq = request.getParameter("bCategorySeq");
+		// 최근 게시물은 bCategorySeq 이 null이고, bCategory는 null일수도 null이 아닐수도있는데
+		// 									bCategory가 null이면        -> 맨 처음 목록보기로 들어가는 경우. 이 경우에는 bCategory가 0이다.
+		// 									bCategory가 null이 아니면 -> 최근게시물이나 기타게시물에서 조회한 경우. 이 경우에는 bCategory가 넘어온 값이다. 
+		// 공지사항, 자유게시판, 건의사항은 해당하는 bCategorySeq 가 넘어온다. -> 이 때 bCategory는 null로 넘어오는데, bCategory가 bCategorySeq이다.
+		if(bCategorySeq == null && bCategory == null) {
+			bCategory = "0";
+		}
+		if(bCategorySeq == null && bCategory != null) {
+			// bCategory는 넘어온 그 자체이다.
+		}
+		if(bCategorySeq != null && bCategory == null) {
+			bCategory = bCategorySeq;
+		}
+		// === 최근 게시물이 아니라 sideinfo.jsp에서 클릭한 게시물을 보여주는 용 END ===
+		
+		
+		boolean flag = false; // 글목록보기로 넘어온 id가 bCategory인 select태그 속 bCategorySeq가, 실제 존재하는 것인지아닌지 여부
+		for(BoardCategoryVO_OHJ bcvo : bcategoryList) {
+			if(bcvo.getbCategorySeq().equals(bCategory)) {
+				flag = true;
+				break;// 반복문 종료
+			}
+		}
+		if(!"0".equals(bCategory) && !flag) { // select태그에서 전체를 선택한 것도 아니고, 카테고리분류에 실제 존재하는것도 아니라면
+			bCategory = "";
+		}
+		
+		
+		if(searchType == null || (!"subject".equals(searchType)&&!"name".equals(searchType))) { // 맨처음 목록보기를 통해 들어가는 경우, 유저가 장난친 경우
+			searchType = "";
+		}
+		if(searchWord == null || "".equals(searchWord) || searchWord.trim().isEmpty()) { // 맨처음 목록보기를 통해 들어가는 경우, 검색어자체가 ⓐ없거나 ⓑ있는데 공백인 경우
+			searchWord = "";
+		}
+		
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("fromDate", fromDate);
+		paraMap.put("toDate", toDate);
+		paraMap.put("bCategory", bCategory);
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		//== recentList.gw에서 가져온 코드 == END////////////////////////////////////////////////////////////////////////
+		
+		
+		// 페이징처리를 안한, 검색어가 있는 글목록 가져오기
+		List<BoardVO_OHJ> boardList = service.boardListSearch(paraMap);
+		
+		
+		// 해당하는 게시판 카테고리명 알아오기
+		String bCategoryName = "";
+		if("0".equals(bCategory) || "".equals(bCategory)) { // ⓐ전체를 선택한 경우임.  ⓑ해당하지 않는 bCategory로 장난친 경우는 글목록이 안나오는데 1행의 header는 '전체'로 줌.
+			bCategoryName = "전체"; // 디폴트는 전체게시판이다.
+		}
+		if(!"0".equals(bCategory) && !"".equals(bCategory)) { // 제대로된 카테고리번호를 입력한 경우
+			bCategoryName = service.getBCategoryName(bCategory);
+		}
+		
+		// == 엑셀 꾸미기 START == // ---------------------------------------------------------------------------------
+		
+		// === 조회결과물인 boardList 를 가지고 엑셀 시트 생성하기 ===
+	    // 시트를 생성하고, 행을 생성하고, 셀을 생성하고, 셀안에 내용을 넣어주면 된다.
+		SXSSFWorkbook workbook = new SXSSFWorkbook();
+		
+		// 시트생성
+		SXSSFSheet sheet = workbook.createSheet("OurCompany게시글목록"); // .createSheet("시트명")
+		
+		// 시트 열 너비 설정
+		sheet.setColumnWidth(0, 1000); 	// No
+		sheet.setColumnWidth(1, 14000); // 글제목
+		sheet.setColumnWidth(2, 2000); 	// 댓글수
+		sheet.setColumnWidth(3, 2000); 	// 작성자
+		sheet.setColumnWidth(4, 2000); 	// 조회수
+		sheet.setColumnWidth(5, 5000); 	// 게시일
+		// 총 6열
+		
+		// 행의 위치를 나타내는 변수
+		int rowLocation = 0;
+		
+		
+		////////////////////////////////////////////////////////////////////////////////////////
+		// CellStyle 정렬하기(Alignment)
+		// CellStyle 객체를 생성하여 Alignment 세팅하는 메소드를 호출해서 인자값을 넣어준다.
+		// 아래는 HorizontalAlignment(가로)와 VerticalAlignment(세로)를 모두 가운데 정렬 시켰다. -> 정가운데정렬
+		CellStyle mergeRowStyle = workbook.createCellStyle();
+	    mergeRowStyle.setAlignment(HorizontalAlignment.CENTER); // 수평기준으로 가운데. justify는 양쪽맞춤
+	    mergeRowStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+	                                      // import org.apache.poi.ss.usermodel.VerticalAlignment 으로 해야함.
+		
+	    CellStyle headerStyle = workbook.createCellStyle();
+	    headerStyle.setAlignment(HorizontalAlignment.CENTER);
+	    headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		
+	    // CellStyle 배경색(ForegroundColor)만들기
+        // setFillForegroundColor 메소드에 IndexedColors Enum인자를 사용한다.
+        // setFillPattern은 해당 색을 어떤 패턴으로 입힐지를 정한다.
+	    mergeRowStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex()); // IndexedColors.DARK_BLUE.getIndex() 는 색상(남색)의 인덱스값을 리턴시켜준다. 
+	    mergeRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 실선
+	    
+	    headerStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex()); // IndexedColors.LIGHT_YELLOW.getIndex() 는 연한노랑의 인덱스값을 리턴시켜준다.
+	    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 실선
+	    
+	    // Cell 폰트(Font) 설정하기
+        // 폰트 적용을 위해 POI 라이브러리의 Font 객체를 생성해준다.
+        // 해당 객체의 세터를 사용해 폰트를 설정해준다. 대표적으로 글씨체, 크기, 색상, 굵기만 설정한다.
+        // 이후 CellStyle의 setFont 메소드를 사용해 인자로 폰트를 넣어준다.
+	    Font mergeRowFont = workbook.createFont(); // import org.apache.poi.ss.usermodel.Font; 으로 한다.
+	    mergeRowFont.setFontName("나눔고딕"); // 글씨체
+	    mergeRowFont.setFontHeight((short)500); // 글자크기
+	    mergeRowFont.setColor(IndexedColors.WHITE.getIndex()); // 글자색
+	    mergeRowFont.setBold(true); // 글자굵기는 굵게
+	    
+	    mergeRowStyle.setFont(mergeRowFont);
+	    
+	    // CellStyle 테두리 Border
+        // 테두리는 각 셀마다 상하좌우 모두 설정해준다.
+        // setBorderTop, Bottom, Left, Right 메소드와 인자로 POI라이브러리의 BorderStyle 인자를 넣어서 적용한다.
+	    headerStyle.setBorderTop(BorderStyle.THICK); // 굵은border선
+	    headerStyle.setBorderBottom(BorderStyle.THICK); 
+	    headerStyle.setBorderLeft(BorderStyle.THIN); // 가는border선
+	    headerStyle.setBorderRight(BorderStyle.THIN); 
+	    
+	    
+	    // Cell Merge 셀 병합시키기
+        /* 셀병합은 시트의 addMergeRegion 메소드에 CellRangeAddress 객체를 인자로 하여 병합시킨다.
+           CellRangeAddress 생성자의 인자로(시작 행, 끝 행, 시작 열, 끝 열) 순서대로 넣어서 병합시킬 범위를 정한다. 배열처럼 시작은 0부터이다.  
+        */
+        // 병합할 행 만들기
+	    Row mergeRow = sheet.createRow(rowLocation); // 엑셀에서 행의 시작은 0 부터 시작한다.
+	    
+	    
+	    // 병합할 행에 "우리회사 사원정보" 로 셀을 만들어 셀에 스타일을 주기  
+	    for(int i=0; i<6; i++) {
+	    	Cell cell = mergeRow.createCell(i); // 셀 생성
+	    	cell.setCellStyle(mergeRowStyle);
+	    	
+	    	cell.setCellValue("우리회사 게시글목록 (" + bCategoryName + ")"); // 예 : 우리회사 게시글목록 (전체), 우리회사 게시글목록 (자유게시판)
+	    }
+	    
+	    // 셀 병합하기
+	    sheet.addMergedRegion(new CellRangeAddress(rowLocation, rowLocation, 0, 5)); // 0행~0행, 0열~5열까지 셀병합
+	    
+	    // CellStyle 천단위 쉼표, 금액
+    //  CellStyle moneyStyle = workbook.createCellStyle();
+    //  moneyStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+	    
+        
+        // 헤더 행 생성
+        Row headerRow = sheet.createRow(++rowLocation); // 아까 그 행의 그 다음번째 행 // 엑셀에서 행의 시작은 0 부터 시작한다.
+        																	 // ++rowLocation는 전위연산자임. (후위가 아님!)
+        
+        // 해당 행의 첫번째 열 셀 생성
+        Cell headerCell = headerRow.createCell(0); // 엑셀에서 열의 시작은 0 부터 시작한다.
+        headerCell.setCellValue("No");
+        headerCell.setCellStyle(headerStyle);
+        
+		// 해당 행의 두번째 열 셀 생성
+        headerCell = headerRow.createCell(1);
+        headerCell.setCellValue("글제목");
+        headerCell.setCellStyle(headerStyle);
+        
+		// 해당 행의 세번째 열 셀 생성
+        headerCell = headerRow.createCell(2);
+        headerCell.setCellValue("댓글수");
+        headerCell.setCellStyle(headerStyle);
+        
+		// 해당 행의 네번째 열 셀 생성
+        headerCell = headerRow.createCell(3);
+        headerCell.setCellValue("작성자");
+        headerCell.setCellStyle(headerStyle);
+        
+		// 해당 행의 다섯번째 열 셀 생성
+        headerCell = headerRow.createCell(4);
+        headerCell.setCellValue("조회수");
+        headerCell.setCellStyle(headerStyle);
+        
+		// 해당 행의 여섯번째 열 셀 생성
+        headerCell = headerRow.createCell(5);
+        headerCell.setCellValue("게시일");
+        headerCell.setCellStyle(headerStyle);
+        
+        
+        // ==== 'OurCompany게시글목록' 내용에 해당하는 행 및 셀 생성하기 ==== // -> 항상 ROW를 만든 다음 각각의 CELL을 만드는 것이다!
+        Row bodyRow = null;
+        Cell bodyCell = null;
+        
+        for(int i=0; i<boardList.size(); i++) {
+        	
+        	// 행생성
+        	bodyRow = sheet.createRow(i + (rowLocation+1)); // DB데이터가 들어갈 행의 인덱스는 2부터 2,3,4,5.. 이런식이다.
+        	
+        	// 데이터 글번호 표시(실제 글번호가 아닌 1,2,3 이런식이다.)
+        	bodyCell = bodyRow.createCell(0); // 엑셀에서 열의 시작은 0 부터 시작한다.
+        	bodyCell.setCellValue(i+1);
+        	
+        	// 데이터 글제목 표시
+        	bodyCell = bodyRow.createCell(1);
+        	bodyCell.setCellValue(boardList.get(i).getSubject());
+        	
+        	// 데이터 댓글수 표시
+        	bodyCell = bodyRow.createCell(2);
+        	bodyCell.setCellValue(boardList.get(i).getCommentCount());
+        	
+        	// 데이터 작성자 표시
+        	bodyCell = bodyRow.createCell(3);
+        	bodyCell.setCellValue(boardList.get(i).getName());
+        	
+        	// 데이터 조회수 표시
+        	bodyCell = bodyRow.createCell(4);
+        	bodyCell.setCellValue(boardList.get(i).getReadCount()); // Integer.parseInt(empMap.get("monthsal")) : 월급은 엑셀에서 sum으로 평균을 구할 수 있으므로, String타입이 아닌 number타입으로 바꿔준다.
+        	
+        	// 데이터 게시일 표시
+        	bodyCell = bodyRow.createCell(5);
+        	bodyCell.setCellValue(boardList.get(i).getRegDate());
+        	
+        }// end of for-------------------------
+        
+        model.addAttribute("locale", Locale.KOREA); // 돈 같은 경우는 원화로 나와야하므로 KOREA
+        model.addAttribute("workbook", workbook);
+        model.addAttribute("workbookName", "OurCompany게시글목록"); // 엑셀을 다운시 파일명 
+		// == 엑셀 꾸미기 END == // ---------------------------------------------------------------------------------
+		
+		
+		return "excelDownloadView"; // ★
+	//  "excelDownloadView" 은 
+	//	/webapp/WEB-INF/spring/appServlet/servlet-context.xml 파일에서
+	//  뷰리졸버(뷰 해결사) 0 순위로 기술된 bean 의 id 값이다.
 	}
 	
 	
 	
 	
-	
-	
-	
-	
-	
+	// === &163. 첨부파일 다운로드 받기 === //
+	@RequestMapping(value="/downloadBoardAttach.gw")
+	public void requiredLogin_download(HttpServletRequest request, HttpServletResponse response) {
+		
+		String boardSeq = request.getParameter("boardSeq");
+		// 첨부파일이 있는 글번호
+		
+		/*
+			첨부파일이 있는 글번호에서
+			2021110812474555403647625200.jpg 처럼
+			이러한 fileName 값을 DB 에서 가져와야 한다. (무엇을 다운받을것인지)
+			또한 orgFilename 값도 DB 에서 가져와야 한다. (파일명을 뭐라고 다운받을것인지 : berkelekle심플V넥02.jpg)
+		*/
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("boardSeq", boardSeq);
+		
+		paraMap.put("fromDate", ""); /* ohhj.xml에서 id="getView"를 재사용할껀데, 이것들이 paraMap에 있어야 오류가 안난다. */
+		paraMap.put("toDate", "");
+		paraMap.put("bCategory", "0");
+		paraMap.put("searchType", "");
+		paraMap.put("searchWord", "");
+		
+		response.setContentType("text/html; charset=UTF-8"); // 응답은 어떤형식이니? 웹브라우저에 찍어주겠다.
+		PrintWriter out = null;
+		
+		try {
+			Integer.parseInt(boardSeq);
+			
+			BoardVO_OHJ boardvo = service.getViewWithNoAddCount(paraMap);
+			
+			if(boardvo == null || (boardvo != null && boardvo.getFileName() == null)) { // ① 존재하지않는글번호 ② 존재하는 글번호이지만, 첨부파일이 없는 경우
+				out = response.getWriter();
+				// out은 웹브라우저상에 메시지를 쓰기 위한 객체생성
+				
+				out.println("<script type='text/javascript'> alert('존재하지 않는 글번호 이거나 첨부파일이 없으므로 파일 다운로드가 불가합니다!!'); history.back(); </script>");
+				
+				return; // 종료
+			}
+			else {
+				String fileName = boardvo.getFileName();
+				// 2021110812474555403647625200.jpg  이것이 바로 WAS(톰캣) 디스크에 저장된 파일명이다.
+				
+				String orgFilename = boardvo.getOrgFilename();
+				// berkelekle심플V넥02.jpg  다운로드시 보여줄 파일명
+				
+				
+				// 첨부파일이 저장되어 있는 WAS(톰캣)의 디스크 경로명을 알아와야만 다운로드를 해줄수 있다. 
+	            // 이 경로는 우리가 파일첨부를 위해서 /boardWriteEnd.gw 에서 설정해두었던 경로와 똑같아야 한다.
+				// WAS의 webapp 의 절대경로를 알아와야 한다.
+				HttpSession session = request.getSession();
+				String root = session.getServletContext().getRealPath("/");
+				
+			//	System.out.println("~~~~ 확인용 webapp 의 절대경로 => " + root);
+				// ~~~~ 확인용 webapp 의 절대경로 => C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
+				
+				String path = root + "resources" + File.separator + "files";
+				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+				       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+				       운영체제가 UNIX, Linux 이라면  File.separator 는 "/" 이다. 
+				*/
+				
+				// path 는 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+			//	System.out.println("~~~~ 확인용 path => " + path);
+				// ~~~~ 확인용 path => C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\files
+				
+				// **** file 다운로드 하기 **** //
+				boolean flag = fileManager.doFileDownload(fileName, orgFilename, path, response);
+				// flag 값이 true 로 받아오면 다운로드 성공을 말하고,
+				// flag 값이 false 로 받아오면 다운로드 실패를 말한다.
+				
+				if(flag == false) {
+					// 다운로드가 실패할 경우 메시지를 띄워준다.
+					
+					out = response.getWriter();
+					// out은 웹브라우저상에 메시지를 쓰기 위한 객체생성
+					
+					out.println("<script type='text/javascript'> alert('파일 다운로드가 실패되었습니다!!'); history.back(); </script>");
+				}
+				
+			}
+		} catch(NumberFormatException e) {
+			
+			try {
+				out = response.getWriter();
+				// out은 웹브라우저상에 메시지를 쓰기 위한 객체생성
+				
+				out.println("<script type='text/javascript'> alert('존재하지 않는 글번호 이므로 파일 다운로드가 불가합니다!!'); history.back(); </script>");
+			} catch(IOException e1) {
+				
+			}
+			
+		} catch(IOException e2) {
+			
+		}
+		
+	}
 	
 	
 	

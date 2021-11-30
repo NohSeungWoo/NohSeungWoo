@@ -1627,7 +1627,22 @@ public class KGHController {
 	public ModelAndView requiredLogin_organization_chart(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		getCurrentURL(request);
 		
-		mav.setViewName("organization/organization_chart.tiles1");
+		// === 부서목록 가져오기(select) === //
+		List<DepartmentVO_KGH> departList = service.getDepartmentName();
+		
+		String departToString = "";
+		
+		for (int i = 0; i < departList.size(); i++) {
+			if(i == departList.size() - 1) {
+				departToString += departList.get(i).getDepartmentname();
+			}
+			else {
+				departToString += departList.get(i).getDepartmentname() + ", ";
+			}
+		}
+		
+		mav.addObject("departToString", departToString);
+		mav.setViewName("organization/organization_chart.tiles_KKH2");
 		return mav;
 	}
 	

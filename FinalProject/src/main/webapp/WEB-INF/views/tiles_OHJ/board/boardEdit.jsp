@@ -169,17 +169,24 @@
 						<span id="subjectLen" style="font-weight: bold;">0</span>/50
 					</td>
 				</tr>
-			<!-- 
-				<tr>
-					<th>파일첨부</th>
-					<td><button type="button" id="fileAttach" class="btn btn-outline-secondary btn-sm">+</button></td>
+			
+				<tr style="border-bottom: solid 1px #dee2e6;">
+					<th>첨부된 파일</th>
+					<td>
+						<c:if test="${not empty requestScope.boardvo.orgFilename}">
+							<i class="fas fa-paperclip mr-2"></i>${requestScope.boardvo.orgFilename}
+						</c:if>
+						<c:if test="${empty requestScope.boardvo.orgFilename}">
+							파일 없음.
+						</c:if>
+					</td>
 				</tr> 
-			-->	
+			<!-- 
 				<tr style="border-bottom: solid 1px #dee2e6;">
 					<th>참조글</th>
 					<td><button type="button" id="refBoard" class="btn btn-outline-secondary btn-sm">+</button></td>
 				</tr>
-			
+			-->	
 			</table>
 		</div>
 		<!-- 글수정에 대한 정보 테이블 종료 -->
